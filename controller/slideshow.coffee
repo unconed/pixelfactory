@@ -13,7 +13,6 @@ slideshow = (el, index, callback) ->
     return if inactive == active
 
     back = delta < 0
-
     show el, back for el in difference active, inactive
     hide el, back for el in difference inactive, active
 
@@ -21,12 +20,14 @@ slideshow = (el, index, callback) ->
 
 prep = (el, back) ->
   el.classList.remove 'animate'
-  el.classList[if  back then 'add' else 'remove'] 'slide-out'
-  el.classList[if !back then 'add' else 'remove'] 'slide-in'
+  el.classList.toggle 'slide-out', back
+  el.classList.toggle 'slide-in', !back
 
 release = (el, active) ->
-  el.classList[if active then 'add' else 'remove'] 'slide-active'
+  el.classList.toggle 'slide-active', active
   el.classList.add 'animate'
+
+reset = (el) -> el.classList.remove 'slide-active'
 
 show = (el, back) ->
   prep el, back
@@ -35,9 +36,6 @@ show = (el, back) ->
 hide = (el, back) ->
   prep el, !back
   setTimeout () -> release el, false
-
-reset = (el) ->
-  el.classList.remove 'slide-active'
 
 clicker = (n, i = 0) ->
   set  = (j, delta) -> [i = j, delta]
@@ -51,7 +49,7 @@ clicker = (n, i = 0) ->
 trigger = (clicker, render) ->
   out = {}
   for k, f of clicker
-    out[k] = do (k, f) -> () -> render.apply this, f.apply this, arguments
+    out[k] = do (f) -> () -> render.apply this, f.apply this, arguments
 
   out.step 0
   out

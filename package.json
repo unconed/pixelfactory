@@ -2,12 +2,9 @@
   "name": "gltalk-pixelfactory",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
+  "main": "index.html",
+  "author": "Steven Wittens",
+  "license": "MIT",
   "dependencies": {
     "coffeeify": "^1.1.0",
     "lodash": "^3.10.1"

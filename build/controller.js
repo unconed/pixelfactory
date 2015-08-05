@@ -86,13 +86,17 @@ slideshow = function(el, index, callback) {
 
 prep = function(el, back) {
   el.classList.remove('animate');
-  el.classList[back ? 'add' : 'remove']('slide-out');
-  return el.classList[!back ? 'add' : 'remove']('slide-in');
+  el.classList.toggle('slide-out', back);
+  return el.classList.toggle('slide-in', !back);
 };
 
 release = function(el, active) {
-  el.classList[active ? 'add' : 'remove']('slide-active');
+  el.classList.toggle('slide-active', active);
   return el.classList.add('animate');
+};
+
+reset = function(el) {
+  return el.classList.remove('slide-active');
 };
 
 show = function(el, back) {
@@ -107,10 +111,6 @@ hide = function(el, back) {
   return setTimeout(function() {
     return release(el, false);
   });
-};
-
-reset = function(el) {
-  return el.classList.remove('slide-active');
 };
 
 clicker = function(n, i) {
@@ -146,11 +146,11 @@ trigger = function(clicker, render) {
   out = {};
   for (k in clicker) {
     f = clicker[k];
-    out[k] = (function(k, f) {
+    out[k] = (function(f) {
       return function() {
         return render.apply(this, f.apply(this, arguments));
       };
-    })(k, f);
+    })(f);
   }
   out.step(0);
   return out;
