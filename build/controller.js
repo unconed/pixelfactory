@@ -85,28 +85,27 @@ slideshow = function(el, index, callback) {
 };
 
 prep = function(el, back) {
-  el.classList.remove(back ? 'slide-in' : 'slide-out');
-  el.classList.add(back ? 'slide-out' : 'slide-in');
-  return el.classList.remove('animate');
+  el.classList.remove('animate');
+  el.classList[back ? 'add' : 'remove']('slide-out');
+  return el.classList[!back ? 'add' : 'remove']('slide-in');
 };
 
-release = function(el, back) {
+release = function(el, active) {
+  el.classList[active ? 'add' : 'remove']('slide-active');
   return el.classList.add('animate');
 };
 
 show = function(el, back) {
   prep(el, back);
   return setTimeout(function() {
-    release(el, back);
-    return el.classList.add('slide-active');
+    return release(el, true);
   });
 };
 
 hide = function(el, back) {
   prep(el, !back);
   return setTimeout(function() {
-    release(el, back);
-    return el.classList.remove('slide-active');
+    return release(el, false);
   });
 };
 

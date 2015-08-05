@@ -20,24 +20,21 @@ slideshow = (el, index, callback) ->
     callback i, delta
 
 prep = (el, back) ->
-  el.classList.remove if back then 'slide-in'  else 'slide-out'
-  el.classList.add    if back then 'slide-out' else 'slide-in'
   el.classList.remove 'animate'
+  el.classList[if  back then 'add' else 'remove'] 'slide-out'
+  el.classList[if !back then 'add' else 'remove'] 'slide-in'
 
-release = (el, back) ->
+release = (el, active) ->
+  el.classList[if active then 'add' else 'remove'] 'slide-active'
   el.classList.add 'animate'
 
 show = (el, back) ->
   prep el, back
-  setTimeout () ->
-    release el, back
-    el.classList.add 'slide-active'
+  setTimeout () -> release el, true
 
 hide = (el, back) ->
   prep el, !back
-  setTimeout () ->
-    release el, back
-    el.classList.remove 'slide-active'
+  setTimeout () -> release el, false
 
 reset = (el) ->
   el.classList.remove 'slide-active'
