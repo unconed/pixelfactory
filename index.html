@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html class="naked">
+  <head>
+    <meta charset="utf-8">
+    <title>The Pixel Factory</title>
+
+    <meta name="viewport" content="width=1280">
+
+    <link rel="stylesheet" href="frame/typography.css" />
+    <link rel="stylesheet" href="frame/layout.css" />
+    <link rel="stylesheet" href="frame/slides.css" />
+    <link rel="stylesheet" href="frame/transition.css" />
+    <link rel="stylesheet" href="frame/controls.css" />
+
+    <script type="text/javascript" src="http://use.typekit.com/nde6wmn.js"></script>
+    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+
+    <script type="text/javascript" src="build/controller.js"></script>
+
+  </head>
+
+  <body class="naked">
+
+    <div class="slides">
+
+      <section class="slide first">
+        
+        <div class="masthead middle"><div>
+          <h1 class="text-giant">The Pixel Factory</h1>
+          <p>FutureJS / FullStack Fest 2015</p>
+        </div></div>
+
+        <div class="masthead footer"><div>
+          
+          <div class="grid2 pad text-left">
+            <h2 class="text-brand">
+              <span class="text-muted text-normal">http://</span>
+              acko.net
+            </h2>
+          </div>
+
+          <div class="grid2 pad text-right">
+            <h3 class="text-muted">Steven Wittens</h3>
+          </div>
+        
+        </div></div>
+        
+      </section>
+
+      <section class="slide">
+
+        <section>
+          <ul>
+            <li class="slide build">Lorem</li>
+            <li class="slide build">Ipsum</li>
+            <li class="slide build">Dolor</li>
+            <li class="slide">Sit</li>
+            <li class="slide">Amet</li>
+          </ul>
+        </section>
+        
+      </section>
+      
+    </div>
+    
+    <div class="controls text-center">
+      <button class="prev">‹</button>
+      <button class="next">›</button>
+    </div>
+    
+  </body>
+
+  <script type="text/javascript">
+    var q = document.querySelector.bind(document);
+    App.mount(q('.slides'), q('.controls'), location);
+  </script>
+
+</html>

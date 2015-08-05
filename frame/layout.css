@@ -1,0 +1,35 @@
+.naked {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.masthead {
+  display: table;
+  width: 100%;
+}
+.masthead > div {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.masthead.middle {
+  top: 50%;
+  -webkit-transform: translate(0, -50%);
+  transform: translate(0, -50%);
+}
+
+.masthead.footer {
+  bottom: 0;
+}
+
+.grid2 {
+  float: left;
+  width: 50%;
+}
+
+.grid2.pad {
+  padding-left: 40px;
+  padding-right: 40px;
+}
