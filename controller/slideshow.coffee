@@ -1,4 +1,4 @@
-{difference, flatten} = require 'lodash'
+{difference, flatten, unique} = require 'lodash'
 
 slideshow = (el, index, callback) ->
   steps = process fetch el
@@ -18,25 +18,6 @@ slideshow = (el, index, callback) ->
 
     callback i, delta
 
-prep = (el, back) ->
-  el.classList.remove 'animate'
-  el.classList.toggle 'slide-out', back
-  el.classList.toggle 'slide-in', !back
-
-release = (el, active) ->
-  el.classList.toggle 'slide-active', active
-  el.classList.add 'animate'
-
-reset = (el) -> el.classList.remove 'slide-active'
-
-show = (el, back) ->
-  prep el, back
-  setTimeout () -> release el, true
-
-hide = (el, back) ->
-  prep el, !back
-  setTimeout () -> release el, false
-
 clicker = (n, i = 0) ->
   set  = (j, delta) -> [i = j, delta]
   go   = (j) -> set (j + n) % n, j - i
@@ -54,11 +35,30 @@ trigger = (clicker, render) ->
   out.step 0
   out
 
+show = (el, back) ->
+  prep el, back
+  setTimeout () -> release el, true
+
+hide = (el, back) ->
+  prep el, !back
+  setTimeout () -> release el, false
+
+prep = (el, back) ->
+  el.classList.remove 'animate'
+  el.classList.toggle 'slide-out', back
+  el.classList.toggle 'slide-in', !back
+
+release = (el, active) ->
+  el.classList.toggle 'slide-active', active
+  el.classList.add 'animate'
+
+reset = (el) -> el.classList.remove 'slide-active'
+
 fetch   = (el)  -> el.querySelectorAll '.slide'
 process = (els) -> step.concat builds step for step in slides els
 
-slides  = (els) ->         filter parents(el), '.slide' for el in els
-builds  = (els) -> flatten(filter prevs(el),   '.build' for el in els)
+slides  = (els) ->         filter parents(el),        '.slide' for el in els
+builds  = (els) -> flatten(filter prevs(el).slice(1), '.build' for el in els)
 
 traverse = (key) -> (el) -> ref while el and ([el, ref] = [el[key], el])
 prevs    = traverse 'previousSibling'

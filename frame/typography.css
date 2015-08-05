@@ -19,7 +19,7 @@ strong, h1, h2, h3, .text-strong {
 }
 
 .text-muted {
-  color: rgb(128, 128, 128);
+  color: rgb(144, 144, 144);
 }
 
 .text-brand.text-muted, .text-brand .text-muted {

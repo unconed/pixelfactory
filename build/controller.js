@@ -47,9 +47,9 @@ root.App = {
 
 
 },{"./controls":1,"./slideshow":3}],3:[function(require,module,exports){
-var builds, clicker, difference, fetch, filter, flatten, hide, parents, patch, prep, prevs, process, ref1, release, reset, show, slides, slideshow, traverse, trigger;
+var builds, clicker, difference, fetch, filter, flatten, hide, parents, patch, prep, prevs, process, ref1, release, reset, show, slides, slideshow, traverse, trigger, unique;
 
-ref1 = require('lodash'), difference = ref1.difference, flatten = ref1.flatten;
+ref1 = require('lodash'), difference = ref1.difference, flatten = ref1.flatten, unique = ref1.unique;
 
 slideshow = function(el, index, callback) {
   var l, last, len, len1, m, step, steps;
@@ -81,35 +81,6 @@ slideshow = function(el, index, callback) {
       hide(el, back);
     }
     return callback(i, delta);
-  });
-};
-
-prep = function(el, back) {
-  el.classList.remove('animate');
-  el.classList.toggle('slide-out', back);
-  return el.classList.toggle('slide-in', !back);
-};
-
-release = function(el, active) {
-  el.classList.toggle('slide-active', active);
-  return el.classList.add('animate');
-};
-
-reset = function(el) {
-  return el.classList.remove('slide-active');
-};
-
-show = function(el, back) {
-  prep(el, back);
-  return setTimeout(function() {
-    return release(el, true);
-  });
-};
-
-hide = function(el, back) {
-  prep(el, !back);
-  return setTimeout(function() {
-    return release(el, false);
   });
 };
 
@@ -156,6 +127,35 @@ trigger = function(clicker, render) {
   return out;
 };
 
+show = function(el, back) {
+  prep(el, back);
+  return setTimeout(function() {
+    return release(el, true);
+  });
+};
+
+hide = function(el, back) {
+  prep(el, !back);
+  return setTimeout(function() {
+    return release(el, false);
+  });
+};
+
+prep = function(el, back) {
+  el.classList.remove('animate');
+  el.classList.toggle('slide-out', back);
+  return el.classList.toggle('slide-in', !back);
+};
+
+release = function(el, active) {
+  el.classList.toggle('slide-active', active);
+  return el.classList.add('animate');
+};
+
+reset = function(el) {
+  return el.classList.remove('slide-active');
+};
+
 fetch = function(el) {
   return el.querySelectorAll('.slide');
 };
@@ -188,7 +188,7 @@ builds = function(els) {
     results = [];
     for (l = 0, len = els.length; l < len; l++) {
       el = els[l];
-      results.push(filter(prevs(el), '.build'));
+      results.push(filter(prevs(el).slice(1), '.build'));
     }
     return results;
   })());
