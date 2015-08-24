@@ -1,8 +1,12 @@
 {difference, flatten, unique} = require 'lodash'
 
+IFRAME_UNLOAD = 150
+
 slideshow = (el, index, callback) ->
-  steps = process fetch el
-  last  = []
+  steps  = process fetch el, '.slide'
+  embeds = sources el, 'iframe[data-src], video[data-src], img[data-src]'
+  last   = []
+  open   = []
 
   reset el for el in step for step in steps
 
@@ -12,9 +16,11 @@ slideshow = (el, index, callback) ->
 
     return if inactive == active
 
-    back = delta < 0
-    show el, back for el in difference active, inactive
-    hide el, back for el in difference inactive, active
+    loaded   = flatten (show el, i, delta for el in difference active, inactive)
+    unloaded = flatten (hide el, i, delta for el in difference inactive, active)
+
+    open = difference unique(open.concat(loaded).filter (x) -> x?), unloaded
+    open.map (el) -> notify el, i, delta
 
     callback i, delta
 
@@ -24,24 +30,49 @@ clicker = (n, i = 0) ->
   step = (d) -> go i + d
   next = ()  -> step 1
   prev = ()  -> step -1
+  get  = ()  -> i
 
-  {go, step, next, prev}
+  {go, step, next, prev, length: n, get}
 
 trigger = (clicker, render) ->
   out = {}
   for k, f of clicker
-    out[k] = do (f) -> () -> render.apply this, f.apply this, arguments
+    out[k] =
+      if k in ['go', 'step', 'next', 'prev']
+        do (f) -> () -> render.apply this, f.apply this, arguments
+      else
+        f
 
   out.step 0
   out
 
-show = (el, back) ->
+notify = (el, i, delta) ->
+  i -= el.slideIndex
+  el.contentWindow?.postMessage {type: 'slideshow', i, delta}, '*'
+
+show = (el, i, delta) ->
+  back = delta < 0
   prep el, back
   setTimeout () -> release el, true
+  el.sources?.map (el) ->
+    prep el, back
+    clearTimeout el.timer if el.timer?
+    el.onload = () ->
+      notify el, i, delta
+      release el, true
+    el.src = el.dataset.src
+    el
 
-hide = (el, back) ->
-  prep el, !back
+hide = (el, i, delta) ->
+  back = delta >= 0
+  prep el, back
   setTimeout () -> release el, false
+  el.sources?.map (el) ->
+    prep el, back
+    el.onload = null
+    setTimeout () -> release el, false
+    el.timer = setTimeout (() -> el.src = 'about:blank'), IFRAME_UNLOAD
+    el
 
 prep = (el, back) ->
   el.classList.remove 'animate'
@@ -54,17 +85,46 @@ release = (el, active) ->
 
 reset = (el) -> el.classList.remove 'slide-active'
 
-fetch   = (el)  -> el.querySelectorAll '.slide'
-process = (els) -> step.concat builds step for step in slides els
+fetch   = (el, selector)-> el.querySelectorAll selector
+process = (els) -> step.concat builds(step), holds(step) for step in collapse slides els
 
-slides  = (els) ->         filter parents(el),        '.slide' for el in els
-builds  = (els) -> flatten(filter prevs(el).slice(1), '.build' for el in els)
+slides   = (els) ->     tag filter(parents(el),        '.slide'), i for el, i in els
+builds   = (els) -> flatten(filter prevs(el).slice(1), '.build'     for el    in els)
+holds    = (els) ->
+  list = []
+  for el in els
+    hold = (prev for prev, i in prevs(el) when match prev, ".stay-#{i + 1}")
+    list.push hold
+  flatten list
+
+tag      = (els, i) ->
+  els.map (el) ->
+    if !el.slideIndex?
+      el.slideIndex = i
+      el.classList.add "slide-#{i}"
+  els
+collapse = (slides) ->
+  list = []
+  for els in slides
+    if match els[0], '.instant'
+      list[list.length - 1].push els[0]
+    else
+      list.push els
+  list
+
+sources = (el, selector) ->
+  for source in fetch el, selector
+    slide = filter(parents(source), '.slide')[0]
+    slide.sources ?= []
+    slide.sources.push source
+    source.slideIndex = slide.slideIndex
 
 traverse = (key) -> (el) -> ref while el and ([el, ref] = [el[key], el])
-prevs    = traverse 'previousSibling'
+prevs    = traverse 'previousElementSibling'
 parents  = traverse 'parentNode'
 
-filter  = (els, sel) -> els.filter (el) -> patch(el) and el.matchesSelector sel
+filter  = (els, sel) -> els.filter (el) -> match el, sel
+match   = (el, sel)  -> patch(el) and el.matchesSelector sel
 patch   = (el)  -> el.matchesSelector ?= el.webkitMatchesSelector ? el.mozMatchesSelector
 
 module.exports = slideshow

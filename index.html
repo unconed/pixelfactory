@@ -6,14 +6,20 @@
 
     <meta name="viewport" content="width=1280">
 
-    <link rel="stylesheet" href="frame/typography.css" />
-    <link rel="stylesheet" href="frame/layout.css" />
-    <link rel="stylesheet" href="frame/slides.css" />
-    <link rel="stylesheet" href="frame/transition.css" />
-    <link rel="stylesheet" href="frame/controls.css" />
+    <link rel="stylesheet" href="css/typography.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/slides.css" />
+    <link rel="stylesheet" href="css/transition.css" />
+    <link rel="stylesheet" href="css/controls.css" />
 
+    <link rel="stylesheet" href="katex/katex.min.css">
+    <script src="katex/katex.min.js"></script>
+    <script src="katex/contrib/auto-render.min.js"></script>
+
+    <!--
     <script type="text/javascript" src="http://use.typekit.com/nde6wmn.js"></script>
     <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+      -->
 
     <script type="text/javascript" src="build/controller.js"></script>
 
@@ -21,51 +27,145 @@
 
   <body class="naked">
 
-    <div class="slides">
+    <div class="squeeze">
+      <div class="slides">
 
-      <section class="slide first">
+        <!-- ============================================= -->
+
+        <section class="slide first">
         
-        <div class="masthead middle"><div>
-          <h1 class="text-giant">The Pixel Factory</h1>
-          <p class="text-muted">FutureJS / FullStack Fest 2015</p>
-        </div></div>
+          <div class="masthead middle"><div>
+            <h1 class="text-giant">The Pixel Factory</h1>
+            <p class="text-muted">FutureJS / FullStack Fest 2015</p>
+          </div></div>
 
-        <div class="masthead footer"><div>
+          <div class="masthead footer"><div>
           
-          <div class="grid2 pad text-left">
-            <h2 class="text-brand">
-              <span class="text-muted text-normal">http://</span>
-              acko.net
-            </h2>
-          </div>
+            <div class="grid2 pad text-left">
+              <h2 class="text-brand">
+                <span class="text-muted text-normal">http://</span>
+                acko.net
+              </h2>
+            </div>
 
-          <div class="grid2 pad text-right">
-            <h3 class="text-muted">Steven Wittens</h3>
-          </div>
+            <div class="grid2 pad text-right">
+              <h3 class="text-muted">Steven Wittens</h3>
+            </div>
         
-        </div></div>
+          </div></div>
         
-      </section>
-
-      <section class="slide">
-
-        <section>
-          <ul>
-            <li class="slide build">Lorem</li>
-            <li class="slide build">Ipsum</li>
-            <li class="slide">Dolor</li>
-            <li class="slide">Sit</li>
-            <li class="slide">Amet</li>
-            <li class="slide build">Elit</li>
-            <li class="slide">Dolor</li>
-            <li class="slide">Sit</li>
-            <li class="slide build">Amet</li>
-            <li class="slide">Elit</li>
-          </ul>
         </section>
+
+        <!-- ============================================= -->
+
+        <section class="slide">
+
+          <iframe class="naked fill" data-src="http://acko.net/"></iframe>
         
-      </section>
+        </section>
+
+        <!-- ============================================= -->
+
+        <section class="slide">
+
+          <iframe class="naked fill recessed" data-src="iframe/index.html#graphwarp"></iframe>
+        
+          <div class="slide instant masthead footer stay-2"><div>
+            <h2 class="text-outline text-brand">MathBox</h2>
+          </div></div>
+
+          <div class="slide"></div>
+
+          <div class="slide masthead footer"><div>
+            <h2 class="text-outline text-brand">MathBox 2</h2>
+          </div></div>
+        
+          <div class="slide fill slide-zoom-in">
+            <div class="masthead footer absolute text-background"><div>
+              <img src="img/glsl-warp-vertex-invert.png" alt="GLSL Vertex Shader Code - Warping Vertices" />
+              <h4 class="text-outline padding-b-2">120,354 vertices @ 60fps = 7.2 million calls / second</h4>
+            </div></div>
+            <div class="masthead top absolute"><div>
+              <h4 class="text-outline">2 Parameters: Time + Intensity</h4>
+            </div></div>
+          </div>
+
+          <div class="slide masthead footer slide-delay-1 stay-2"><div>
+            <p class="text-outline">
+              $$
+                f (\color{#3080FF}{x}, \color{#259035}{y}, \color{#C02050}{z}, time, intensity)
+                \rightarrow
+                (\color{#3080FF}{x}, \color{#259035}{y}, \color{#C02050}{z})
+              $$
+            </p>
+          </div></div>
+
+          <div class="slide"></div>
+          <div class="slide"></div>
+
+          <div class="slide fill">
+            <div class="masthead header slide-delay-1 absolute"><div>
+              <h4 class="text-outline">Surface Normals</h4>
+            </div></div>
+            <div class="masthead footer slide-delay-1 absolute"><div>
+              <p class="text-outline">
+                $$ \color{#40B0FF}{\vec n} $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header slide-delay-1 absolute"><div>
+              <h4 class="text-outline">Vector Cross Product</h4>
+            </div></div>
+            <div class="masthead footer slide-delay-1 absolute"><div>
+              <p class="text-outline">
+                $$ \color{#60D020}{\vec t_u} \times \color{#F92055}{\vec t_v} = \color{#40B0FF}{\vec n} $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide masthead footer text-background"><div>
+            <img src="img/glsl-warp-normal.png" alt="GLSL Vertex Shader Code - Warping Normals" />
+            <h4 class="text-outline padding-b-2">~2.5 x 294,192 vertices @ 60fps = ~44 million calls / second</h4>
+            <h6 class="text-outline padding-b-2">(including vector visualization)</h6>
+          </div></div>
+
+          <div class="slide masthead stack footer"><div>
+            <h3 class="text-outline padding-b-1 text-brand">Pixel Shader</h3>
+            <h4 class="text-outline padding-b-2">1920 ⨉ 1080 pixels @ 60fps = 124 million calls / second</h4>
+          </div></div>
+        </section>
+
+        <section class="slide fill slide-zoom-in">
+          <div class="fill clip" style="opacity: .5">
+            <img src="img/gpu-die.jpg" alt="GPU - Kepler Die" title="GPU - Kepler Die" />
+          </div>
+          <div class="masthead middle absolute text-center">
+            <img src="img/gpu-card-amd.png" alt="GPU - AMD R9 390X" title="GPU - AMD R9 390X" />
+          </div>
+          <div class="masthead footer absolute text-background"><div>
+            <h4 class="text-outline padding-b-2 padding-t-2">Nvidia GTX 980 <span class="text-pad">&middot;</span> 336 GB/s <span class="text-pad">&middot;</span> 5.2 billion transistors <span class="text-pad">&middot;</span> 5 TFLOPS</h4>
+            <h4 class="text-outline padding-b-2">AMD R9 390X <span class="text-pad">&middot;</span> 384 GB/s <span class="text-pad">&middot;</span> 3.3 trillion bits/s</h4>
+          </div></div>
+        </section>
+
+        <section class="slide fill">
+          <div class="slide fill slide-zoom-out">
+            <div class="absolute" style="top: 10%; left: 37%; width: 25%; height: 90%; border-radius: 40px; border: 20px solid rgba(255,196,39,.85);">
+            </div>              
+            <div class="masthead top absolute text-background"><div>
+              <h4 class="text-outline">2007 <span class="text-pad">&middot;</span> 5 T<span class="text-muted">rillion</span> FL<span class="text-muted">oating-point</span> OPS = 1 supercomputer rack</h4>
+            </div></div>
+          </div>
+
+          <div class="fill clip recessed">
+            <img src="img/ibm-blue-gene-p.jpg" alt="IBM Blue Gene/P" title="IBM Blue Gene/P" />
+          </div>
+
+        </section>
       
+      </div>
     </div>
     
     <div class="controls text-center">
@@ -74,6 +174,10 @@
     </div>
     
   </body>
+
+  <script>
+    renderMathInElement(document.body);
+  </script>
 
   <script type="text/javascript">
     var q = document.querySelector.bind(document);

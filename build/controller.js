@@ -2,11 +2,48 @@
 var controls;
 
 controls = function(els, slideshow) {
-  var next, prev;
+  var FOOTER, HEIGHT, WIDTH, next, ping, prev, slides, squeeze;
   prev = els.querySelector('.prev');
   next = els.querySelector('.next');
   prev.onclick = slideshow.prev;
-  return next.onclick = slideshow.next;
+  next.onclick = slideshow.next;
+  WIDTH = 1280;
+  HEIGHT = 720;
+  FOOTER = 60;
+  window.onkeydown = function(e) {
+    switch (e.keyCode) {
+      case 37:
+      case 38:
+        return slideshow.prev();
+      case 39:
+      case 40:
+        return slideshow.next();
+      default:
+        return console.log('keyCode', e.keyCode);
+    }
+  };
+  slides = document.querySelector('.slides');
+  squeeze = document.querySelector('.squeeze');
+  ping = function() {
+    var doc, height, margin, ratio, style, transform, width;
+    style = slides.style;
+    doc = document.documentElement;
+    width = Math.min(doc.clientWidth, window.innerWidth);
+    height = Math.min(doc.clientHeight, window.innerHeight);
+    ratio = width / WIDTH;
+    ratio = Math.min(ratio, (height - FOOTER) / HEIGHT);
+    ratio = Math.min(1, ratio);
+    margin = Math.max(0, (height - HEIGHT * ratio - FOOTER) / 2);
+    transform = "scale(" + ratio + "," + ratio + ")";
+    transform = "translate(-50%, 0) " + transform;
+    style.WebkitTransform = style.transform = transform;
+    style.WebkitTransformOrigin = style.transformOrigin = "50% 0%";
+    style = squeeze.style;
+    style.height = (HEIGHT * ratio) + 'px';
+    return style.marginTop = margin + 'px';
+  };
+  window.onresize = ping;
+  return ping();
 };
 
 module.exports = controls;
@@ -47,14 +84,18 @@ root.App = {
 
 
 },{"./controls":1,"./slideshow":3}],3:[function(require,module,exports){
-var builds, clicker, difference, fetch, filter, flatten, hide, parents, patch, prep, prevs, process, ref1, release, reset, show, slides, slideshow, traverse, trigger, unique;
+var IFRAME_UNLOAD, builds, clicker, collapse, difference, fetch, filter, flatten, hide, holds, match, notify, parents, patch, prep, prevs, process, ref1, release, reset, show, slides, slideshow, sources, tag, traverse, trigger, unique;
 
 ref1 = require('lodash'), difference = ref1.difference, flatten = ref1.flatten, unique = ref1.unique;
 
+IFRAME_UNLOAD = 150;
+
 slideshow = function(el, index, callback) {
-  var l, last, len, len1, m, step, steps;
-  steps = process(fetch(el));
+  var embeds, l, last, len, len1, m, open, step, steps;
+  steps = process(fetch(el, '.slide'));
+  embeds = sources(el, 'iframe[data-src], video[data-src], img[data-src]');
   last = [];
+  open = [];
   for (l = 0, len = steps.length; l < len; l++) {
     step = steps[l];
     for (m = 0, len1 = step.length; m < len1; m++) {
@@ -63,29 +104,44 @@ slideshow = function(el, index, callback) {
     }
   }
   return trigger(clicker(steps.length, index), function(i, delta) {
-    var active, back, inactive, len2, len3, o, p, ref2, ref3;
+    var active, inactive, loaded, unloaded;
     inactive = last;
     active = last = steps[i];
     if (inactive === active) {
       return;
     }
-    back = delta < 0;
-    ref2 = difference(active, inactive);
-    for (o = 0, len2 = ref2.length; o < len2; o++) {
-      el = ref2[o];
-      show(el, back);
-    }
-    ref3 = difference(inactive, active);
-    for (p = 0, len3 = ref3.length; p < len3; p++) {
-      el = ref3[p];
-      hide(el, back);
-    }
+    loaded = flatten((function() {
+      var len2, o, ref2, results;
+      ref2 = difference(active, inactive);
+      results = [];
+      for (o = 0, len2 = ref2.length; o < len2; o++) {
+        el = ref2[o];
+        results.push(show(el, i, delta));
+      }
+      return results;
+    })());
+    unloaded = flatten((function() {
+      var len2, o, ref2, results;
+      ref2 = difference(inactive, active);
+      results = [];
+      for (o = 0, len2 = ref2.length; o < len2; o++) {
+        el = ref2[o];
+        results.push(hide(el, i, delta));
+      }
+      return results;
+    })());
+    open = difference(unique(open.concat(loaded).filter(function(x) {
+      return x != null;
+    })), unloaded);
+    open.map(function(el) {
+      return notify(el, i, delta);
+    });
     return callback(i, delta);
   });
 };
 
 clicker = function(n, i) {
-  var go, next, prev, set, step;
+  var get, go, next, prev, set, step;
   if (i == null) {
     i = 0;
   }
@@ -104,11 +160,16 @@ clicker = function(n, i) {
   prev = function() {
     return step(-1);
   };
+  get = function() {
+    return i;
+  };
   return {
     go: go,
     step: step,
     next: next,
-    prev: prev
+    prev: prev,
+    length: n,
+    get: get
   };
 };
 
@@ -117,28 +178,65 @@ trigger = function(clicker, render) {
   out = {};
   for (k in clicker) {
     f = clicker[k];
-    out[k] = (function(f) {
+    out[k] = k === 'go' || k === 'step' || k === 'next' || k === 'prev' ? (function(f) {
       return function() {
         return render.apply(this, f.apply(this, arguments));
       };
-    })(f);
+    })(f) : f;
   }
   out.step(0);
   return out;
 };
 
-show = function(el, back) {
-  prep(el, back);
-  return setTimeout(function() {
-    return release(el, true);
-  });
+notify = function(el, i, delta) {
+  var ref2;
+  i -= el.slideIndex;
+  return (ref2 = el.contentWindow) != null ? ref2.postMessage({
+    type: 'slideshow',
+    i: i,
+    delta: delta
+  }, '*') : void 0;
 };
 
-hide = function(el, back) {
-  prep(el, !back);
-  return setTimeout(function() {
+show = function(el, i, delta) {
+  var back, ref2;
+  back = delta < 0;
+  prep(el, back);
+  setTimeout(function() {
+    return release(el, true);
+  });
+  return (ref2 = el.sources) != null ? ref2.map(function(el) {
+    prep(el, back);
+    if (el.timer != null) {
+      clearTimeout(el.timer);
+    }
+    el.onload = function() {
+      notify(el, i, delta);
+      return release(el, true);
+    };
+    el.src = el.dataset.src;
+    return el;
+  }) : void 0;
+};
+
+hide = function(el, i, delta) {
+  var back, ref2;
+  back = delta >= 0;
+  prep(el, back);
+  setTimeout(function() {
     return release(el, false);
   });
+  return (ref2 = el.sources) != null ? ref2.map(function(el) {
+    prep(el, back);
+    el.onload = null;
+    setTimeout(function() {
+      return release(el, false);
+    });
+    el.timer = setTimeout((function() {
+      return el.src = 'about:blank';
+    }), IFRAME_UNLOAD);
+    return el;
+  }) : void 0;
 };
 
 prep = function(el, back) {
@@ -156,27 +254,27 @@ reset = function(el) {
   return el.classList.remove('slide-active');
 };
 
-fetch = function(el) {
-  return el.querySelectorAll('.slide');
+fetch = function(el, selector) {
+  return el.querySelectorAll(selector);
 };
 
 process = function(els) {
   var l, len, ref2, results, step;
-  ref2 = slides(els);
+  ref2 = collapse(slides(els));
   results = [];
   for (l = 0, len = ref2.length; l < len; l++) {
     step = ref2[l];
-    results.push(step.concat(builds(step)));
+    results.push(step.concat(builds(step), holds(step)));
   }
   return results;
 };
 
 slides = function(els) {
-  var el, l, len, results;
+  var el, i, l, len, results;
   results = [];
-  for (l = 0, len = els.length; l < len; l++) {
-    el = els[l];
-    results.push(filter(parents(el), '.slide'));
+  for (i = l = 0, len = els.length; l < len; i = ++l) {
+    el = els[i];
+    results.push(tag(filter(parents(el), '.slide'), i));
   }
   return results;
 };
@@ -194,6 +292,68 @@ builds = function(els) {
   })());
 };
 
+holds = function(els) {
+  var el, hold, i, l, len, list, prev;
+  list = [];
+  for (l = 0, len = els.length; l < len; l++) {
+    el = els[l];
+    hold = (function() {
+      var len1, m, ref2, results;
+      ref2 = prevs(el);
+      results = [];
+      for (i = m = 0, len1 = ref2.length; m < len1; i = ++m) {
+        prev = ref2[i];
+        if (match(prev, ".stay-" + (i + 1))) {
+          results.push(prev);
+        }
+      }
+      return results;
+    })();
+    list.push(hold);
+  }
+  return flatten(list);
+};
+
+tag = function(els, i) {
+  els.map(function(el) {
+    if (el.slideIndex == null) {
+      el.slideIndex = i;
+      return el.classList.add("slide-" + i);
+    }
+  });
+  return els;
+};
+
+collapse = function(slides) {
+  var els, l, len, list;
+  list = [];
+  for (l = 0, len = slides.length; l < len; l++) {
+    els = slides[l];
+    if (match(els[0], '.instant')) {
+      list[list.length - 1].push(els[0]);
+    } else {
+      list.push(els);
+    }
+  }
+  return list;
+};
+
+sources = function(el, selector) {
+  var l, len, ref2, results, slide, source;
+  ref2 = fetch(el, selector);
+  results = [];
+  for (l = 0, len = ref2.length; l < len; l++) {
+    source = ref2[l];
+    slide = filter(parents(source), '.slide')[0];
+    if (slide.sources == null) {
+      slide.sources = [];
+    }
+    slide.sources.push(source);
+    results.push(source.slideIndex = slide.slideIndex);
+  }
+  return results;
+};
+
 traverse = function(key) {
   return function(el) {
     var ref, ref2, results;
@@ -205,14 +365,18 @@ traverse = function(key) {
   };
 };
 
-prevs = traverse('previousSibling');
+prevs = traverse('previousElementSibling');
 
 parents = traverse('parentNode');
 
 filter = function(els, sel) {
   return els.filter(function(el) {
-    return patch(el) && el.matchesSelector(sel);
+    return match(el, sel);
   });
+};
+
+match = function(el, sel) {
+  return patch(el) && el.matchesSelector(sel);
 };
 
 patch = function(el) {

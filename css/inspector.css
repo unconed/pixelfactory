@@ -1,0 +1,28 @@
+.shadergraph-overlay {
+  position: absolute !important;
+  top: 0 !important;
+}
+
+.shadergraph-overlay {
+  opacity: 0;
+  -webkit-transition: opacity .5s ease-in-out;
+  transition: opacity .5s ease-in-out;
+}
+
+.shadergraph-overlay.slide-active {
+  opacity: 1;
+}
+
+.shadergraph-overlay.slide-delay-1 {
+  -webkit-transition-delay: 1s;
+  transition-delay: 1s;
+}
+
+.shadergraph-overlay.slide-delay-2 {
+  -webkit-transition-delay: 2s;
+  transition-delay: 2s;
+}
+
+.shadergraph-code {
+  margin-bottom: 100px;
+}
