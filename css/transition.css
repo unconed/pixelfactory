@@ -16,10 +16,19 @@ body.animate .slide {
 body.animate .slide.animate {
   -webkit-transition:
     opacity .15s ease-in-out,
-    -webkit-transform .1s ease-in-out;
+    -webkit-transform .15s ease-in-out;
   transition:
     opacity .15s ease-in-out,
     transform .15s ease-in-out;
+}
+
+body.animate .slide.animate.slow {
+  -webkit-transition:
+    opacity .3s ease-in-out,
+    -webkit-transform .3s ease-in-out;
+  transition:
+    opacity .3s ease-in-out,
+    transform .3s ease-in-out;
 }
 
 body.animate .slide.slide-active {
@@ -103,7 +112,7 @@ body.animate iframe {
 body.animate iframe.animate {
   -webkit-transition:
     opacity .15s ease-in-out,
-    -webkit-transform .1s ease-in-out;
+    -webkit-transform .15s ease-in-out;
   transition:
     opacity .15s ease-in-out,
     transform .15s ease-in-out;

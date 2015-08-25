@@ -1,9 +1,23 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var camera, emitCurve, emitSurface, enlarge, enter, formatNumber, intensitySteps, mathbox, orbit, polar, present, ref, slide, subslide, three, time, view;
+var camera, emitCurve, emitSurface, enlarge, enter, formatNumber, intensitySteps, mathbox, orbit, polar, present, ref, slide, subslide, three, time, view, warpShader;
 
 window.mathbox = (ref = mathBox({
-  plugins: ['core']
+  plugins: ['core'],
+  time: {
+    delay: 10
+  },
+  mathbox: {
+    color: 'blue',
+    warmup: 1
+  }
 }), mathbox = ref.mathbox, three = ref.three, ref);
+
+MathBox.DOM.Types.latex = MathBox.DOM.createClass({
+  render: function(el, props, children) {
+    props.innerHTML = katex.renderToString(children);
+    return el('span', props);
+  }
+});
 
 mathbox = mathbox.v2();
 
@@ -28,7 +42,7 @@ time = function(t) {
 };
 
 intensitySteps = {
-  stops: [0, 0, 1, 3, 4, 5, 6, 7],
+  stops: [0, 0, 1, 3, 3, 4, 5, 6, 7],
   duration: 0,
   pace: 5,
   script: {
@@ -53,8 +67,10 @@ intensitySteps = {
       }
     ],
     "3": [
-      {
-        intensity: 3
+      {}, {
+        intensity: function(t) {
+          return 1.5 + .75 * Math.sin(t * .43) + .75 * Math.sin(t * 1.31);
+        }
       }
     ],
     "4": [
@@ -85,17 +101,19 @@ mathbox.set({
 });
 
 present = mathbox.present({
-  index: 0 + 7
+  index: 0
 });
+
+present.slide();
 
 slide = present.slide({
   id: 'top'
 });
 
-camera = slide.camera().steps({
+camera = slide.camera().step({
   duration: 0,
   pace: 5,
-  stops: [0, 0, 2, 4, 5, 5, 6, 7],
+  stops: [0, 0, 2, 2, 4, 5, 5, 6, 7],
   script: [
     {
       key: 0,
@@ -145,11 +163,11 @@ camera = slide.camera().steps({
       }
     }
   ]
-}).steps({
+}).step({
   target: 'root',
   duration: 0,
   pace: 1,
-  trigger: 7,
+  trigger: 8,
   stops: [0, 1, 2, 3],
   realTime: true,
   script: [
@@ -173,23 +191,138 @@ camera = slide.camera().steps({
   ]
 });
 
-slide.shader({
+warpShader = slide.shader({
   code: "uniform float time;\nuniform float intensity;\n\nvec4 warpVertex(vec4 xyzw, inout vec4 stpq) {\n  xyzw *= vec4(1.0, 0.5, 0.5, 0.0);\n\n  xyzw +=   0.2 * intensity * (sin(xyzw.yzwx * 1.91 + time + sin(xyzw.wxyz * 1.74 + time)));\n  xyzw +=   0.1 * intensity * (sin(xyzw.yzwx * 4.03 + time + sin(xyzw.wxyz * 2.74 + time)));\n  xyzw +=  0.05 * intensity * (sin(xyzw.yzwx * 8.39 + time + sin(xyzw.wxyz * 4.18 + time)));\n  xyzw += 0.025 * intensity * (sin(xyzw.yzwx * 15.1 + time + sin(xyzw.wxyz * 9.18 + time)));\n    \n  xyzw *= vec4(1.0, 2.0, 2.0, 0.0);\n    \n  return xyzw;\n}"
 }, {
   time: time
-}).steps(intensitySteps);
+});
+
+slide.step(intensitySteps);
+
+slide.slide().end().slide().end();
+
+slide.slide().layer().unit({
+  scale: 500,
+  focus: 1
+}).cartesian({
+  id: "overlayGraph",
+  range: [[-1, 0], [0, 4], [-.5, .5]],
+  scale: [1.5, .35, .35],
+  position: [0, -.55]
+}).transition({
+  stagger: [-10],
+  duration: 1
+}).axis({
+  axis: 1,
+  origin: [-1, 0],
+  zIndex: 2
+}).axis({
+  axis: 2,
+  origin: [-1, 0],
+  zIndex: 2
+}).area({
+  width: 2,
+  height: 2
+}).surface({
+  shaded: false,
+  color: 'white',
+  opacity: .95,
+  zBias: -10,
+  zOrder: -1,
+  zIndex: 2
+}).grid({
+  divideX: 5,
+  divideY: 5,
+  zIndex: 2
+}).end().transition({
+  stagger: [10],
+  duration: 1
+}).array({
+  length: 1,
+  history: 512,
+  expr: function(emit, i, t) {
+    return emit(0, t % 4);
+  },
+  channels: 2,
+  fps: 60
+}).spread({
+  height: -1,
+  alignHeight: 1
+}).transpose({
+  order: 'yx'
+}).line({
+  width: 3,
+  color: '#25A035',
+  zIndex: 2,
+  proximity: 1
+}).slice({
+  width: [0, 1]
+}).point({
+  color: '#25A035',
+  size: 9,
+  zIndex: 3
+}).format({
+  data: ["Time"],
+  font: ["klavika-web", "Klavika Web Basic", "sans-serif"],
+  style: 'italic',
+  weight: 'bold',
+  detail: 32
+}).label({
+  color: '#25A035',
+  zIndex: 3,
+  size: 28,
+  offset: [0, 20]
+}).array({
+  length: 1,
+  history: 512,
+  expr: function(emit, i, t) {
+    return emit(0, warpShader.get('intensity'));
+  },
+  channels: 2,
+  fps: 60
+}).spread({
+  height: -1,
+  alignHeight: 1
+}).transpose({
+  order: 'yx'
+}).line({
+  width: 3,
+  color: '#3090FF',
+  zIndex: 2,
+  proximity: 1
+}).slice({
+  width: [0, 1]
+}).point({
+  color: '#3090FF',
+  size: 9,
+  zIndex: 3
+}).format({
+  data: ["Intensity"],
+  font: ["klavika-web", "Klavika Web Basic", "sans-serif"],
+  style: 'italic',
+  weight: 'bold',
+  detail: 32
+}).label({
+  color: '#3080FF',
+  zIndex: 3,
+  size: 28,
+  offset: [0, -20]
+});
+
+slide.slide().end();
 
 polar = slide.transition({
   stagger: [10, 0, 0, 0],
-  duration: 2
+  durationEnter: 2,
+  durationExit: 3
 }).polar({
   bend: .25,
   range: [[-π, π], [0, π], [-π / 2, π / 2]],
   scale: [2, 1, 1]
 });
 
-polar.steps({
-  stops: [0, 11, 11, 11, 12],
+polar.step({
+  stops: [0, 11, 11, 11, 11, 12],
   duration: 0,
   pace: 1,
   script: {
@@ -225,7 +358,7 @@ polar.steps({
 
 view = polar.vertex({
   pass: 'data'
-}).slide().end().slide().end().slide().end();
+});
 
 subslide = view.slide({
   id: 'grids',
@@ -247,7 +380,8 @@ subslide.transition({
   divideX: 40,
   divideY: 10,
   detailX: 512,
-  detailY: 128
+  detailY: 128,
+  crossed: true
 }).end().grid({
   opacity: .5,
   axes: [1, 3],
@@ -257,7 +391,8 @@ subslide.transition({
   divideX: 40,
   divideY: 10,
   detailX: 512,
-  detailY: 128
+  detailY: 128,
+  crossed: true
 });
 
 view.slide().end();
@@ -272,8 +407,8 @@ view.slide().end();
 
 view.transition({
   stagger: [-100]
-}).steps({
-  trigger: 6,
+}).step({
+  trigger: 7,
   pace: 1,
   stops: [0, 1],
   script: {
@@ -296,13 +431,13 @@ view.transition({
   width: 193,
   height: 97,
   channels: 3,
-  map: emitSurface
+  expr: emitSurface
 }).surface({
   lineX: false,
   lineY: false,
   zBias: 3
-}).steps({
-  trigger: 8,
+}).step({
+  trigger: 9,
   pace: 1,
   stops: [0, 1],
   script: {
@@ -322,23 +457,25 @@ view.transition({
 }).surface({
   lineX: true,
   lineY: true,
-  solid: false,
+  fill: false,
   width: 0,
   zBias: 3
-}).steps({
-  trigger: 8,
+}).step({
+  trigger: 9,
   pace: 1,
   stops: [0, 1],
   script: {
     0: [
       {
         color: '#3090FF',
+        opacity: 1,
         width: 0
       }
     ],
     1: [
       {
-        color: '#18487F',
+        color: '#3090FF',
+        opacity: .5,
         width: 1
       }
     ]
@@ -347,8 +484,8 @@ view.transition({
 
 polar.transition({
   stagger: [-5]
-}).steps({
-  trigger: 7,
+}).step({
+  trigger: 8,
   pace: 1,
   stops: [0, 1],
   script: {
@@ -370,7 +507,7 @@ polar.transition({
   code: "uniform float time;\nuniform float intensity;\n\nvec4 warpVertex(vec4 xyzw) {\n  xyzw *= vec4(1.0, 0.5, 0.5, 0.0);\n\n  xyzw +=   0.2 * intensity * (sin(xyzw.yzwx * 1.91 + time + sin(xyzw.wxyz * 1.74 + time)));\n  xyzw +=   0.1 * intensity * (sin(xyzw.yzwx * 4.03 + time + sin(xyzw.wxyz * 2.74 + time)));\n  xyzw +=  0.05 * intensity * (sin(xyzw.yzwx * 8.39 + time + sin(xyzw.wxyz * 4.18 + time)));\n  xyzw += 0.025 * intensity * (sin(xyzw.yzwx * 15.1 + time + sin(xyzw.wxyz * 9.18 + time)));\n\n  xyzw *= vec4(1.0, 2.0, 2.0, 0.0);\n    \n  return xyzw;\n}\n\nvec4 getSample(vec4 xyzw);\nvec4 getVectorSample(vec4 xyzw) {\n  vec4 xyz0 = vec4(xyzw.xyz, 0.0);\n  vec3 c = warpVertex(getSample(xyz0)).xyz;\n  vec3 r = warpVertex(getSample(xyz0 + vec4(1.0, 0.0, 0.0, 0.0))).xyz;\n  vec3 u = warpVertex(getSample(xyz0 + vec4(0.0, 1.0, 0.0, 0.0))).xyz;\n  vec3 n = normalize(cross(r - c, u - c));\n  return vec4(c - n * xyzw.w * .2, 0.0);\n}"
 }, {
   time: time
-}).steps(intensitySteps).resample({
+}).step(intensitySteps).resample({
   source: '#surfaceArea',
   width: 37,
   height: 19,
@@ -386,8 +523,8 @@ polar.transition({
 
 polar.transition({
   stagger: [-5]
-}).steps({
-  trigger: 8,
+}).step({
+  trigger: 9,
   pace: .7,
   stops: [0, 1],
   script: {
@@ -409,7 +546,7 @@ polar.transition({
   code: "uniform float time;\nuniform float intensity;\n\nvec4 warpVertex(vec4 xyzw) {\n  xyzw *= vec4(1.0, 0.5, 0.5, 0.0);\n\n  xyzw +=   0.2 * intensity * (sin(xyzw.yzwx * 1.91 + time + sin(xyzw.wxyz * 1.74 + time)));\n  xyzw +=   0.1 * intensity * (sin(xyzw.yzwx * 4.03 + time + sin(xyzw.wxyz * 2.74 + time)));\n  xyzw +=  0.05 * intensity * (sin(xyzw.yzwx * 8.39 + time + sin(xyzw.wxyz * 4.18 + time)));\n  xyzw += 0.025 * intensity * (sin(xyzw.yzwx * 15.1 + time + sin(xyzw.wxyz * 9.18 + time)));\n\n  xyzw *= vec4(1.0, 2.0, 2.0, 0.0);\n    \n  return xyzw;\n}\n\nvec4 getSample(vec4 xyzw);\nvec4 getVectorSample(vec4 xyzw) {\n  vec4 xyz0 = vec4(xyzw.xyz, 0.0);\n  vec3 c = warpVertex(getSample(xyz0)).xyz;\n  vec3 r = warpVertex(getSample(xyz0 + vec4(1.0, 0.0, 0.0, 0.0))).xyz;\n  return vec4(c + normalize(c - r) * xyzw.w * .15, 0.0);\n}"
 }, {
   time: time
-}).steps(intensitySteps).resample({
+}).step(intensitySteps).resample({
   source: '#surfaceArea',
   width: 37,
   height: 19,
@@ -426,7 +563,7 @@ polar.transition({
   code: "uniform float time;\nuniform float intensity;\n\nvec4 warpVertex(vec4 xyzw) {\n  xyzw *= vec4(1.0, 0.5, 0.5, 0.0);\n\n  xyzw +=   0.2 * intensity * (sin(xyzw.yzwx * 1.91 + time + sin(xyzw.wxyz * 1.74 + time)));\n  xyzw +=   0.1 * intensity * (sin(xyzw.yzwx * 4.03 + time + sin(xyzw.wxyz * 2.74 + time)));\n  xyzw +=  0.05 * intensity * (sin(xyzw.yzwx * 8.39 + time + sin(xyzw.wxyz * 4.18 + time)));\n  xyzw += 0.025 * intensity * (sin(xyzw.yzwx * 15.1 + time + sin(xyzw.wxyz * 9.18 + time)));\n\n  xyzw *= vec4(1.0, 2.0, 2.0, 0.0);\n    \n  return xyzw;\n}\n\nvec4 getSample(vec4 xyzw);\nvec4 getVectorSample(vec4 xyzw) {\n  vec4 xyz0 = vec4(xyzw.xyz, 0.0);\n  vec3 c = warpVertex(getSample(xyz0)).xyz;\n  vec3 u = warpVertex(getSample(xyz0 + vec4(0.0, 1.0, 0.0, 0.0))).xyz;\n  return vec4(c + normalize(c - u) * xyzw.w * .15, 0.0);\n}"
 }, {
   time: time
-}).steps(intensitySteps).resample({
+}).step(intensitySteps).resample({
   source: '#surfaceArea',
   width: 37,
   height: 19,
@@ -435,7 +572,7 @@ polar.transition({
   paddingWidth: 1,
   paddingHeight: 1
 }).vector({
-  color: '#F92055',
+  color: '#F92000',
   zBias: 15,
   end: true
 });
@@ -461,13 +598,14 @@ view.transform({
 }).format({
   expr: function(x) {
     return formatNumber(x);
-  }
+  },
+  font: ["klavika-web", "Klavika Web Basic", "sans-serif"]
 }).label({
   depth: .5,
   zIndex: 1
-}).steps({
+}).step({
   stops: [0, 1],
-  trigger: 4,
+  trigger: 5,
   script: [
     [
       {
@@ -520,17 +658,18 @@ view.grid({
   unitX: π,
   unitY: π,
   baseX: 2,
-  zBias: -5
+  zBias: -5,
+  crossed: true
 }).interval({
   length: 512,
   channels: 2,
-  map: emitCurve
+  expr: emitCurve
 }).line({
   color: '#B94095',
   width: 5,
   zBias: 3
-}).steps({
-  trigger: 4,
+}).step({
+  trigger: 5,
   stops: [0, 1, 2, 3],
   script: [
     [
@@ -545,7 +684,7 @@ view.grid({
     ], [
       {
         opacity: 1,
-        color: '#3090FF'
+        color: '#B94095'
       }
     ], [
       {
@@ -555,10 +694,11 @@ view.grid({
     ]
   ]
 }).transition({
+  id: "primary-axes",
   stagger: 10
-}).steps({
+}).step({
   stops: [0, 1, 0],
-  trigger: 4,
+  trigger: 5,
   script: [
     [
       {
@@ -575,21 +715,57 @@ view.grid({
 }).axis({
   axis: 2,
   detail: 256,
-  color: 0x259035,
-  width: 5
-}).transform({
-  pass: 'data',
-  position: [0, π / 2, 0]
+  color: 0x40C020,
+  width: 5,
+  zBias: 5,
+  zOrder: -1,
+  origin: [0, π / 2, 0]
 }).axis({
   axis: 1,
   detail: 512,
   color: 0x3090FF,
-  width: 5
+  width: 5,
+  zBias: 5,
+  zOrder: -1,
+  origin: [0, π / 2, 0]
 }).axis({
   axis: 3,
   detail: 256,
   color: 0xC02050,
-  width: 5
+  width: 5,
+  zBias: 5,
+  zOrder: -1,
+  origin: [0, π / 2, 0]
+}).scale({
+  axis: 1,
+  divide: 2,
+  origin: [0, π / 2, 0]
+}).slice({
+  width: [0, 0]
+}).format({
+  data: ["x"]
+}).label({
+  color: 0x3080FF
+}).scale({
+  axis: 2,
+  divide: 2,
+  origin: [0, π / 2, 0]
+}).slice({
+  width: [0, 0]
+}).format({
+  data: ["y"]
+}).label({
+  color: 0x40A020
+}).scale({
+  axis: 3,
+  divide: 2,
+  origin: [0, π / 2, 0]
+}).slice({
+  width: [0, 0]
+}).format({
+  data: ["z"]
+}).label({
+  color: 0xC02050
 });
 
 window.onmessage = function(e) {
@@ -601,7 +777,7 @@ window.onmessage = function(e) {
 };
 
 enlarge = function(el, zoom) {
-  var k, len, ref1, results, svg;
+  var k, l, len, len1, ref1, ref2, results, svg;
   el.style.zoom = zoom;
   ref1 = el.querySelectorAll('.shadergraph-graph');
   results = [];
@@ -610,16 +786,12 @@ enlarge = function(el, zoom) {
     if (typeof el.update === "function") {
       el.update();
     }
-    results.push((function() {
-      var l, len1, ref2, results1;
-      ref2 = el.querySelectorAll('svg');
-      results1 = [];
-      for (l = 0, len1 = ref2.length; l < len1; l++) {
-        svg = ref2[l];
-        results1.push(svg.setAttribute('height', svg.getAttribute('height') * zoom));
-      }
-      return results1;
-    })());
+    ref2 = el.querySelectorAll('svg');
+    for (l = 0, len1 = ref2.length; l < len1; l++) {
+      svg = ref2[l];
+      svg.setAttribute('height', svg.getAttribute('height') * zoom);
+    }
+    results.push(el.classList.add('animate'));
   }
   return results;
 };
@@ -631,20 +803,35 @@ enter = function(el) {
   });
 };
 
+three.on('mathbox.progress', function(e) {
+  var i, j, k, ref1, results;
+  i = present[0].get('index');
+  if (e.total === e.current && i <= 2) {
+    results = [];
+    for (j = k = ref1 = i; ref1 <= 2 ? k < 2 : k > 2; j = ref1 <= 2 ? ++k : --k) {
+      results.push(window.parent.postMessage({
+        type: 'slideshow',
+        method: 'next'
+      }, '*'));
+    }
+    return results;
+  }
+});
+
 present.on('change', function(e) {
   var el, k, l, len, len1, len2, m, ref1, ref2, ref3, results, step, surface;
   step = present[0].get('index');
-  if (step <= 11) {
-    ref1 = document.querySelectorAll('.shadergraph-overlay');
+  if (step <= 13) {
+    ref1 = document.querySelectorAll('.shadergraph-overlay.animate');
     for (k = 0, len = ref1.length; k < len; k++) {
       el = ref1[k];
       el.remove();
     }
   }
-  if (step === 11) {
+  if (step === 13) {
     surface = mathbox.select('surface')[0];
     if (surface != null) {
-      surface.controller.objects[0].objects[0].material.fragmentGraph.inspect();
+      surface.controller.objects[0].render[0].material.fragmentGraph.inspect();
     }
     ref2 = document.querySelectorAll('.shadergraph-overlay');
     for (l = 0, len1 = ref2.length; l < len1; l++) {
@@ -660,6 +847,19 @@ present.on('change', function(e) {
     return results;
   }
 });
+
+if (window === top) {
+  window.onkeydown = function(e) {
+    switch (e.keyCode) {
+      case 37:
+      case 38:
+        return present[0].set('index', present[0].get('index') - 1);
+      case 39:
+      case 40:
+        return present[0].set('index', present[0].get('index') + 1);
+    }
+  };
+}
 
 
 

@@ -26,6 +26,17 @@ root.App = {
       return _element.appendChild(script);
     };
     return refresh();
+
+    /*
+      progress: (current, total) ->
+    
+    if current == total
+      @_progress.style.width = '100%'
+      setTimeout (() => @_loader.style.display = 'none'), 100
+    else
+      @_loader.style.display = 'block'
+      @_progress.style.width = Math.round(100 * (current / total)) + '%'
+     */
   }
 };
 

@@ -10,11 +10,16 @@ controls = (els, slideshow) ->
   HEIGHT = 720
   FOOTER = 60
 
+  window.onmessage = (e) ->
+    d = e.data
+    if d?.type == 'slideshow' and d?.method?
+      slideshow[d.method]?()
+
   window.onkeydown = (e) ->
     switch e.keyCode
       when 37, 38 then slideshow.prev()
       when 39, 40 then slideshow.next()
-      else console.log 'keyCode', e.keyCode
+      #else console.log 'keyCode', e.keyCode
 
   slides  = document.querySelector '.slides'
   squeeze = document.querySelector '.squeeze'

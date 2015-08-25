@@ -10,6 +10,13 @@ controls = function(els, slideshow) {
   WIDTH = 1280;
   HEIGHT = 720;
   FOOTER = 60;
+  window.onmessage = function(e) {
+    var d, name;
+    d = e.data;
+    if ((d != null ? d.type : void 0) === 'slideshow' && ((d != null ? d.method : void 0) != null)) {
+      return typeof slideshow[name = d.method] === "function" ? slideshow[name]() : void 0;
+    }
+  };
   window.onkeydown = function(e) {
     switch (e.keyCode) {
       case 37:
@@ -18,8 +25,6 @@ controls = function(els, slideshow) {
       case 39:
       case 40:
         return slideshow.next();
-      default:
-        return console.log('keyCode', e.keyCode);
     }
   };
   slides = document.querySelector('.slides');
@@ -84,11 +89,13 @@ root.App = {
 
 
 },{"./controls":1,"./slideshow":3}],3:[function(require,module,exports){
-var IFRAME_UNLOAD, builds, clicker, collapse, difference, fetch, filter, flatten, hide, holds, match, notify, parents, patch, prep, prevs, process, ref1, release, reset, show, slides, slideshow, sources, tag, traverse, trigger, unique;
+var IFRAME_LOAD, IFRAME_UNLOAD, builds, clicker, collapse, difference, fetch, filter, flatten, hide, holds, match, notify, parents, patch, prep, prevs, process, ref1, release, reset, show, slides, slideshow, sources, tag, traverse, trigger, unique;
 
 ref1 = require('lodash'), difference = ref1.difference, flatten = ref1.flatten, unique = ref1.unique;
 
 IFRAME_UNLOAD = 150;
+
+IFRAME_LOAD = 150;
 
 slideshow = function(el, index, callback) {
   var embeds, l, last, len, len1, m, open, step, steps;
@@ -214,7 +221,9 @@ show = function(el, i, delta) {
       notify(el, i, delta);
       return release(el, true);
     };
-    el.src = el.dataset.src;
+    el.timer = setTimeout(function() {
+      return el.src = el.dataset.src;
+    }, IFRAME_LOAD);
     return el;
   }) : void 0;
 };
@@ -229,6 +238,9 @@ hide = function(el, i, delta) {
   return (ref2 = el.sources) != null ? ref2.map(function(el) {
     prep(el, back);
     el.onload = null;
+    if (el.timer) {
+      clearTimeout(el.timer);
+    }
     setTimeout(function() {
       return release(el, false);
     });

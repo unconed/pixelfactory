@@ -1,6 +1,7 @@
 {difference, flatten, unique} = require 'lodash'
 
 IFRAME_UNLOAD = 150
+IFRAME_LOAD   = 150
 
 slideshow = (el, index, callback) ->
   steps  = process fetch el, '.slide'
@@ -60,7 +61,9 @@ show = (el, i, delta) ->
     el.onload = () ->
       notify el, i, delta
       release el, true
-    el.src = el.dataset.src
+    el.timer = setTimeout () ->
+        el.src = el.dataset.src
+      , IFRAME_LOAD
     el
 
 hide = (el, i, delta) ->
@@ -70,6 +73,7 @@ hide = (el, i, delta) ->
   el.sources?.map (el) ->
     prep el, back
     el.onload = null
+    clearTimeout el.timer if el.timer
     setTimeout () -> release el, false
     el.timer = setTimeout (() -> el.src = 'about:blank'), IFRAME_UNLOAD
     el

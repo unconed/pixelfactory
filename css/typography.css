@@ -83,7 +83,7 @@ h6 {
 }
 
 
-.text-outline {
+.text-outline, .text-outline-fill {
   text-shadow:
      4px  0px 0px rgb(255, 255, 255),
     -4px  0px 0px rgb(255, 255, 255),
@@ -109,6 +109,9 @@ h6 {
      1px -2px 1px rgb(255, 255, 255),
      2px -1px 1px rgb(255, 255, 255);
 }
+.text-outline-fill, .text-outline-fill * {
+  color: #fff !important;
+}
 
 .text-background {
   background: rgba(255, 255, 255, .5);
@@ -120,4 +123,53 @@ h6 {
 
 .text-normal {
   font-weight: normal;
+}
+
+
+
+/* math coloring */
+.purple {
+  color: #B940A5;
+}
+.green {
+  color: #25A035;
+}
+.blue {
+  color: #3080F0;
+}
+.red {
+  color: #C02050;
+}
+.orangered {
+  color: rgb(192,48,0);
+}
+.surfacered {
+  color: #df5000;
+}
+.teal {
+  color: #50a5c0;
+}
+.white {
+  color: #fff;
+}
+.cyan {
+  color: #30A0B0;
+}
+.gold {
+  color: #db8101;
+}
+.royal {
+  color: #5528A0;
+}
+.grey, .gray {
+  color: #a9a9a9;
+}
+.slate {
+  color: #5070A0;
+}
+.orange {
+  color: #DC6200;
+}
+.black {
+  color: #000000;
 }

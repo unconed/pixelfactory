@@ -3,7 +3,7 @@
   top: 0 !important;
 }
 
-.shadergraph-overlay {
+.shadergraph-overlay.animate {
   opacity: 0;
   -webkit-transition: opacity .5s ease-in-out;
   transition: opacity .5s ease-in-out;
@@ -25,4 +25,8 @@
 
 .shadergraph-code {
   margin-bottom: 100px;
+}
+
+.shadergraph-close {
+  display: none;
 }
