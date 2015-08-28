@@ -835,7 +835,7 @@ getOverlays = () ->
 present.on 'change', (e) ->
   step = present[0].get('index')
   if step <= 20
-    el.remove() for el in gerOverlays()
+    el.remove() for el in getOverlays()
   if step == 20
     surface = mathbox.select('surface')[0]
     surface?.controller.objects[0].renders[0].material.fragmentGraph.inspect()
