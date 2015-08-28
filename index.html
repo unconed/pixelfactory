@@ -16,8 +16,10 @@
     <script src="katex/katex.min.js"></script>
     <script src="katex/contrib/auto-render.min.js"></script>
 
+    <!--
     <script type="text/javascript" src="http://use.typekit.com/nde6wmn.js"></script>
     <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+      -->
 
     <script type="text/javascript" src="build/controller.js"></script>
 
@@ -60,8 +62,6 @@
 
           <iframe class="naked fill" data-src="http://acko.net/"></iframe>
         
-          <div class="slide"></div>
-        
         </section>
 
         <!-- ============================================= -->
@@ -70,7 +70,7 @@
 
           <iframe class="naked fill recessed" data-src="iframe/index.html#graphwarp"></iframe>
         
-          <div class="slide instant masthead footer stay-2"><div>
+          <div class="slide instant masthead footer" data-stay="3"><div>
             <h2 class="text-outline text-brand">MathBox</h2>
           </div></div>
 
@@ -82,47 +82,62 @@
             <h2 class="text-outline text-brand">MathBox 2</h2>
           </div></div>
         
-          <div class="slide fill slide-zoom-in">
+          <div class="slide fill slide-zoom-in" data-stay="3">
             <div class="masthead top absolute"><div>
-              <h4 class="text-outline">2 Parameters: <span class="green">Time</span> + <span class="blue">Intensity</span></h4>
+              <h4 class="text-outline"><span class="green">Time</span> Parameter</h4>
             </div></div>
           </div>
 
+          <div class="slide"></div>
+
+          <div class="slide"></div>
+
           <div class="slide fill slide-zoom-in">
+            <div class="masthead top absolute"><div>
+              <h4 class="text-outline"><span class="blue">Intensity</span> Parameter</h4>
+            </div></div>
+          </div>
+          
+          <div class="slide fill slide-zoom-in slide-delay-1">
             <div class="masthead footer absolute text-background"><div>
               <img src="img/glsl-warp-vertex-invert.png" alt="GLSL Vertex Shader Code - Warping Vertices" />
               <h4 class="text-outline padding-b-2">120,354 vertices @ 60fps = 7.2 million calls / second</h4>
             </div></div>
           </div>
 
-          <div class="slide masthead footer slide-delay-1 stay-2"><div>
-            <p class="text-outline">
-              $$
-                f (\color{#3080FF}{x}, \color{#40A020}{y}, \color{#C02050}{z}, time, intensity)
-                \rightarrow
-                (\color{#3080FF}{x}, \color{#40A020}{y}, \color{#C02050}{z})
-              $$
-            </p>
-          </div></div>
+          <div class="slide fill" data-stay="2">
+            <div class="masthead top slide-delay-1"><div>
+              <h4 class="text-outline">XYZ Space</h4>
+            </div></div>
+            <div class="masthead footer slide-delay-1"><div>
+              <p class="text-outline">
+                $$
+                  f(\color{#3080FF}{x}, \color{#40A020}{y}, \color{#C02050}{z}, \text{time}, \text{intensity})
+                  \rightarrow
+                  (\color{#3080FF}{x}, \color{#40A020}{y}, \color{#C02050}{z})
+                $$
+              </p>
+            </div></div>
+          </div>
 
           <div class="slide"></div>
           <div class="slide"></div>
 
           <div class="slide fill">
-            <div class="masthead header slide-delay-1 absolute"><div>
+            <div class="masthead header absolute"><div>
               <h4 class="text-outline">Surface Normals</h4>
             </div></div>
-            <div class="masthead footer slide-delay-1 absolute text-background"><div>
+            <div class="masthead footer absolute text-background"><div>
 
               <div class="grid2 pad text-center">
                 <p class="text-outline">
-                  $$ \color{#18487F}{\vec p} = (\color{#18487F}{p_x}, \color{#18487F}{p_y}, \color{#18487F}{p_z}) $$
+                  $$ \color{#18487F}{\vec p} = (\color{#18487F}{p_\color{#3080FF}{x}}, \color{#18487F}{p_\color{#40A020}{y}}, \color{#18487F}{p_\color{#C02050}{z}}) $$
                 </p>
               </div>
 
               <div class="grid2 pad text-center">
                 <p class="text-outline">
-                  $$ \color{#40B0FF}{\vec n} = (\color{#40B0FF}{n_x}, \color{#40B0FF}{n_y}, \color{#40B0FF}{n_z}) $$
+                  $$ \color{#40B0FF}{\vec n} = (\color{#40B0FF}{n_\color{#3080FF}{x}}, \color{#40B0FF}{n_\color{#40A020}{y}}, \color{#40B0FF}{n_\color{#C02050}{z}}) $$
                 </p>
               </div>
 
@@ -130,23 +145,86 @@
           </div>
 
           <div class="slide fill">
-            <div class="masthead header slide-delay-1 absolute"><div>
-              <h4 class="text-outline">Differential Geometry + Vector Cross Product</h4>
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">UV Plane to XYZ Space</h4>
             </div></div>
-            <div class="masthead footer slide absolute text-background"><div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline">
+                $$
+                  \color{#18487F}{\vec p}(\color{#35bd96}{u}, \color{#9759d1}{v}) = \text{warp}\Big(\text{surface}(\color{#35bd96}{u}, \color{#9759d1}{v}), \text{time}, \text{intensity}\Big)
+                $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">U Tangents</h4>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fill">
+                $$
+                  \color{#35bd96}{\vec U}
+                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#35bd96}{\partial u}}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#35bd96}{u} + \epsilon, \color{#9759d1}{v}) - \color{#18487F}{\vec p}(\color{#35bd96}{u}, \color{#9759d1}{v}\big)}{\epsilon}
+                $$
+              </p>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fix">
+                $$
+                  \color{#35bd96}{\vec U}
+                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#35bd96}{\partial u}}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#35bd96}{u} + \epsilon, \color{#9759d1}{v}) - \color{#18487F}{\vec p}(\color{#35bd96}{u}, \color{#9759d1}{v}\big)}{\epsilon}
+                $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">V Tangents</h4>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fill">
+                $$
+                  \color{#9759d1}{\vec V}
+                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial v}}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#35bd96}{u}, \color{#9759d1}{v} + \epsilon) - \color{#18487F}{\vec p}(\color{#35bd96}{u}, \color{#9759d1}{v}\big)}{\epsilon}
+                $$
+              </p>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fix">
+                $$
+                  \color{#9759d1}{\vec V}
+                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial v}}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#35bd96}{u}, \color{#9759d1}{v} + \epsilon) - \color{#18487F}{\vec p}(\color{#35bd96}{u}, \color{#9759d1}{v}\big)}{\epsilon}
+                $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Vector Cross Product</h4>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
               <p class="text-outline-fill">
                 $$ \color{#40B0FF}{\vec n}
-                 = \color{#40A020}{\vec t_u} \times \color{#F92055}{\vec t_v}
-                 = \frac{\color{#18487F}{\partial \vec p}}{\color{#40A020}{\partial u}}
+                 = \frac{\color{#18487F}{\partial \vec p}}{\color{#35bd96}{\partial u}}
                    \times
-                   \frac{\color{#18487F}{\partial \vec p}}{\color{#F92055}{\partial v}}
+                   \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial v}}
                  =
 
                 \left(
                 \begin{array}{c}
-                  \color{#40A020}{u_y} \color{#F92055}{v_z} - \color{#F92055}{v_y} \color{#40A020}{u_z} \\
-                  \color{#40A020}{u_z} \color{#F92055}{v_x} - \color{#F92055}{v_z} \color{#40A020}{u_x} \\ 
-                  \color{#40A020}{u_x} \color{#F92055}{v_y} - \color{#F92055}{v_x} \color{#40A020}{u_y} 
+                  \color{#35bd96}{{U_\color{#40A020}{y}}} \color{#9759d1}{{V_\color{#C02050}{z}}}
+                  - \color{#9759d1}{{V_\color{#40A020}{y}}} \color{#35bd96}{{U_\color{#C02050}{z}}} \\
+                  \color{#35bd96}{{U_\color{#C02050}{z}}} \color{#9759d1}{{V_\color{#3080FF}{x}}}
+                  - \color{#9759d1}{{V_\color{#C02050}{z}}} \color{#35bd96}{{U_\color{#3080FF}{x}}} \\ 
+                  \color{#35bd96}{{U_\color{#3080FF}{x}}} \color{#9759d1}{{V_\color{#40A020}{y}}}
+                  - \color{#9759d1}{{V_\color{#3080FF}{x}}} \color{#35bd96}{{U_\color{#40A020}{y}}}
                 \end{array}
                 \right)
 
@@ -154,7 +232,7 @@
                 
                \left(
                \begin{array}{c}
-                 \color{#40B0FF}{n_x} \\ \color{#40B0FF}{n_y} \\ \color{#40B0FF}{n_z}
+                 \color{#40B0FF}{n_\color{#3080FF}{x}} \\ \color{#40B0FF}{n_\color{#40A020}{y}} \\ \color{#40B0FF}{n_\color{#C02050}{z}}
                \end{array}
                \right)         
 
@@ -164,17 +242,19 @@
             <div class="masthead footer slide instant absolute text-background"><div>
               <p class="text-outline-fix">
                 $$ \color{#40B0FF}{\vec n}
-                 = \color{#40A020}{\vec t_u} \times \color{#F92055}{\vec t_v}
-                 = \frac{\color{#18487F}{\partial \vec p}}{\color{#40A020}{\partial u}}
+                 = \frac{\color{#18487F}{\partial \vec p}}{\color{#35bd96}{\partial u}}
                    \times
-                   \frac{\color{#18487F}{\partial \vec p}}{\color{#F92055}{\partial v}}
+                   \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial v}}
                  =
 
                 \left(
                 \begin{array}{c}
-                  \color{#40A020}{u_y} \color{#F92055}{v_z} - \color{#F92055}{v_y} \color{#40A020}{u_z} \\
-                  \color{#40A020}{u_z} \color{#F92055}{v_x} - \color{#F92055}{v_z} \color{#40A020}{u_x} \\ 
-                  \color{#40A020}{u_x} \color{#F92055}{v_y} - \color{#F92055}{v_x} \color{#40A020}{u_y} 
+                  \color{#35bd96}{{U_\color{#40A020}{y}}} \color{#9759d1}{{V_\color{#C02050}{z}}}
+                  - \color{#9759d1}{{V_\color{#40A020}{y}}} \color{#35bd96}{{U_\color{#C02050}{z}}} \\
+                  \color{#35bd96}{{U_\color{#C02050}{z}}} \color{#9759d1}{{V_\color{#3080FF}{x}}}
+                  - \color{#9759d1}{{V_\color{#C02050}{z}}} \color{#35bd96}{{U_\color{#3080FF}{x}}} \\ 
+                  \color{#35bd96}{{U_\color{#3080FF}{x}}} \color{#9759d1}{{V_\color{#40A020}{y}}}
+                  - \color{#9759d1}{{V_\color{#3080FF}{x}}} \color{#35bd96}{{U_\color{#40A020}{y}}}
                 \end{array}
                 \right)
 
@@ -182,7 +262,7 @@
                 
                \left(
                \begin{array}{c}
-                 \color{#40B0FF}{n_x} \\ \color{#40B0FF}{n_y} \\ \color{#40B0FF}{n_z}
+                 \color{#40B0FF}{n_\color{#3080FF}{x}} \\ \color{#40B0FF}{n_\color{#40A020}{y}} \\ \color{#40B0FF}{n_\color{#C02050}{z}}
                \end{array}
                \right)         
 
@@ -193,9 +273,21 @@
 
           <div class="slide masthead footer text-background"><div>
             <img src="img/glsl-warp-normal.png" alt="GLSL Vertex Shader Code - Warping Normals" />
-            <h4 class="text-outline padding-b-2">~2.5 x 792,042 vertices @ 60fps = ~118 million calls / second</h4>
+            <h4 class="text-outline padding-b-2">~2.5 x 676,158 vertices @ 60fps = ~101 million calls / second</h4>
             <h6 class="text-outline padding-b-2">(including vector visualization)</h6>
           </div></div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Differential Geometry - Jacobian Matrices</h4>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline">
+
+    
+              </p>
+            </div></div>
+          </div>
 
           <div class="slide masthead stack footer"><div>
             <h3 class="text-outline padding-b-1 text-brand">Pixel Shader</h3>

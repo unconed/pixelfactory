@@ -90,23 +90,9 @@ release = (el, active) ->
 reset = (el) -> el.classList.remove 'slide-active'
 
 fetch   = (el, selector)-> el.querySelectorAll selector
-process = (els) -> step.concat builds(step), holds(step) for step in collapse slides els
+process = (els) -> tag expand collapse slides els
+slides  = (els) -> filter(parents(el), '.slide') for el, i in els
 
-slides   = (els) ->     tag filter(parents(el),        '.slide'), i for el, i in els
-builds   = (els) -> flatten(filter prevs(el).slice(1), '.build'     for el    in els)
-holds    = (els) ->
-  list = []
-  for el in els
-    hold = (prev for prev, i in prevs(el) when match prev, ".stay-#{i + 1}")
-    list.push hold
-  flatten list
-
-tag      = (els, i) ->
-  els.map (el) ->
-    if !el.slideIndex?
-      el.slideIndex = i
-      el.classList.add "slide-#{i}"
-  els
 collapse = (slides) ->
   list = []
   for els in slides
@@ -116,6 +102,24 @@ collapse = (slides) ->
       list.push els
   list
 
+expand = (slides) ->
+  list = []
+  for els, i in slides
+    for el in els
+      stay = +el.dataset.stay || 1
+      for j in [i...i + stay]
+        list[j] ?= []
+        list[j].push el
+  list.map (els) -> els.filter (el, i) -> els.indexOf(el) == i
+
+tag = (slides) ->
+  for els, i in slides
+    els.map (el) ->
+      if !el.slideIndex?
+        el.slideIndex = i
+        el.classList.add "slide-#{i}"
+    els
+
 sources = (el, selector) ->
   for source in fetch el, selector
     slide = filter(parents(source), '.slide')[0]
@@ -124,7 +128,6 @@ sources = (el, selector) ->
     source.slideIndex = slide.slideIndex
 
 traverse = (key) -> (el) -> ref while el and ([el, ref] = [el[key], el])
-prevs    = traverse 'previousElementSibling'
 parents  = traverse 'parentNode'
 
 filter  = (els, sel) -> els.filter (el) -> match el, sel

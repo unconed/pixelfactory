@@ -3,7 +3,7 @@
   top: 0 !important;
 }
 
-.shadergraph-overlay.animate {
+.shadergraph-overlay {
   opacity: 0;
   -webkit-transition: opacity .5s ease-in-out;
   transition: opacity .5s ease-in-out;

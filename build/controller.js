@@ -89,7 +89,7 @@ root.App = {
 
 
 },{"./controls":1,"./slideshow":3}],3:[function(require,module,exports){
-var IFRAME_LOAD, IFRAME_UNLOAD, builds, clicker, collapse, difference, fetch, filter, flatten, hide, holds, match, notify, parents, patch, prep, prevs, process, ref1, release, reset, show, slides, slideshow, sources, tag, traverse, trigger, unique;
+var IFRAME_LOAD, IFRAME_UNLOAD, clicker, collapse, difference, expand, fetch, filter, flatten, hide, match, notify, parents, patch, prep, process, ref1, release, reset, show, slides, slideshow, sources, tag, traverse, trigger, unique;
 
 ref1 = require('lodash'), difference = ref1.difference, flatten = ref1.flatten, unique = ref1.unique;
 
@@ -271,14 +271,7 @@ fetch = function(el, selector) {
 };
 
 process = function(els) {
-  var l, len, ref2, results, step;
-  ref2 = collapse(slides(els));
-  results = [];
-  for (l = 0, len = ref2.length; l < len; l++) {
-    step = ref2[l];
-    results.push(step.concat(builds(step), holds(step)));
-  }
-  return results;
+  return tag(expand(collapse(slides(els))));
 };
 
 slides = function(els) {
@@ -286,54 +279,9 @@ slides = function(els) {
   results = [];
   for (i = l = 0, len = els.length; l < len; i = ++l) {
     el = els[i];
-    results.push(tag(filter(parents(el), '.slide'), i));
+    results.push(filter(parents(el), '.slide'));
   }
   return results;
-};
-
-builds = function(els) {
-  var el;
-  return flatten((function() {
-    var l, len, results;
-    results = [];
-    for (l = 0, len = els.length; l < len; l++) {
-      el = els[l];
-      results.push(filter(prevs(el).slice(1), '.build'));
-    }
-    return results;
-  })());
-};
-
-holds = function(els) {
-  var el, hold, i, l, len, list, prev;
-  list = [];
-  for (l = 0, len = els.length; l < len; l++) {
-    el = els[l];
-    hold = (function() {
-      var len1, m, ref2, results;
-      ref2 = prevs(el);
-      results = [];
-      for (i = m = 0, len1 = ref2.length; m < len1; i = ++m) {
-        prev = ref2[i];
-        if (match(prev, ".stay-" + (i + 1))) {
-          results.push(prev);
-        }
-      }
-      return results;
-    })();
-    list.push(hold);
-  }
-  return flatten(list);
-};
-
-tag = function(els, i) {
-  els.map(function(el) {
-    if (el.slideIndex == null) {
-      el.slideIndex = i;
-      return el.classList.add("slide-" + i);
-    }
-  });
-  return els;
 };
 
 collapse = function(slides) {
@@ -348,6 +296,45 @@ collapse = function(slides) {
     }
   }
   return list;
+};
+
+expand = function(slides) {
+  var el, els, i, j, l, len, len1, list, m, o, ref2, ref3, stay;
+  list = [];
+  for (i = l = 0, len = slides.length; l < len; i = ++l) {
+    els = slides[i];
+    for (m = 0, len1 = els.length; m < len1; m++) {
+      el = els[m];
+      stay = +el.dataset.stay || 1;
+      for (j = o = ref2 = i, ref3 = i + stay; ref2 <= ref3 ? o < ref3 : o > ref3; j = ref2 <= ref3 ? ++o : --o) {
+        if (list[j] == null) {
+          list[j] = [];
+        }
+        list[j].push(el);
+      }
+    }
+  }
+  return list.map(function(els) {
+    return els.filter(function(el, i) {
+      return els.indexOf(el) === i;
+    });
+  });
+};
+
+tag = function(slides) {
+  var els, i, l, len, results;
+  results = [];
+  for (i = l = 0, len = slides.length; l < len; i = ++l) {
+    els = slides[i];
+    els.map(function(el) {
+      if (el.slideIndex == null) {
+        el.slideIndex = i;
+        return el.classList.add("slide-" + i);
+      }
+    });
+    results.push(els);
+  }
+  return results;
 };
 
 sources = function(el, selector) {
@@ -376,8 +363,6 @@ traverse = function(key) {
     return results;
   };
 };
-
-prevs = traverse('previousElementSibling');
 
 parents = traverse('parentNode');
 

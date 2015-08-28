@@ -16,13 +16,20 @@
   text-align: center;
 }
 
+.masthead.top, .masthead.header {
+  position: absolute;
+  top: 0;
+}
+
 .masthead.middle {
+  position: absolute;
   top: 50%;
   -webkit-transform: translate(0, -50%);
   transform: translate(0, -50%);
 }
 
-.masthead.footer {
+.masthead.bottom, .masthead.footer {
+  position: absolute;
   bottom: 0;
 }
 

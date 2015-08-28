@@ -13,6 +13,7 @@ root.App =
       return unless id.length
 
       rand = Math.floor(Math.random() * 0x100000000).toString 16
+      rand = 'wat'
 
       script = document.createElement 'script'
       script.src = "../build/#{id}.js?#{rand}"
