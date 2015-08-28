@@ -1036,7 +1036,7 @@ present.on('change', function(e) {
   var el, k, l, len, len1, ref1, ref2, results, step, surface;
   step = present[0].get('index');
   if (step <= 20) {
-    ref1 = gerOverlays();
+    ref1 = getOverlays();
     for (k = 0, len = ref1.length; k < len; k++) {
       el = ref1[k];
       el.remove();
