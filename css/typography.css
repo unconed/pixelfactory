@@ -50,6 +50,10 @@ h1 {
   font-size: 96px;
 }
 
+.text-smaller {
+  font-size: 36px;
+}
+
 .text-left {
   text-align: left;
 }

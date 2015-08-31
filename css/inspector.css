@@ -4,7 +4,7 @@
 }
 
 .shadergraph-overlay {
-  xopacity: 0;
+  opacity: 0;
   -webkit-transition: opacity .5s ease-in-out;
   transition: opacity .5s ease-in-out;
 

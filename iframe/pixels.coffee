@@ -24,15 +24,27 @@ three.renderer.setClearColor new THREE.Color(0xFFFFFF), 1.0
 
 # ====================================================================================
 
-deepred = 0xa00000
+deepred = new THREE.Color(0xa00000)
+deeperred = new THREE.Color(0x800000)
 
 # ====================================================================================
 
+triangleBuffer = []
+
 triangle = (emit, i, t) ->
-  theta = i * τ / 3 + t / 4
-  x = Math.sin(theta) * .8
-  y = Math.cos(theta) * .8
-  emit x * 10 + 16, y * 10 + 10
+  theta = i * τ / 3 + t / 8
+  x = Math.sin(theta) * .79
+  y = Math.cos(theta) * .79
+  x = x * 10 + 16
+  y = y * 10 + 10
+
+  emit x, y
+
+  if i < 3
+    triangleBuffer[i*2]   = x
+    triangleBuffer[i*2+1] = y
+    if i == 2
+      updateTriangle()
 
 triangleSnap = (emit, i, t) ->
   _emit = (x, y) ->
@@ -40,6 +52,29 @@ triangleSnap = (emit, i, t) ->
     y = Math.round(y - .5) + .5
     emit x, y
   triangle _emit, i, t
+
+tri = new THREE.Triangle
+updateTriangle = do ->
+  mapX = (x) -> (x - 16) * HEIGHT / (HEIGHT - 1) + 16
+  mapY = (y) -> (y - 10) * HEIGHT / (HEIGHT - 1) + 10
+
+  () ->
+    tri.a.set mapX(triangleBuffer[0]), mapY(triangleBuffer[1]), 0
+    tri.b.set mapX(triangleBuffer[2]), mapY(triangleBuffer[3]), 0
+    tri.c.set mapX(triangleBuffer[4]), mapY(triangleBuffer[5]), 0
+
+inTriangle = do ->
+  p = new THREE.Vector3
+  (x, y) ->
+    p.set x, y, 0
+    tri.containsPoint p
+
+sampleCone = (emit, i, j) ->
+  theta = i * τ / 4 + τ / 8
+  x = Math.cos(theta) * j * .707 + 16.5
+  y = Math.sin(theta) * j * .707 + 10.5
+  z = 7 - j * 14
+  emit x, y, z
 
 formatNumber = MathBox.Util.Pretty.number()
 
@@ -51,6 +86,7 @@ ASPECT = WIDTH / HEIGHT
 
 mathbox
 .set
+  scale: 720
   focus: 4
 
 present =
@@ -74,14 +110,20 @@ pixelView =
     fov: 30
   .step
     trigger: 6
-    duration: 2
-    stops: [0, 1, 1.5, 2.5, 4.5]
+    duration: 1
+    pace: 1
+    rewind: 2
+    stops: [0, 1, 1.5, 2.5, 4.5, 4.5, 4.5, 4.5, 5.5, 7.5, 9.5, 10.5]
     script: {
       0:   [{position: [0, 0, 4.5], rotation: [0, 0, 0]}]
       1:   [{position: [0, .2, 2]}]
       1.5: [{position: [0, .2, .75]}]
-      2.5:   [{position: [0, -1.2, .75], rotation: [1, 0, .3]}]
-      4.5:   [{position: [0, 0, 4.5], rotation: [0, 0, 0]}]
+      2.5: [{position: [0, -1.1, .6], rotation: [1, 0, .3]}]
+      4.5: [{position: [0, 0, 4.5], rotation: [0, 0, 0], lookAt: null}]
+      5.5:   [{position: [0, 0, 3.5], rotation: [0, 0, 0], lookAt: [0, 0, 0]}]
+      7.5:   [{position: [2.5, 0, 0]}]
+      9.5:   [{position: [0, 0, 3.5]}]
+      10.5:  [{position: [0, .4, 1.2], lookAt: [0, .4, 0]}]
     }
 
   .cartesian
@@ -90,7 +132,7 @@ pixelView =
 
 pixelView
 .slide
-    late: Infinity
+    late: 5
   .reveal
       stagger: [5]
       duration: .5
@@ -182,28 +224,48 @@ pixelCanvas =
   .reveal
       stagger: [5]
       duration: 1
-    .grid
-      divideX: WIDTH
-      divideY: HEIGHT
-      width: 2
-      crossed: true
-      zBias: 15
-      color: 0
-    .step
-      trigger: 6
-      duration: 2
-      stops: [0, 1, 1, 1, 2]
-      script:[
-        [{width: 2, opacity: .5}]
-        [{width: 4, opacity: 1}]
-        [{width: 2, opacity: .5}]
-      ]
-    .area
-      width:  2
-      height: 2
-    .surface
-      color: 0xFFFFFF
-      map: pixelRTT
+    .transform()
+      .step
+        trigger: 14
+        duration: 2
+        script: [
+          [{position: [0, 0, 0]}]
+          [{position: [0, 0, -7]}]
+          [{position: [0, 0, 0]}]
+        ]
+      .grid
+        divideX: WIDTH
+        divideY: HEIGHT
+        width: 2
+        crossed: true
+        zBias: 15
+        color: 0
+      .step
+        trigger: 6
+        duration: 2
+        stops: [0, 1, 1, 1, 2]
+        script:[
+          [{width: 2, opacity: .5}]
+          [{width: 4, opacity: 1}]
+          [{width: 2, opacity: .5}]
+        ]
+    .end()
+    .transform()
+      .step
+        trigger: 14
+        duration: 2
+        script: [
+          [{position: [0, 0, 0]}]
+          [{position: [0, 0, -7]}]
+          [{position: [0, 0, 0]}]
+        ]
+      .area
+        width:  2
+        height: 2
+      .surface
+        color: 0xFFFFFF
+        map: pixelRTT
+    .end()
   .end()
 
 # ====================================================================================
@@ -212,96 +274,81 @@ line1 =
   pixelGrid
   .slide
       late: 7
-    .view
-        range: [[8, 25], [10, 11]]
-      .area
-        width: 2
-        height: 2
-      .grow
-        width: 'first'
-      .step
-        trigger: 0
+    .reveal
         duration: .5
-        script: [
-          [{scale: 0}]
-          [{scale: 1}]
-        ]
-      .surface
-        color: 0x2090FF
-      .step
-        trigger: 6
-        delay: 2.5
-        duration: 3
-        stops: [0, 1]
-        script: [
-          [{opacity: 1}]
-          [{}, {opacity: (t) -> .5 - .5 * Math.cos(t * .78) }]
-        ]
+        stagger: [100]
+        delayExit: 1
+      .view
+          range: [[8, 25], [10, 11]]
+        .area
+          width: 2
+          height: 2
+        .surface
+          color: 0x2090FF
+        .step
+          trigger: 6
+          delay: 2.5
+          duration: 3
+          stops: [0, 1]
+          script: [
+            [{opacity: 1}]
+            [{}, {opacity: (t) -> .5 - .5 * Math.cos(t * .78) }]
+          ]
 # ====================================================================================
 
 line2 =
   pixelGrid
   .slide
       late: 6
-    .view
-        range: [[15, 17], [4, 20]]
-      .area
-        width: 2
-        height: 2
-      .grow
-        height: 'first'
-      .step
-        trigger: 0
+    .reveal
         duration: .5
-        script: [
-          [{scale: 0}]
-          [{scale: 1}]
-        ]
-      .surface
-        color: 0xC02070
-      .step
-        trigger: 5
-        delay: 2.5
-        duration: 3
-        stops: [0, 1]
-        script: [
-          [{opacity: 1}]
-          [{}, {opacity: (t) -> .5 - .5 * Math.cos(t * .65) }]
-        ]
+        delayExit: 1
+        stagger: [0, 100]
+      .view
+          range: [[15, 17], [4, 20]]
+        .area
+          width: 2
+          height: 2
+        .surface
+          color: 0xC02070
+        .step
+          trigger: 5
+          delay: 2.5
+          duration: 3
+          stops: [0, 1]
+          script: [
+            [{opacity: 1}]
+            [{}, {opacity: (t) -> .5 - .5 * Math.cos(t * .65) }]
+          ]
 # ====================================================================================
 
 line3 =
   pixelGrid
   .slide
       late: 5
-    .transform
-        rotation: [0, 0, 1.2]
-        position: [19.5, 10]
-      .view
-          range: [[0, 1], [0, 9.9]]
-        .area
-          width: 2
-          height: 2
-        .grow
-          height: 'first'
-        .step
-          trigger: 0
-          duration: .5
-          script: [
-            [{scale: 0}]
-            [{scale: 1}]
-          ]
-        .surface
-          color: 0x8040B0
-        .step
-          trigger: 4
-          delay: 2.5
-          duration: 3
-          stops: [0, 1]
-          script: [
-            [{opacity: 1}]
-            [{}, {opacity: (t) -> .5 - .5 * Math.cos(t * .81) }]
-          ]
+    .reveal
+        duration: .5
+        delayExit: 1
+        stagger: [0, 100]
+      .transform
+          rotation: [0, 0, 1.2]
+          position: [19.5, 10]
+        .view
+            range: [[0, 1], [0, 9.9]]
+          .area
+            width: 2
+            height: 2
+          .surface
+            color: 0x8040B0
+          .step
+            trigger: 4
+            delay: 2.5
+            duration: 3
+            stops: [0, 1]
+            script: [
+              [{opacity: 1}]
+              [{}, {opacity: (t) -> .5 - .5 * Math.cos(t * .81) }]
+            ]
 # ====================================================================================
 
 line4 =
@@ -310,6 +357,7 @@ line4 =
       late: 4
     .reveal
         duration: .5
+        delayExit: 1
         stagger: [0, 10000]
       .view
           range: [[7, 25], [18, 5]]
@@ -401,8 +449,8 @@ pixelCanvasTextR =
       zIndex: 1
       zBias: 5
       zOrder: -100
-      size: 8
-      outline: 1
+      size: 6.5
+      outline: .7
       depth: .8
 
 pixelCanvasTextG =
@@ -441,8 +489,8 @@ pixelCanvasTextG =
       zIndex: 1
       zBias: 5
       zOrder: -100
-      size: 8
-      outline: 1
+      size: 6.5
+      outline: .7
       depth: .8
 
 pixelCanvasTextB =
@@ -481,8 +529,8 @@ pixelCanvasTextB =
       zIndex: 1
       zBias: 5
       zOrder: -100
-      size: 8
-      outline: 1
+      size: 6.5
+      outline: .7
       depth: .8
 
 pixelCanvasTextA =
@@ -521,8 +569,8 @@ pixelCanvasTextA =
       zIndex: 1
       zBias: 5
       zOrder: -100
-      size: 8
-      outline: 1
+      size: 6.5
+      outline: .7
       depth: .8
 
 # ====================================================================================
@@ -534,8 +582,8 @@ triangleSnapFace =
       from: 10
       to: 12
     .reveal
-        delayEnter: .5
-        duration: 1
+        delayEnter: 2
+        duration: .5
       .array
         channels: 2
         length: 3
@@ -543,8 +591,14 @@ triangleSnapFace =
       .transpose
         order: 'yzwx'
       .face
-        color: 0
-        opacity: .5
+        color: deeperred
+        zBias: 5
+      .step
+        duration: .5
+        script: [
+          [{opacity: 1}]
+          [{opacity: .5}]
+        ]
 
 triangleSnapOutline =
   pixelView
@@ -553,7 +607,7 @@ triangleSnapOutline =
       from: 11
       to: 12
     .reveal
-        duration: 1
+        duration: .5
       .array
         channels: 2
         length: 4
@@ -561,18 +615,22 @@ triangleSnapOutline =
       .line
         color: deepred
         width: 10
+        zBias: 10
       .slice
         width: [0, 3]
       .point
         color: deepred
         size: 30
+        zBias: 15
 
-triangleFace =
+# ====================================================================================
+
+triangleFaceData =
   pixelGrid
   .slide
       steps: 0
       from: 12
-      to: 14
+      to: 20
     .reveal
         duration: 1
       .array
@@ -581,30 +639,368 @@ triangleFace =
         expr: triangle
       .transpose
         order: 'yzwx'
-      .face
-        color: 0
-        opacity: .5
 
-triangleSnap =
+triangleFace =
+  triangleFaceData
+  .face
+    color: deeperred
+    opacity: .5
+    zBias: 5
+
+triangleOutline =
   pixelView
   .slide
       steps: 0
       from: 12
-      to: 14
+      to: 20
     .reveal
         duration: 1
-      .array
-        channels: 2
-        length: 4
-        expr: triangle
-      .line
-        color: deepred
-        width: 10
-      .slice
-        width: [0, 3]
-      .point
-        color: deepred
-        size: 30
+      .transform()
+        .step
+          trigger: 2
+          duration: 2
+          script: [
+            [{position: [0, 0, 0]}]
+            [{position: [0, 0, 7]}]
+            [{position: [0, 0, 0]}]
+          ]
+        .array
+          channels: 2
+          length: 4
+          expr: triangle
+        .line
+          color: deepred
+          width: 10
+          zBias: 10
+        .slice
+          width: [0, 3]
+        .point
+          color: deepred
+          size: 30
+          zBias: 15
+        .transpose
+          order: 'yzwx'
+        .face
+          color: deepred
+          zBias: 8
+          zOrder: -3
+        .step
+          trigger: 2
+          duration: 1
+          stops: [0, 2, 4]
+          script: [
+            [{opacity: 0}]
+            [{opacity: 0}]
+            [{opacity: .25}]
+            [{opacity: 0}]
+            [{opacity: 0}]
+          ]
+
+# ====================================================================================
+
+multisamples = [
+  [.375, .125],
+  [-.125, .375],
+  [.125, -.375],
+  [-.375,-.125],
+]
+
+sliceLerp = 0
+triangleSamples =
+  pixelView
+  .slide
+      steps: 0
+      from: 13
+      to: 20
+    .reveal
+        duration: 1
+        stagger: [3, 3]
+      .area
+        width:  WIDTH
+        height: HEIGHT
+        centeredX: true
+        centeredY: true
+        items: 4
+        expr: (emit, x, y, i, j) ->
+          for k in [0..3]
+            emit x, y, 0, 0
+          return
+
+      .step
+        trigger: 4
+        duration: 1
+        script: [
+          [{
+            expr: (emit, x, y, i, j) ->
+              for k in [0..3]
+                emit x, y, 0, 0
+              return
+          }],
+          [{
+            expr: (emit, x, y, i, j) ->
+              for k in [0..3]
+                ms = multisamples[k]
+                xx = x + ms[0]
+                yy = y + ms[1]
+                emit xx, yy, 0, 0
+              return
+          }]
+        ]
+
+      .slice()
+      .step
+        trigger: 4,
+        duration: 1
+        script: {
+          0:    [{items: [0, 1]}]
+          0.01: [{items: [0, 4]}]
+        }
+      .area
+        width:  WIDTH
+        height: HEIGHT
+        items: 4
+        expr: (emit, x, y, i, j) ->
+          for k in [0..3]
+            inside = inTriangle x, y
+            if inside
+              emit deepred.r, deepred.g, deepred.b, 1
+            else
+              emit .5, .5, .5, 1
+
+      .step
+        trigger: 4
+        duration: 1
+        script: [
+          [{
+            expr: (emit, x, y, i, j) ->
+              for k in [0..3]
+                inside = inTriangle x, y
+                if inside
+                  emit deepred.r, deepred.g, deepred.b, 1
+                else
+                  emit .5, .5, .5, 1
+          }],
+          [{
+            expr: (emit, x, y, i, j) ->
+              for k in [0..3]
+                ms = multisamples[k]
+                xx = x + ms[0]
+                yy = y + ms[1]
+
+                inside = inTriangle xx, yy
+                if inside
+                  emit deepred.r, deepred.g, deepred.b, 1
+                else
+                  emit .5, .5, .5, 1
+          }],
+        ]
+
+      .slice()
+      .step
+        trigger: 4,
+        duration: 0
+        script: {
+          0:    [{items: [0, 1]}]
+          0.01: [{items: [0, 4]}]
+        }
+
+triangleSamplePoint =
+  triangleSamples
+  .transform()
+    .step
+      duration: 2
+      script: [
+        [{position: [0, 0, 0]}]
+        [{position: [0, 0, 7]}]
+        [{position: [0, 0, 0]}]
+      ]
+
+    .point
+      color: 0xffffff
+      points: "<<<"
+      colors: "<"
+      size: 10.5
+      zIndex: 1
+      zBias: 6
+      zOrder: -2
+    .step
+      trigger: 4,
+      duration: 1
+      script: {
+        0: [{size: 10.5}]
+        1: [{size: 7}]
+      }
+# ====================================================================================
+
+sampleCone =
+  pixelView
+  .slide
+      steps: 0
+      from: 14
+      to: 15
+    .reveal
+        stagger: [0, 5]
+        durationEnter: 2
+        durationExit: 1
+      .transform()
+        .step
+          trigger: 0
+          duration: 2
+          script: [
+            [{scale: [1, 1, 0]}]
+            [{scale: [1, 1, 1]}]
+            [{scale: [1, 1, 0]}]
+          ]
+        .matrix
+          channels: 3
+          width:  5
+          height: 2
+          expr: sampleCone
+        .surface
+          color: deepred
+          zBias: 5
+          zOrder: -2
+          zIndex: 1
+          opacity: .5
+        .surface
+          fill: false
+          lineX: true
+          lineY: true
+          color: deeperred
+          width: 3
+          zBias: 5
+          zOrder: -3
+          zIndex: 1
+          opacity: .5
+
+# ====================================================================================
+
+pixelRTTms1 =
+  pixelView
+  .rtt
+      width:  WIDTH
+      height: HEIGHT
+      minFilter: 'nearest'
+      magFilter: 'nearest'
+
+pixelRTTms1
+.camera
+  position: [0, 0, 1]
+  fov: 90
+.cartesian
+    position: [multisamples[0][0] / HEIGHT * 2, multisamples[0][1] / HEIGHT * 2]
+    range: [[0, WIDTH], [0, HEIGHT], [-HEIGHT / 2, HEIGHT / 2]]
+    scale: [WIDTH / HEIGHT, 1, 1]
+  .face
+    points: triangleFaceData
+    color: deeperred
+    opacity: .5
+    zBias: 5
+
+pixelRTTms2 =
+  pixelView
+  .rtt
+      width:  WIDTH
+      height: HEIGHT
+      minFilter: 'nearest'
+      magFilter: 'nearest'
+
+pixelRTTms2
+.camera
+  position: [0, 0, 1]
+  fov: 90
+.cartesian
+    position: [multisamples[1][0] / HEIGHT * 2, multisamples[1][1] / HEIGHT * 2]
+    range: [[0, WIDTH], [0, HEIGHT], [-HEIGHT / 2, HEIGHT / 2]]
+    scale: [WIDTH / HEIGHT, 1, 1]
+  .face
+    points: triangleFaceData
+    color: deeperred
+    opacity: .5
+    zBias: 5
+
+pixelRTTms3 =
+  pixelView
+  .rtt
+      width:  WIDTH
+      height: HEIGHT
+      minFilter: 'nearest'
+      magFilter: 'nearest'
+
+pixelRTTms3
+.camera
+  position: [0, 0, 1]
+  fov: 90
+.cartesian
+    position: [multisamples[2][0] / HEIGHT * 2, multisamples[2][1] / HEIGHT * 2]
+    range: [[0, WIDTH], [0, HEIGHT], [-HEIGHT / 2, HEIGHT / 2]]
+    scale: [WIDTH / HEIGHT, 1, 1]
+  .face
+    points: triangleFaceData
+    color: deeperred
+    opacity: .5
+    zBias: 5
+
+pixelRTTms4 =
+  pixelView
+  .rtt
+      width:  WIDTH
+      height: HEIGHT
+      minFilter: 'nearest'
+      magFilter: 'nearest'
+
+pixelRTTms4
+.camera
+  position: [0, 0, 1]
+  fov: 90
+.cartesian
+    position: [multisamples[3][0] / HEIGHT * 2, multisamples[3][1] / HEIGHT * 2]
+    range: [[0, WIDTH], [0, HEIGHT], [-HEIGHT / 2, HEIGHT / 2]]
+    scale: [WIDTH / HEIGHT, 1, 1]
+  .face
+    points: triangleFaceData
+    color: deeperred
+    opacity: .5
+    zBias: 5
+
+multisampleShader =
+  pixelView
+  .shader
+    sources: [pixelRTTms1, pixelRTTms2, pixelRTTms3, pixelRTTms4]
+    code: """
+    vec4 getSample1(vec4 xyzw);
+    vec4 getSample2(vec4 xyzw);
+    vec4 getSample3(vec4 xyzw);
+    vec4 getSample4(vec4 xyzw);
+    vec4 getSampleMS(vec4 xyzw) {
+      return .25 * (getSample1(xyzw) + getSample2(xyzw) + getSample3(xyzw) + getSample4(xyzw)); 
+    }
+    """
+
+multisampler =
+  pixelView
+  .resample
+    source: pixelRTTms1
+    shader: multisampleShader
+
+multisampleCanvas =
+  pixelView
+  .slide
+      steps: 0
+      from: 17
+      to: 20
+    .reveal
+        duration: 1
+      .area
+        width:  2
+        height: 2
+      .surface
+        color: 0xFFFFFF
+        map: multisampler
+
+# ====================================================================================
+
+
 
 # ====================================================================================
 

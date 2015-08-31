@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var ASPECT, HEIGHT, WIDTH, deepred, enlarge, enter, formatNumber, getOverlays, line1, line2, line3, line4, mathbox, pixelCanvas, pixelCanvasRGBA, pixelCanvasText, pixelCanvasTextA, pixelCanvasTextB, pixelCanvasTextG, pixelCanvasTextR, pixelGrid, pixelRTT, pixelRTTRGBA, pixelSlide, pixelView, present, ref, three, triangle, triangleFace, triangleSnap, triangleSnapFace, triangleSnapOutline;
+var ASPECT, HEIGHT, WIDTH, deeperred, deepred, enlarge, enter, formatNumber, getOverlays, inTriangle, line1, line2, line3, line4, mathbox, multisampleCanvas, multisampleShader, multisampler, multisamples, pixelCanvas, pixelCanvasRGBA, pixelCanvasText, pixelCanvasTextA, pixelCanvasTextB, pixelCanvasTextG, pixelCanvasTextR, pixelGrid, pixelRTT, pixelRTTRGBA, pixelRTTms1, pixelRTTms2, pixelRTTms3, pixelRTTms4, pixelSlide, pixelView, present, ref, sampleCone, sliceLerp, three, tri, triangle, triangleBuffer, triangleFace, triangleFaceData, triangleOutline, triangleSamplePoint, triangleSamples, triangleSnap, triangleSnapFace, triangleSnapOutline, updateTriangle;
 
 window.mathbox = (ref = mathBox({
   plugins: ['core', 'cursor'],
@@ -33,14 +33,27 @@ mathbox = mathbox.v2();
 
 three.renderer.setClearColor(new THREE.Color(0xFFFFFF), 1.0);
 
-deepred = 0xa00000;
+deepred = new THREE.Color(0xa00000);
+
+deeperred = new THREE.Color(0x800000);
+
+triangleBuffer = [];
 
 triangle = function(emit, i, t) {
   var theta, x, y;
-  theta = i * τ / 3 + t / 4;
-  x = Math.sin(theta) * .8;
-  y = Math.cos(theta) * .8;
-  return emit(x * 10 + 16, y * 10 + 10);
+  theta = i * τ / 3 + t / 8;
+  x = Math.sin(theta) * .79;
+  y = Math.cos(theta) * .79;
+  x = x * 10 + 16;
+  y = y * 10 + 10;
+  emit(x, y);
+  if (i < 3) {
+    triangleBuffer[i * 2] = x;
+    triangleBuffer[i * 2 + 1] = y;
+    if (i === 2) {
+      return updateTriangle();
+    }
+  }
 };
 
 triangleSnap = function(emit, i, t) {
@@ -53,6 +66,41 @@ triangleSnap = function(emit, i, t) {
   return triangle(_emit, i, t);
 };
 
+tri = new THREE.Triangle;
+
+updateTriangle = (function() {
+  var mapX, mapY;
+  mapX = function(x) {
+    return (x - 16) * HEIGHT / (HEIGHT - 1) + 16;
+  };
+  mapY = function(y) {
+    return (y - 10) * HEIGHT / (HEIGHT - 1) + 10;
+  };
+  return function() {
+    tri.a.set(mapX(triangleBuffer[0]), mapY(triangleBuffer[1]), 0);
+    tri.b.set(mapX(triangleBuffer[2]), mapY(triangleBuffer[3]), 0);
+    return tri.c.set(mapX(triangleBuffer[4]), mapY(triangleBuffer[5]), 0);
+  };
+})();
+
+inTriangle = (function() {
+  var p;
+  p = new THREE.Vector3;
+  return function(x, y) {
+    p.set(x, y, 0);
+    return tri.containsPoint(p);
+  };
+})();
+
+sampleCone = function(emit, i, j) {
+  var theta, x, y, z;
+  theta = i * τ / 4 + τ / 8;
+  x = Math.cos(theta) * j * .707 + 16.5;
+  y = Math.sin(theta) * j * .707 + 10.5;
+  z = 7 - j * 14;
+  return emit(x, y, z);
+};
+
 formatNumber = MathBox.Util.Pretty.number();
 
 WIDTH = 32;
@@ -62,6 +110,7 @@ HEIGHT = 20;
 ASPECT = WIDTH / HEIGHT;
 
 mathbox.set({
+  scale: 720,
   focus: 4
 });
 
@@ -79,8 +128,10 @@ pixelView = pixelSlide.camera({
   fov: 30
 }).step({
   trigger: 6,
-  duration: 2,
-  stops: [0, 1, 1.5, 2.5, 4.5],
+  duration: 1,
+  pace: 1,
+  rewind: 2,
+  stops: [0, 1, 1.5, 2.5, 4.5, 4.5, 4.5, 4.5, 5.5, 7.5, 9.5, 10.5],
   script: {
     0: [
       {
@@ -100,14 +151,38 @@ pixelView = pixelSlide.camera({
     ],
     2.5: [
       {
-        position: [0, -1.2, .75],
+        position: [0, -1.1, .6],
         rotation: [1, 0, .3]
       }
     ],
     4.5: [
       {
         position: [0, 0, 4.5],
-        rotation: [0, 0, 0]
+        rotation: [0, 0, 0],
+        lookAt: null
+      }
+    ],
+    5.5: [
+      {
+        position: [0, 0, 3.5],
+        rotation: [0, 0, 0],
+        lookAt: [0, 0, 0]
+      }
+    ],
+    7.5: [
+      {
+        position: [2.5, 0, 0]
+      }
+    ],
+    9.5: [
+      {
+        position: [0, 0, 3.5]
+      }
+    ],
+    10.5: [
+      {
+        position: [0, .4, 1.2],
+        lookAt: [0, .4, 0]
       }
     ]
   }
@@ -117,7 +192,7 @@ pixelView = pixelSlide.camera({
 });
 
 pixelView.slide({
-  late: Infinity
+  late: 5
 }).reveal({
   stagger: [5],
   duration: .5
@@ -179,6 +254,24 @@ pixelGrid = pixelRTT.cartesian({
 pixelCanvas = pixelView.reveal({
   stagger: [5],
   duration: 1
+}).transform().step({
+  trigger: 14,
+  duration: 2,
+  script: [
+    [
+      {
+        position: [0, 0, 0]
+      }
+    ], [
+      {
+        position: [0, 0, -7]
+      }
+    ], [
+      {
+        position: [0, 0, 0]
+      }
+    ]
+  ]
 }).grid({
   divideX: WIDTH,
   divideY: HEIGHT,
@@ -208,37 +301,43 @@ pixelCanvas = pixelView.reveal({
       }
     ]
   ]
+}).end().transform().step({
+  trigger: 14,
+  duration: 2,
+  script: [
+    [
+      {
+        position: [0, 0, 0]
+      }
+    ], [
+      {
+        position: [0, 0, -7]
+      }
+    ], [
+      {
+        position: [0, 0, 0]
+      }
+    ]
+  ]
 }).area({
   width: 2,
   height: 2
 }).surface({
   color: 0xFFFFFF,
   map: pixelRTT
-}).end();
+}).end().end();
 
 line1 = pixelGrid.slide({
   late: 7
+}).reveal({
+  duration: .5,
+  stagger: [100],
+  delayExit: 1
 }).view({
   range: [[8, 25], [10, 11]]
 }).area({
   width: 2,
   height: 2
-}).grow({
-  width: 'first'
-}).step({
-  trigger: 0,
-  duration: .5,
-  script: [
-    [
-      {
-        scale: 0
-      }
-    ], [
-      {
-        scale: 1
-      }
-    ]
-  ]
 }).surface({
   color: 0x2090FF
 }).step({
@@ -263,27 +362,15 @@ line1 = pixelGrid.slide({
 
 line2 = pixelGrid.slide({
   late: 6
+}).reveal({
+  duration: .5,
+  delayExit: 1,
+  stagger: [0, 100]
 }).view({
   range: [[15, 17], [4, 20]]
 }).area({
   width: 2,
   height: 2
-}).grow({
-  height: 'first'
-}).step({
-  trigger: 0,
-  duration: .5,
-  script: [
-    [
-      {
-        scale: 0
-      }
-    ], [
-      {
-        scale: 1
-      }
-    ]
-  ]
 }).surface({
   color: 0xC02070
 }).step({
@@ -308,6 +395,10 @@ line2 = pixelGrid.slide({
 
 line3 = pixelGrid.slide({
   late: 5
+}).reveal({
+  duration: .5,
+  delayExit: 1,
+  stagger: [0, 100]
 }).transform({
   rotation: [0, 0, 1.2],
   position: [19.5, 10]
@@ -316,22 +407,6 @@ line3 = pixelGrid.slide({
 }).area({
   width: 2,
   height: 2
-}).grow({
-  height: 'first'
-}).step({
-  trigger: 0,
-  duration: .5,
-  script: [
-    [
-      {
-        scale: 0
-      }
-    ], [
-      {
-        scale: 1
-      }
-    ]
-  ]
 }).surface({
   color: 0x8040B0
 }).step({
@@ -358,6 +433,7 @@ line4 = pixelGrid.slide({
   late: 4
 }).reveal({
   duration: .5,
+  delayExit: 1,
   stagger: [0, 10000]
 }).view({
   range: [[7, 25], [18, 5]]
@@ -447,8 +523,8 @@ pixelCanvasTextR = pixelCanvasText.area({
   zIndex: 1,
   zBias: 5,
   zOrder: -100,
-  size: 8,
-  outline: 1,
+  size: 6.5,
+  outline: .7,
   depth: .8
 });
 
@@ -479,8 +555,8 @@ pixelCanvasTextG = pixelCanvasText.area({
   zIndex: 1,
   zBias: 5,
   zOrder: -100,
-  size: 8,
-  outline: 1,
+  size: 6.5,
+  outline: .7,
   depth: .8
 });
 
@@ -511,8 +587,8 @@ pixelCanvasTextB = pixelCanvasText.area({
   zIndex: 1,
   zBias: 5,
   zOrder: -100,
-  size: 8,
-  outline: 1,
+  size: 6.5,
+  outline: .7,
   depth: .8
 });
 
@@ -543,8 +619,8 @@ pixelCanvasTextA = pixelCanvasText.area({
   zIndex: 1,
   zBias: 5,
   zOrder: -100,
-  size: 8,
-  outline: 1,
+  size: 6.5,
+  outline: .7,
   depth: .8
 });
 
@@ -553,7 +629,8 @@ triangleSnapFace = pixelGrid.slide({
   from: 10,
   to: 12
 }).reveal({
-  duration: 1
+  delayEnter: 2,
+  duration: .5
 }).array({
   channels: 2,
   length: 3,
@@ -561,8 +638,21 @@ triangleSnapFace = pixelGrid.slide({
 }).transpose({
   order: 'yzwx'
 }).face({
-  color: 0,
-  opacity: .5
+  color: deeperred,
+  zBias: 5
+}).step({
+  duration: .5,
+  script: [
+    [
+      {
+        opacity: 1
+      }
+    ], [
+      {
+        opacity: .5
+      }
+    ]
+  ]
 });
 
 triangleSnapOutline = pixelView.slide({
@@ -570,25 +660,27 @@ triangleSnapOutline = pixelView.slide({
   from: 11,
   to: 12
 }).reveal({
-  duration: 1
+  duration: .5
 }).array({
   channels: 2,
   length: 4,
   expr: triangleSnap
 }).line({
   color: deepred,
-  width: 10
+  width: 10,
+  zBias: 10
 }).slice({
   width: [0, 3]
 }).point({
   color: deepred,
-  size: 30
+  size: 30,
+  zBias: 15
 });
 
-triangleFace = pixelGrid.slide({
+triangleFaceData = pixelGrid.slide({
   steps: 0,
   from: 12,
-  to: 14
+  to: 20
 }).reveal({
   duration: 1
 }).array({
@@ -597,29 +689,424 @@ triangleFace = pixelGrid.slide({
   expr: triangle
 }).transpose({
   order: 'yzwx'
-}).face({
-  color: 0,
-  opacity: .5
 });
 
-triangleSnap = pixelView.slide({
+triangleFace = triangleFaceData.face({
+  color: deeperred,
+  opacity: .5,
+  zBias: 5
+});
+
+triangleOutline = pixelView.slide({
   steps: 0,
   from: 12,
-  to: 14
+  to: 20
 }).reveal({
   duration: 1
+}).transform().step({
+  trigger: 2,
+  duration: 2,
+  script: [
+    [
+      {
+        position: [0, 0, 0]
+      }
+    ], [
+      {
+        position: [0, 0, 7]
+      }
+    ], [
+      {
+        position: [0, 0, 0]
+      }
+    ]
+  ]
 }).array({
   channels: 2,
   length: 4,
   expr: triangle
 }).line({
   color: deepred,
-  width: 10
+  width: 10,
+  zBias: 10
 }).slice({
   width: [0, 3]
 }).point({
   color: deepred,
-  size: 30
+  size: 30,
+  zBias: 15
+}).transpose({
+  order: 'yzwx'
+}).face({
+  color: deepred,
+  zBias: 8,
+  zOrder: -3
+}).step({
+  trigger: 2,
+  duration: 1,
+  stops: [0, 2, 4],
+  script: [
+    [
+      {
+        opacity: 0
+      }
+    ], [
+      {
+        opacity: 0
+      }
+    ], [
+      {
+        opacity: .25
+      }
+    ], [
+      {
+        opacity: 0
+      }
+    ], [
+      {
+        opacity: 0
+      }
+    ]
+  ]
+});
+
+multisamples = [[.375, .125], [-.125, .375], [.125, -.375], [-.375, -.125]];
+
+sliceLerp = 0;
+
+triangleSamples = pixelView.slide({
+  steps: 0,
+  from: 13,
+  to: 20
+}).reveal({
+  duration: 1,
+  stagger: [3, 3]
+}).area({
+  width: WIDTH,
+  height: HEIGHT,
+  centeredX: true,
+  centeredY: true,
+  items: 4,
+  expr: function(emit, x, y, i, j) {
+    var k, l;
+    for (k = l = 0; l <= 3; k = ++l) {
+      emit(x, y, 0, 0);
+    }
+  }
+}).step({
+  trigger: 4,
+  duration: 1,
+  script: [
+    [
+      {
+        expr: function(emit, x, y, i, j) {
+          var k, l;
+          for (k = l = 0; l <= 3; k = ++l) {
+            emit(x, y, 0, 0);
+          }
+        }
+      }
+    ], [
+      {
+        expr: function(emit, x, y, i, j) {
+          var k, l, ms, xx, yy;
+          for (k = l = 0; l <= 3; k = ++l) {
+            ms = multisamples[k];
+            xx = x + ms[0];
+            yy = y + ms[1];
+            emit(xx, yy, 0, 0);
+          }
+        }
+      }
+    ]
+  ]
+}).slice().step({
+  trigger: 4,
+  duration: 1,
+  script: {
+    0: [
+      {
+        items: [0, 1]
+      }
+    ],
+    0.01: [
+      {
+        items: [0, 4]
+      }
+    ]
+  }
+}).area({
+  width: WIDTH,
+  height: HEIGHT,
+  items: 4,
+  expr: function(emit, x, y, i, j) {
+    var inside, k, l, results;
+    results = [];
+    for (k = l = 0; l <= 3; k = ++l) {
+      inside = inTriangle(x, y);
+      if (inside) {
+        results.push(emit(deepred.r, deepred.g, deepred.b, 1));
+      } else {
+        results.push(emit(.5, .5, .5, 1));
+      }
+    }
+    return results;
+  }
+}).step({
+  trigger: 4,
+  duration: 1,
+  script: [
+    [
+      {
+        expr: function(emit, x, y, i, j) {
+          var inside, k, l, results;
+          results = [];
+          for (k = l = 0; l <= 3; k = ++l) {
+            inside = inTriangle(x, y);
+            if (inside) {
+              results.push(emit(deepred.r, deepred.g, deepred.b, 1));
+            } else {
+              results.push(emit(.5, .5, .5, 1));
+            }
+          }
+          return results;
+        }
+      }
+    ], [
+      {
+        expr: function(emit, x, y, i, j) {
+          var inside, k, l, ms, results, xx, yy;
+          results = [];
+          for (k = l = 0; l <= 3; k = ++l) {
+            ms = multisamples[k];
+            xx = x + ms[0];
+            yy = y + ms[1];
+            inside = inTriangle(xx, yy);
+            if (inside) {
+              results.push(emit(deepred.r, deepred.g, deepred.b, 1));
+            } else {
+              results.push(emit(.5, .5, .5, 1));
+            }
+          }
+          return results;
+        }
+      }
+    ]
+  ]
+}).slice().step({
+  trigger: 4,
+  duration: 0,
+  script: {
+    0: [
+      {
+        items: [0, 1]
+      }
+    ],
+    0.01: [
+      {
+        items: [0, 4]
+      }
+    ]
+  }
+});
+
+triangleSamplePoint = triangleSamples.transform().step({
+  duration: 2,
+  script: [
+    [
+      {
+        position: [0, 0, 0]
+      }
+    ], [
+      {
+        position: [0, 0, 7]
+      }
+    ], [
+      {
+        position: [0, 0, 0]
+      }
+    ]
+  ]
+}).point({
+  color: 0xffffff,
+  points: "<<<",
+  colors: "<",
+  size: 10.5,
+  zIndex: 1,
+  zBias: 6,
+  zOrder: -2
+}).step({
+  trigger: 4,
+  duration: 1,
+  script: {
+    0: [
+      {
+        size: 10.5
+      }
+    ],
+    1: [
+      {
+        size: 7
+      }
+    ]
+  }
+});
+
+sampleCone = pixelView.slide({
+  steps: 0,
+  from: 14,
+  to: 15
+}).reveal({
+  stagger: [0, 5],
+  durationEnter: 2,
+  durationExit: 1
+}).transform().step({
+  trigger: 0,
+  duration: 2,
+  script: [
+    [
+      {
+        scale: [1, 1, 0]
+      }
+    ], [
+      {
+        scale: [1, 1, 1]
+      }
+    ], [
+      {
+        scale: [1, 1, 0]
+      }
+    ]
+  ]
+}).matrix({
+  channels: 3,
+  width: 5,
+  height: 2,
+  expr: sampleCone
+}).surface({
+  color: deepred,
+  zBias: 5,
+  zOrder: -2,
+  zIndex: 1,
+  opacity: .5
+}).surface({
+  fill: false,
+  lineX: true,
+  lineY: true,
+  color: deeperred,
+  width: 3,
+  zBias: 5,
+  zOrder: -3,
+  zIndex: 1,
+  opacity: .5
+});
+
+pixelRTTms1 = pixelView.rtt({
+  width: WIDTH,
+  height: HEIGHT,
+  minFilter: 'nearest',
+  magFilter: 'nearest'
+});
+
+pixelRTTms1.camera({
+  position: [0, 0, 1],
+  fov: 90
+}).cartesian({
+  position: [multisamples[0][0] / HEIGHT * 2, multisamples[0][1] / HEIGHT * 2],
+  range: [[0, WIDTH], [0, HEIGHT], [-HEIGHT / 2, HEIGHT / 2]],
+  scale: [WIDTH / HEIGHT, 1, 1]
+}).face({
+  points: triangleFaceData,
+  color: deeperred,
+  opacity: .5,
+  zBias: 5
+});
+
+pixelRTTms2 = pixelView.rtt({
+  width: WIDTH,
+  height: HEIGHT,
+  minFilter: 'nearest',
+  magFilter: 'nearest'
+});
+
+pixelRTTms2.camera({
+  position: [0, 0, 1],
+  fov: 90
+}).cartesian({
+  position: [multisamples[1][0] / HEIGHT * 2, multisamples[1][1] / HEIGHT * 2],
+  range: [[0, WIDTH], [0, HEIGHT], [-HEIGHT / 2, HEIGHT / 2]],
+  scale: [WIDTH / HEIGHT, 1, 1]
+}).face({
+  points: triangleFaceData,
+  color: deeperred,
+  opacity: .5,
+  zBias: 5
+});
+
+pixelRTTms3 = pixelView.rtt({
+  width: WIDTH,
+  height: HEIGHT,
+  minFilter: 'nearest',
+  magFilter: 'nearest'
+});
+
+pixelRTTms3.camera({
+  position: [0, 0, 1],
+  fov: 90
+}).cartesian({
+  position: [multisamples[2][0] / HEIGHT * 2, multisamples[2][1] / HEIGHT * 2],
+  range: [[0, WIDTH], [0, HEIGHT], [-HEIGHT / 2, HEIGHT / 2]],
+  scale: [WIDTH / HEIGHT, 1, 1]
+}).face({
+  points: triangleFaceData,
+  color: deeperred,
+  opacity: .5,
+  zBias: 5
+});
+
+pixelRTTms4 = pixelView.rtt({
+  width: WIDTH,
+  height: HEIGHT,
+  minFilter: 'nearest',
+  magFilter: 'nearest'
+});
+
+pixelRTTms4.camera({
+  position: [0, 0, 1],
+  fov: 90
+}).cartesian({
+  position: [multisamples[3][0] / HEIGHT * 2, multisamples[3][1] / HEIGHT * 2],
+  range: [[0, WIDTH], [0, HEIGHT], [-HEIGHT / 2, HEIGHT / 2]],
+  scale: [WIDTH / HEIGHT, 1, 1]
+}).face({
+  points: triangleFaceData,
+  color: deeperred,
+  opacity: .5,
+  zBias: 5
+});
+
+multisampleShader = pixelView.shader({
+  sources: [pixelRTTms1, pixelRTTms2, pixelRTTms3, pixelRTTms4],
+  code: "vec4 getSample1(vec4 xyzw);\nvec4 getSample2(vec4 xyzw);\nvec4 getSample3(vec4 xyzw);\nvec4 getSample4(vec4 xyzw);\nvec4 getSampleMS(vec4 xyzw) {\n  return .25 * (getSample1(xyzw) + getSample2(xyzw) + getSample3(xyzw) + getSample4(xyzw)); \n}"
+});
+
+multisampler = pixelView.resample({
+  source: pixelRTTms1,
+  shader: multisampleShader
+});
+
+multisampleCanvas = pixelView.slide({
+  steps: 0,
+  from: 17,
+  to: 20
+}).reveal({
+  duration: 1
+}).area({
+  width: 2,
+  height: 2
+}).surface({
+  color: 0xFFFFFF,
+  map: multisampler
 });
 
 window.onmessage = function(e) {
@@ -631,21 +1118,21 @@ window.onmessage = function(e) {
 };
 
 enlarge = function(el, zoom) {
-  var k, len, ref1, results, svg;
+  var l, len, ref1, results, svg;
   el.style.zoom = zoom;
   ref1 = el.querySelectorAll('.shadergraph-graph');
   results = [];
-  for (k = 0, len = ref1.length; k < len; k++) {
-    el = ref1[k];
+  for (l = 0, len = ref1.length; l < len; l++) {
+    el = ref1[l];
     if (typeof el.update === "function") {
       el.update();
     }
     results.push((function() {
-      var l, len1, ref2, results1;
+      var len1, m, ref2, results1;
       ref2 = el.querySelectorAll('svg');
       results1 = [];
-      for (l = 0, len1 = ref2.length; l < len1; l++) {
-        svg = ref2[l];
+      for (m = 0, len1 = ref2.length; m < len1; m++) {
+        svg = ref2[m];
         results1.push(svg.setAttribute('height', svg.getAttribute('height') * zoom));
       }
       return results1;
@@ -662,11 +1149,11 @@ enter = function(el) {
 };
 
 three.on('mathbox/progress', function(e) {
-  var i, j, k, ref1, results;
+  var i, j, l, ref1, results;
   i = present[0].get('index');
   if (e.total === e.current && i <= 2) {
     results = [];
-    for (j = k = ref1 = i; ref1 <= 2 ? k < 2 : k > 2; j = ref1 <= 2 ? ++k : --k) {
+    for (j = l = ref1 = i; ref1 <= 2 ? l < 2 : l > 2; j = ref1 <= 2 ? ++l : --l) {
       results.push(window.parent.postMessage({
         type: 'slideshow',
         method: 'next'

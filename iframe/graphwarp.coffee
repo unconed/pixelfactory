@@ -30,9 +30,6 @@ emitSurface = (emit, x, y, i, j, t) ->
                .3  * Math.sin(x * 2 + y * 2 + t * 1.81) +
                .1825 * Math.sin(x * 3 - y * 2 + t * 2.18), y
 
-orbit = (t) -> [Math.cos(t / 1) * .5 - 2, 0, 1 + .25 * Math.sin(t / 1)]
-time  = (t) -> t / 4
-
 intensitySteps =
   stops: [0, 0, 1, 1, 1, 1, 3, 3, 4, 5, 6, 7]
   duration: 0
@@ -47,6 +44,9 @@ intensitySteps =
     "6":   [{}, {intensity: (t) -> Math.cos(t) * .75 }]
     "7":   [{}, {intensity: (t) -> .75 }]
   }
+
+orbit = (t) -> [Math.cos(t / 8) * .5 - 2, -.2, 1.8 + .25 * Math.sin(t / 8)]
+time  = (t) -> t / 4
 
 mathbox
   .set
@@ -153,7 +153,6 @@ slide
               width:  2
               height: 2
             .surface
-              shaded: false
               color: 'white'
               opacity: .95
               zBias: -10
@@ -357,6 +356,7 @@ view
       expr: emitSurface
     .surface
       zBias: 3
+      shaded: true
     .step
       trigger: 12
       pace: 1

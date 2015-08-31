@@ -37,14 +37,6 @@ emitSurface = function(emit, x, y, i, j, t) {
   return emit(x, π / 2 + .6 * Math.sin(x + t - y + 2 * Math.sin(y)) + .3 * Math.sin(x * 2 + y * 2 + t * 1.81) + .1825 * Math.sin(x * 3 - y * 2 + t * 2.18), y);
 };
 
-orbit = function(t) {
-  return [Math.cos(t / 1) * .5 - 2, 0, 1 + .25 * Math.sin(t / 1)];
-};
-
-time = function(t) {
-  return t / 4;
-};
-
 intensitySteps = {
   stops: [0, 0, 1, 1, 1, 1, 3, 3, 4, 5, 6, 7],
   duration: 0,
@@ -99,6 +91,14 @@ intensitySteps = {
       }
     ]
   }
+};
+
+orbit = function(t) {
+  return [Math.cos(t / 8) * .5 - 2, -.2, 1.8 + .25 * Math.sin(t / 8)];
+};
+
+time = function(t) {
+  return t / 4;
 };
 
 mathbox.set({
@@ -243,7 +243,6 @@ slide.layer().unit({
   width: 2,
   height: 2
 }).surface({
-  shaded: false,
   color: 'white',
   opacity: .95,
   zBias: -10,
@@ -496,7 +495,8 @@ view.reveal({
   channels: 3,
   expr: emitSurface
 }).surface({
-  zBias: 3
+  zBias: 3,
+  shaded: true
 }).step({
   trigger: 12,
   pace: 1,
