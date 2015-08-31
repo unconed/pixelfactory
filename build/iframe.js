@@ -21,23 +21,11 @@ root.App = {
         return;
       }
       rand = Math.floor(Math.random() * 0x100000000).toString(16);
-      rand = 'wat';
       script = document.createElement('script');
       script.src = "../build/" + id + ".js?" + rand;
       return _element.appendChild(script);
     };
     return refresh();
-
-    /*
-      progress: (current, total) ->
-    
-    if current == total
-      @_progress.style.width = '100%'
-      setTimeout (() => @_loader.style.display = 'none'), 100
-    else
-      @_loader.style.display = 'block'
-      @_progress.style.width = Math.round(100 * (current / total)) + '%'
-     */
   }
 };
 

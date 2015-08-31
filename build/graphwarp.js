@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var camera, emitCurve, emitSurface, enlarge, enter, formatNumber, getOverlays, intensitySteps, mathbox, orbit, polar, present, ref, slide, subslide, three, time, view, warpShader;
 
-window.mathbox = (ref = mathBox({
+window.mathbox = window.three = (ref = mathBox({
   plugins: ['core'],
   time: {
     delay: 10
@@ -13,6 +13,8 @@ window.mathbox = (ref = mathBox({
     color: 'blue'
   }
 }), mathbox = ref.mathbox, three = ref.three, ref);
+
+window.three = three;
 
 MathBox.DOM.Types.latex = MathBox.DOM.createClass({
   render: function(el, props, children) {
@@ -44,7 +46,7 @@ time = function(t) {
 };
 
 intensitySteps = {
-  stops: [0, 0, 1, 1, 1, 3, 3, 3, 4, 5, 6, 7],
+  stops: [0, 0, 1, 1, 1, 1, 3, 3, 4, 5, 6, 7],
   duration: 0,
   pace: 5,
   script: {
@@ -162,8 +164,8 @@ camera = slide.camera().step({
     }, {
       key: 6.2,
       props: {
-        position: [-2.1, .6, 1.1],
-        lookAt: [0, -.9, -1]
+        position: [-2.1, .7, 1.1],
+        lookAt: [0, -1.2, -1]
       }
     }
   ]
@@ -294,7 +296,7 @@ slide.layer().unit({
 }).point({
   color: '#25A035',
   size: 9,
-  zIndex: 4
+  zIndex: 3
 }).format({
   data: ["Time"],
   font: ["klavika-web", "Klavika Web Basic", "sans-serif"],
@@ -494,8 +496,6 @@ view.reveal({
   channels: 3,
   expr: emitSurface
 }).surface({
-  lineX: false,
-  lineY: false,
   zBias: 3
 }).step({
   trigger: 12,
@@ -524,7 +524,7 @@ view.reveal({
 }).step({
   trigger: 12,
   pace: 1,
-  stops: [0, 1],
+  stops: [0, 1, 2],
   script: {
     0: [
       {
@@ -534,6 +534,13 @@ view.reveal({
       }
     ],
     1: [
+      {
+        color: '#3090FF',
+        opacity: 1,
+        width: 1
+      }
+    ],
+    1.1: [
       {
         color: '#3090FF',
         opacity: .5,
@@ -590,12 +597,12 @@ polar.reveal({
     ],
     3: [
       {
-        scale: .2
+        scale: .15
       }
     ],
     4: [
       {
-        scale: .2
+        scale: .15
       }
     ],
     4.5: [
@@ -615,7 +622,8 @@ polar.reveal({
 }).vector({
   color: '#40C0FF',
   zBias: 15,
-  end: true
+  end: true,
+  width: 1
 }).step({
   trigger: 12,
   pace: .05,
@@ -673,17 +681,17 @@ polar.reveal({
   paddingWidth: 1,
   paddingHeight: 1
 }).vector({
-  color: '#46daaf',
-  zBias: 25,
-  end: true
+  color: '#c099ff',
+  zBias: 30,
+  end: true,
+  width: 1
 }).step({
   trigger: 17,
   pace: .1,
   script: [
     null, [
       {
-        width: 1,
-        color: '#D0E0FF'
+        width: 1
       }
     ]
   ]
@@ -723,17 +731,17 @@ polar.reveal({
   paddingWidth: 1,
   paddingHeight: 1
 }).vector({
-  color: '#c089ff',
-  zBias: 25,
-  end: true
+  color: '#46daaf',
+  zBias: 30,
+  end: true,
+  width: 1
 }).step({
   trigger: 17,
   pace: .1,
   script: [
     null, [
       {
-        width: 1,
-        color: '#D0E0FF'
+        width: 1
       }
     ]
   ]
@@ -742,7 +750,7 @@ polar.reveal({
 polar.reveal({
   stagger: [-5]
 }).step({
-  trigger: 17,
+  trigger: 16,
   pace: .1,
   stops: [0, 1],
   script: {
@@ -761,10 +769,26 @@ polar.reveal({
   }
 }).shader({
   id: 'falsenormal',
-  code: "uniform float time;\nuniform float intensity;\n\nvec4 warpVertex(vec4 xyzw) {\n  xyzw *= vec4(1.0, 0.5, 0.5, 0.0);\n\n  xyzw +=   0.2 * intensity * (sin(xyzw.yzwx * 1.91 + time + sin(xyzw.wxyz * 1.74 + time)));\n  xyzw +=   0.1 * intensity * (sin(xyzw.yzwx * 4.03 + time + sin(xyzw.wxyz * 2.74 + time)));\n  xyzw +=  0.05 * intensity * (sin(xyzw.yzwx * 8.39 + time + sin(xyzw.wxyz * 4.18 + time)));\n  xyzw += 0.025 * intensity * (sin(xyzw.yzwx * 15.1 + time + sin(xyzw.wxyz * 9.18 + time)));\n\n  xyzw *= vec4(1.0, 2.0, 2.0, 0.0);\n    \n  return xyzw;\n}\n\nvec4 getSample(vec4 xyzw);\nvec4 getVectorSample(vec4 xyzw) {\n  vec4 xyz0 = vec4(xyzw.xyz, 0.0);\n  vec3 c = getSample(xyz0).xyz;\n  vec3 r = getSample(xyz0 + vec4(1.0, 0.0, 0.0, 0.0)).xyz;\n  vec3 u = getSample(xyz0 + vec4(0.0, 1.0, 0.0, 0.0)).xyz;\n  vec3 n = normalize(cross(r - c, u - c));\n  return warpVertex(vec4(c - .15 * n * xyzw.w, 0.0));\n}"
+  code: "uniform float time;\nuniform float intensity;\nuniform float scale;\n\nvec4 warpVertex(vec4 xyzw) {\n  xyzw *= vec4(1.0, 0.5, 0.5, 0.0);\n\n  xyzw +=   0.2 * intensity * (sin(xyzw.yzwx * 1.91 + time + sin(xyzw.wxyz * 1.74 + time)));\n  xyzw +=   0.1 * intensity * (sin(xyzw.yzwx * 4.03 + time + sin(xyzw.wxyz * 2.74 + time)));\n  xyzw +=  0.05 * intensity * (sin(xyzw.yzwx * 8.39 + time + sin(xyzw.wxyz * 4.18 + time)));\n  xyzw += 0.025 * intensity * (sin(xyzw.yzwx * 15.1 + time + sin(xyzw.wxyz * 9.18 + time)));\n\n  xyzw *= vec4(1.0, 2.0, 2.0, 0.0);\n    \n  return xyzw;\n}\n\nvec4 getSample(vec4 xyzw);\nvec4 getVectorSample(vec4 xyzw) {\n  vec4 xyz0 = vec4(xyzw.xyz, 0.0);\n  vec3 c = getSample(xyz0).xyz;\n  vec3 r = getSample(xyz0 + vec4(1.0, 0.0, 0.0, 0.0)).xyz;\n  vec3 u = getSample(xyz0 + vec4(0.0, 1.0, 0.0, 0.0)).xyz;\n  vec3 n = normalize(cross(r - c, u - c));\n  return warpVertex(vec4(c - scale * n * xyzw.w, 0.0));\n}"
 }, {
   time: time
-}).step(intensitySteps).resample({
+}).step(intensitySteps).step({
+  duration: .2,
+  trigger: 17,
+  target: '<<',
+  script: {
+    0: [
+      {
+        scale: 0
+      }
+    ],
+    1: [
+      {
+        scale: .15
+      }
+    ]
+  }
+}).resample({
   source: '#surfaceArea',
   width: 37,
   height: 19,
@@ -774,7 +798,7 @@ polar.reveal({
   paddingHeight: 1
 }).vector({
   width: 1,
-  color: '#D0E0FF',
+  color: '#f0a050',
   zBias: 15,
   end: true
 });
@@ -798,13 +822,15 @@ view.transform({
   start: false,
   end: true
 }).format({
+  expand: 7,
   expr: function(x) {
     return formatNumber(x);
   },
   font: ["klavika-web", "Klavika Web Basic", "sans-serif"]
 }).label({
   depth: .5,
-  zIndex: 1
+  zIndex: 1,
+  zOrder: -5
 }).step({
   stops: [0, 1],
   trigger: 3,
@@ -977,7 +1003,6 @@ window.onmessage = function(e) {
   var data;
   data = e.data;
   if (data.type === 'slideshow') {
-    console.log('slideshow msg', data.i);
     return present.set('index', data.i + 1);
   }
 };
@@ -1035,7 +1060,7 @@ getOverlays = function() {
 present.on('change', function(e) {
   var el, k, l, len, len1, ref1, ref2, results, step, surface;
   step = present[0].get('index');
-  if (step <= 20) {
+  if (step === 19 || step === 21) {
     ref1 = getOverlays();
     for (k = 0, len = ref1.length; k < len; k++) {
       el = ref1[k];
@@ -1043,7 +1068,7 @@ present.on('change', function(e) {
     }
   }
   if (step === 20) {
-    surface = mathbox.select('surface')[0];
+    surface = mathbox.select('vector')[0];
     if (surface != null) {
       surface.controller.objects[0].renders[0].material.fragmentGraph.inspect();
     }

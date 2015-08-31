@@ -4,9 +4,12 @@
 }
 
 .shadergraph-overlay {
-  opacity: 0;
+  xopacity: 0;
   -webkit-transition: opacity .5s ease-in-out;
   transition: opacity .5s ease-in-out;
+
+  background: rgba(255, 255, 255, .5);
+  border: none;
 }
 
 .shadergraph-overlay.slide-active {
@@ -25,8 +28,4 @@
 
 .shadergraph-code {
   margin-bottom: 100px;
-}
-
-.shadergraph-close {
-  display: none;
 }

@@ -1,4 +1,4 @@
-window.mathbox =
+window.mathbox = window.three =
 {mathbox, three} = mathBox
   plugins: ['core']
   time:
@@ -7,6 +7,7 @@ window.mathbox =
     warmup: 2
   splash:
     color: 'blue'
+window.three = three
 
 MathBox.DOM.Types.latex = MathBox.DOM.createClass
   render: (el, props, children) ->
@@ -33,7 +34,7 @@ orbit = (t) -> [Math.cos(t / 1) * .5 - 2, 0, 1 + .25 * Math.sin(t / 1)]
 time  = (t) -> t / 4
 
 intensitySteps =
-  stops: [0, 0, 1, 1, 1, 3, 3, 3, 4, 5, 6, 7]
+  stops: [0, 0, 1, 1, 1, 1, 3, 3, 4, 5, 6, 7]
   duration: 0
   pace:     5
   script: {
@@ -73,7 +74,7 @@ camera = slide
       {key: 4, props: {position: [-1, 0, 1], lookAt: [4, 0, -1]}}
       {key: 5, props: {position: [-1.2, .9, 2.5], lookAt: [0, -.7, -1]}}
       {key: 6, props: {position: [-2.4, 1, 1.2], lookAt: [0, -.9, -1]}}
-      {key: 6.2, props: {position: [-2.1, .6, 1.1], lookAt: [0, -.9, -1]}}
+      {key: 6.2, props: {position: [-2.1, .7, 1.1], lookAt: [0, -1.2, -1]}}
     ]
   .step
     target:   'root'
@@ -198,7 +199,7 @@ slide
             .point
               color: '#25A035'
               size: 9
-              zIndex: 4
+              zIndex: 3
             .format
               data: ["Time"]
               font: ["klavika-web", "Klavika Web Basic", "sans-serif"]
@@ -355,8 +356,6 @@ view
       channels: 3
       expr: emitSurface
     .surface
-      lineX: false
-      lineY: false
       zBias: 3
     .step
       trigger: 12
@@ -375,10 +374,11 @@ view
     .step
       trigger: 12
       pace: 1
-      stops: [0, 1]
+      stops: [0, 1, 2]
       script: {
         0: [{color: '#3090FF', opacity: 1, width: 0}]
-        1: [{color: '#3090FF', opacity: .5, width: 1}]
+        1: [{color: '#3090FF', opacity: 1, width: 1}]
+        1.1: [{color: '#3090FF', opacity: .5, width: 1}]
       }
 
 polar
@@ -434,8 +434,8 @@ polar
         0: [{scale: .2}],
         1: [{scale: 0}],
         2: [{scale: 0}],
-        3: [{scale: .2}],
-        4: [{scale: .2}],
+        3: [{scale: .15}],
+        4: [{scale: .15}],
         4.5: [{scale: 0}],
       }
     .resample
@@ -451,6 +451,7 @@ polar
       #color: '#3090FF'
       zBias: 15
       end: true
+      width: 1
     .step
       trigger: 12
       pace: .05
@@ -512,15 +513,16 @@ polar
       paddingWidth:  1
       paddingHeight: 1
     .vector
-      color: '#46daaf'
-      zBias: 25
+      color: '#c099ff'
+      zBias: 30
       end: true
+      width: 1
     .step
       trigger: 17
       pace: .1
       script: [
         null,
-        [{width: 1, color: '#D0E0FF'}]
+        [{width: 1}]
       ]
 
 polar
@@ -574,22 +576,23 @@ polar
       paddingWidth:  1
       paddingHeight: 1
     .vector
-      color: '#c089ff'
-      zBias: 25
+      color: '#46daaf'
+      zBias: 30
       end: true
+      width: 1
     .step
       trigger: 17
       pace: .1
       script: [
         null,
-        [{width: 1, color: '#D0E0FF'}]
+        [{width: 1}]
       ]
 
 polar
   .reveal
       stagger: [-5]
     .step
-      trigger: 17
+      trigger: 16
       pace: .1
       stops: [0, 1]
       script: {
@@ -601,6 +604,7 @@ polar
       code: """
       uniform float time;
       uniform float intensity;
+      uniform float scale;
 
       vec4 warpVertex(vec4 xyzw) {
         xyzw *= vec4(1.0, 0.5, 0.5, 0.0);
@@ -622,13 +626,21 @@ polar
         vec3 r = getSample(xyz0 + vec4(1.0, 0.0, 0.0, 0.0)).xyz;
         vec3 u = getSample(xyz0 + vec4(0.0, 1.0, 0.0, 0.0)).xyz;
         vec3 n = normalize(cross(r - c, u - c));
-        return warpVertex(vec4(c - .15 * n * xyzw.w, 0.0));
+        return warpVertex(vec4(c - scale * n * xyzw.w, 0.0));
       }
       """
     }, {
       time: time
     }
     .step intensitySteps
+    .step
+      duration: .2
+      trigger: 17
+      target: '<<'
+      script: {
+        0: [{scale: 0}],
+        1: [{scale: .15}],
+      }
     .resample
       source: '#surfaceArea'
       width: 37
@@ -639,7 +651,7 @@ polar
       paddingHeight: 1
     .vector
       width: 1
-      color: '#D0E0FF'
+      color: '#f0a050'
       zBias: 15
       end: true
 
@@ -663,11 +675,13 @@ view
       start: false
       end:   true
     .format
+      expand: 7
       expr: (x) -> formatNumber x
       font: ["klavika-web", "Klavika Web Basic", "sans-serif"]
     .label
       depth: .5
       zIndex: 1
+      zOrder: -5
     .step
       stops: [0, 1]
       trigger: 3
@@ -807,7 +821,6 @@ view
 window.onmessage = (e) ->
   {data} = e
   if data.type == 'slideshow'
-    console.log 'slideshow msg', data.i
     present.set 'index', data.i + 1
 
 enlarge = (el, zoom) ->
@@ -834,10 +847,10 @@ getOverlays = () ->
 
 present.on 'change', (e) ->
   step = present[0].get('index')
-  if step <= 20
+  if step == 19 or step == 21
     el.remove() for el in getOverlays()
   if step == 20
-    surface = mathbox.select('surface')[0]
+    surface = mathbox.select('vector')[0]
     surface?.controller.objects[0].renders[0].material.fragmentGraph.inspect()
     for el in getOverlays()
       enlarge el, 2

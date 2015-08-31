@@ -16,10 +16,8 @@
     <script src="katex/katex.min.js"></script>
     <script src="katex/contrib/auto-render.min.js"></script>
 
-    <!--
     <script type="text/javascript" src="http://use.typekit.com/nde6wmn.js"></script>
     <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-      -->
 
     <script type="text/javascript" src="build/controller.js"></script>
 
@@ -64,6 +62,16 @@
         
         </section>
 
+        <!-- ============================================= -->
+
+        <section class="slide first">
+        
+          <div class="masthead middle"><div>
+            <h1>Graphics Processing Unit</h1>
+          </div></div>
+
+        </section>
+        
         <!-- ============================================= -->
 
         <section class="slide">
@@ -151,7 +159,7 @@
             <div class="masthead footer absolute text-background"><div>
               <p class="text-outline">
                 $$
-                  \color{#18487F}{\vec p}(\color{#35bd96}{u}, \color{#9759d1}{v}) = \text{warp}\Big(\text{surface}(\color{#35bd96}{u}, \color{#9759d1}{v}), \text{time}, \text{intensity}\Big)
+                  \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}) = \text{warp}\Big(\text{surface}(\color{#9759d1}{u}, \color{#2fb28c}{v}), \text{time}, \text{intensity}\Big)
                 $$
               </p>
             </div></div>
@@ -164,18 +172,18 @@
             <div class="masthead footer absolute text-background"><div>
               <p class="text-outline-fill">
                 $$
-                  \color{#35bd96}{\vec U}
-                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#35bd96}{\partial u}}
-                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#35bd96}{u} + \epsilon, \color{#9759d1}{v}) - \color{#18487F}{\vec p}(\color{#35bd96}{u}, \color{#9759d1}{v}\big)}{\epsilon}
+                  \color{#9759d1}{\vec U}
+                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial u}}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u} + \epsilon, \color{#2fb28c}{v}) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\epsilon}
                 $$
               </p>
             </div></div>
             <div class="masthead footer absolute text-background"><div>
               <p class="text-outline-fix">
                 $$
-                  \color{#35bd96}{\vec U}
-                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#35bd96}{\partial u}}
-                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#35bd96}{u} + \epsilon, \color{#9759d1}{v}) - \color{#18487F}{\vec p}(\color{#35bd96}{u}, \color{#9759d1}{v}\big)}{\epsilon}
+                  \color{#9759d1}{\vec U}
+                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial u}}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u} + \epsilon, \color{#2fb28c}{v}) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\epsilon}
                 $$
               </p>
             </div></div>
@@ -188,18 +196,18 @@
             <div class="masthead footer absolute text-background"><div>
               <p class="text-outline-fill">
                 $$
-                  \color{#9759d1}{\vec V}
-                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial v}}
-                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#35bd96}{u}, \color{#9759d1}{v} + \epsilon) - \color{#18487F}{\vec p}(\color{#35bd96}{u}, \color{#9759d1}{v}\big)}{\epsilon}
+                  \color{#2fb28c}{\vec V}
+                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#2fb28c}{\partial v}}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u}, \color{#2fb28c}{v} + \epsilon) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\epsilon}
                 $$
               </p>
             </div></div>
             <div class="masthead footer absolute text-background"><div>
               <p class="text-outline-fix">
                 $$
-                  \color{#9759d1}{\vec V}
-                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial v}}
-                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#35bd96}{u}, \color{#9759d1}{v} + \epsilon) - \color{#18487F}{\vec p}(\color{#35bd96}{u}, \color{#9759d1}{v}\big)}{\epsilon}
+                  \color{#2fb28c}{\vec V}
+                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#2fb28c}{\partial v}}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u}, \color{#2fb28c}{v} + \epsilon) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\epsilon}
                 $$
               </p>
             </div></div>
@@ -212,19 +220,19 @@
             <div class="masthead footer absolute text-background"><div>
               <p class="text-outline-fill">
                 $$ \color{#40B0FF}{\vec n}
-                 = \frac{\color{#18487F}{\partial \vec p}}{\color{#35bd96}{\partial u}}
+                 = \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial u}}
                    \times
-                   \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial v}}
+                   \frac{\color{#18487F}{\partial \vec p}}{\color{#2fb28c}{\partial v}}
                  =
 
                 \left(
                 \begin{array}{c}
-                  \color{#35bd96}{{U_\color{#40A020}{y}}} \color{#9759d1}{{V_\color{#C02050}{z}}}
-                  - \color{#9759d1}{{V_\color{#40A020}{y}}} \color{#35bd96}{{U_\color{#C02050}{z}}} \\
-                  \color{#35bd96}{{U_\color{#C02050}{z}}} \color{#9759d1}{{V_\color{#3080FF}{x}}}
-                  - \color{#9759d1}{{V_\color{#C02050}{z}}} \color{#35bd96}{{U_\color{#3080FF}{x}}} \\ 
-                  \color{#35bd96}{{U_\color{#3080FF}{x}}} \color{#9759d1}{{V_\color{#40A020}{y}}}
-                  - \color{#9759d1}{{V_\color{#3080FF}{x}}} \color{#35bd96}{{U_\color{#40A020}{y}}}
+                  \color{#9759d1}{{U_\color{#40A020}{y}}} \color{#2fb28c}{{V_\color{#C02050}{z}}}
+                  - \color{#2fb28c}{{V_\color{#40A020}{y}}} \color{#9759d1}{{U_\color{#C02050}{z}}} \\
+                  \color{#9759d1}{{U_\color{#C02050}{z}}} \color{#2fb28c}{{V_\color{#3080FF}{x}}}
+                  - \color{#2fb28c}{{V_\color{#C02050}{z}}} \color{#9759d1}{{U_\color{#3080FF}{x}}} \\ 
+                  \color{#9759d1}{{U_\color{#3080FF}{x}}} \color{#2fb28c}{{V_\color{#40A020}{y}}}
+                  - \color{#2fb28c}{{V_\color{#3080FF}{x}}} \color{#9759d1}{{U_\color{#40A020}{y}}}
                 \end{array}
                 \right)
 
@@ -242,19 +250,19 @@
             <div class="masthead footer slide instant absolute text-background"><div>
               <p class="text-outline-fix">
                 $$ \color{#40B0FF}{\vec n}
-                 = \frac{\color{#18487F}{\partial \vec p}}{\color{#35bd96}{\partial u}}
+                 = \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial u}}
                    \times
-                   \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial v}}
+                   \frac{\color{#18487F}{\partial \vec p}}{\color{#2fb28c}{\partial v}}
                  =
 
                 \left(
                 \begin{array}{c}
-                  \color{#35bd96}{{U_\color{#40A020}{y}}} \color{#9759d1}{{V_\color{#C02050}{z}}}
-                  - \color{#9759d1}{{V_\color{#40A020}{y}}} \color{#35bd96}{{U_\color{#C02050}{z}}} \\
-                  \color{#35bd96}{{U_\color{#C02050}{z}}} \color{#9759d1}{{V_\color{#3080FF}{x}}}
-                  - \color{#9759d1}{{V_\color{#C02050}{z}}} \color{#35bd96}{{U_\color{#3080FF}{x}}} \\ 
-                  \color{#35bd96}{{U_\color{#3080FF}{x}}} \color{#9759d1}{{V_\color{#40A020}{y}}}
-                  - \color{#9759d1}{{V_\color{#3080FF}{x}}} \color{#35bd96}{{U_\color{#40A020}{y}}}
+                  \color{#9759d1}{{U_\color{#40A020}{y}}} \color{#2fb28c}{{V_\color{#C02050}{z}}}
+                  - \color{#2fb28c}{{V_\color{#40A020}{y}}} \color{#9759d1}{{U_\color{#C02050}{z}}} \\
+                  \color{#9759d1}{{U_\color{#C02050}{z}}} \color{#2fb28c}{{V_\color{#3080FF}{x}}}
+                  - \color{#2fb28c}{{V_\color{#C02050}{z}}} \color{#9759d1}{{U_\color{#3080FF}{x}}} \\ 
+                  \color{#9759d1}{{U_\color{#3080FF}{x}}} \color{#2fb28c}{{V_\color{#40A020}{y}}}
+                  - \color{#2fb28c}{{V_\color{#3080FF}{x}}} \color{#9759d1}{{U_\color{#40A020}{y}}}
                 \end{array}
                 \right)
 
@@ -282,8 +290,69 @@
               <h4 class="text-outline">Differential Geometry - Jacobian Matrices</h4>
             </div></div>
             <div class="masthead footer absolute text-background"><div>
-              <p class="text-outline">
+              <p class="text-outline-fill">
+                
+                $$
+                
+                 J(\color{#9759d1}{u}, \color{#2fb28c}{v}, \color{#d08040}{w})
+                
+                 = 
 
+                   \left[
+                   \begin{array}{ccc}
+
+                   \color{#9759d1}{{U_\color{#3080FF}{x}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#3080FF}{x}}} &amp; 
+                   \color{#d08040}{{W_\color{#3080FF}{x}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#40A020}{y}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#40A020}{y}}} &amp; 
+                   \color{#d08040}{{W_\color{#40A020}{y}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#C02050}{z}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#C02050}{z}}} &amp; 
+                   \color{#d08040}{{W_\color{#C02050}{z}}}
+                   
+                   \end{array}
+                   \right]    
+                               
+                $$
+    
+              </p>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fix">
+                
+                $$
+
+                 J(\color{#9759d1}{u}, \color{#2fb28c}{v}, \color{#d08040}{w})
+                
+                 = 
+
+
+                   \left[
+                   \begin{array}{ccc}
+
+                   \color{#9759d1}{{U_\color{#3080FF}{x}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#3080FF}{x}}} &amp; 
+                   \color{#d08040}{{W_\color{#3080FF}{x}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#40A020}{y}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#40A020}{y}}} &amp; 
+                   \color{#d08040}{{W_\color{#40A020}{y}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#C02050}{z}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#C02050}{z}}} &amp; 
+                   \color{#d08040}{{W_\color{#C02050}{z}}}
+                   
+                   \end{array}
+                   \right]    
+                               
+                $$
     
               </p>
             </div></div>
@@ -331,6 +400,75 @@
         </section>
       
         <!-- ============================================= -->
+
+        <section class="slide fill slide-zoom-in slow">
+          <div class="absolute">
+            <div class="grid2 pad text-center">
+              <img src="img/htc-one.jpg" height="720" alt="HTC One Smartphone">
+            </div>
+            <div class="grid2 slide slide-zoom-in pad text-center">
+              <img src="img/dell-dimension.jpg" alt="DELL Dimension">
+            </div>
+          </div>
+        </section>
+      
+        <!-- ============================================= -->
+
+        <section class="slide fill slide-zoom-in slow">
+
+          <div class="fill clip recessed">
+            <img src="img/crysis3.jpg" alt="Crysis 3" title="Crysis 3" />
+          </div>
+
+          <div class="masthead top absolute text-center"><div>
+            <h4 class="text-outline">Crysis 3 (PC/360/PS3)</h4>
+          </div></div>
+
+        </section>
+
+        <!-- ============================================= -->
+
+        <section class="slide fill slide-zoom-in slow">
+
+          <div class="fill clip recessed">
+            <img src="img/shadowfall.jpg" alt="IBM Blue Gene/P" title="Shadowfall" />
+          </div>
+
+          <div class="masthead top absolute text-center"><div>
+            <h4 class="text-outline">Killzone: Shadow Fall (PS4)</h4>
+          </div></div>
+
+        </section>
+
+        <!-- ============================================= -->
+
+        <section class="slide first">
+        
+          <div class="masthead middle"><div>
+            <h1>Pixels</h1>
+          </div></div>
+
+        </section>
+
+        <!-- ============================================= -->
+
+        <section class="slide">
+
+          <iframe class="naked fill recessed" data-src="iframe/index.html#pixels"></iframe>
+        
+          <div class="slide"></div>
+          <div class="slide"></div>
+          <div class="slide"></div>
+          <div class="slide"></div>
+          <div class="slide"></div>
+          <div class="slide"></div>
+          <div class="slide"></div>
+          <div class="slide"></div>
+          <div class="slide"></div>
+          <div class="slide"></div>
+          <div class="slide"></div>
+        
+        </section>
       
       </div>
     </div>
