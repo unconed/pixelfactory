@@ -15,11 +15,18 @@ controls = (els, slideshow) ->
     if d?.type == 'slideshow' and d?.method?
       slideshow[d.method]?()
 
+  setSpeed = (e) ->
+    speed = if e.shiftKey then .2 else 1
+    for iframe in document.querySelectorAll('iframe')
+      iframe.contentWindow?.postMessage {type: 'speed', speed}, '*'
+
   window.onkeydown = (e) ->
+    setSpeed e
     switch e.keyCode
       when 37, 38 then slideshow.prev()
       when 39, 40 then slideshow.next()
       #else console.log 'keyCode', e.keyCode
+  window.onkeyup = (e) -> setSpeed e
 
   slides  = document.querySelector '.slides'
   squeeze = document.querySelector '.squeeze'

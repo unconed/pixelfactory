@@ -1,6 +1,8 @@
 window.mathbox =
 {mathbox, three} = mathBox
   plugins: ['core', 'cursor']
+  size:
+    scale: .5
   time:
     delay: 10
   mathbox:
@@ -33,8 +35,8 @@ triangleBuffer = []
 
 triangle = (emit, i, t) ->
   theta = i * τ / 3 + t / 8
-  x = Math.sin(theta) * .79
-  y = Math.cos(theta) * .79
+  x = Math.sin(theta) * .77
+  y = Math.cos(theta) * .77
   x = x * 10 + 16
   y = y * 10 + 10
 
@@ -76,6 +78,13 @@ sampleCone = (emit, i, j) ->
   z = 7 - j * 14
   emit x, y, z
 
+nyquistX  = (x) -> (x - WIDTH / 2) * (WIDTH - 1) / (WIDTH) + WIDTH / 2
+nyquistXi = (x) -> (x - WIDTH / 2) / (WIDTH - 1) * (WIDTH) + WIDTH / 2
+
+nyquistSampler = (x, t) ->
+  freq = nyquistShader.props.frequency
+  Math.cos((x - WIDTH / 2) * (WIDTH - 1) / (WIDTH) * π * freq + t) * .5 + .5
+
 formatNumber = MathBox.Util.Pretty.number()
 
 WIDTH  = 32
@@ -93,6 +102,7 @@ present =
   mathbox
   .present
     index: 0
+    index: 17
 
 present.slide()
 
@@ -113,9 +123,9 @@ pixelView =
     duration: 1
     pace: 1
     rewind: 2
-    stops: [0, 1, 1.5, 2.5, 4.5, 4.5, 4.5, 4.5, 5.5, 7.5, 9.5, 10.5]
+    stops: [0, 1, 1.5, 2.5, 4.5, 4.5, 4.5, 4.5, 5.5, 7.5, 9.5, 10.5, 10.5, 10.5, 12, 12, 12, 12, 12, 12, 13]
     script: {
-      0:   [{position: [0, 0, 4.5], rotation: [0, 0, 0]}]
+      0:   [{position: [0, 0, 4.5], rotation: [0, 0, 0], quaternion: [0, 0, 0, 1]}]
       1:   [{position: [0, .2, 2]}]
       1.5: [{position: [0, .2, .75]}]
       2.5: [{position: [0, -1.1, .6], rotation: [1, 0, .3]}]
@@ -124,6 +134,8 @@ pixelView =
       7.5:   [{position: [2.5, 0, 0]}]
       9.5:   [{position: [0, 0, 3.5]}]
       10.5:  [{position: [0, .4, 1.2], lookAt: [0, .4, 0]}]
+      12:    [{position: [0, .3, .4], lookAt: [0, .3, 0], quaternion: [.5, 0, 0, .833]}]
+      13:    [{position: [0, 0, .5], lookAt: [0, 0, 0], quaternion: [.65, 0, 0, .76]}]
     }
 
   .cartesian
@@ -239,6 +251,7 @@ pixelCanvas =
         width: 2
         crossed: true
         zBias: 15
+        zOrder: -1
         color: 0
       .step
         trigger: 6
@@ -446,7 +459,7 @@ pixelCanvasTextR =
       offset: [0, 0]
       background: 0
       color: 0xFF8080
-      zIndex: 1
+      zIndex: 2
       zBias: 5
       zOrder: -100
       size: 6.5
@@ -486,7 +499,7 @@ pixelCanvasTextG =
       offset: [0, 0]
       background: 0
       color: 0x80FF80
-      zIndex: 1
+      zIndex: 2
       zBias: 5
       zOrder: -100
       size: 6.5
@@ -526,7 +539,7 @@ pixelCanvasTextB =
       offset: [0, 0]
       background: 0
       color: 0xA0A0FF
-      zIndex: 1
+      zIndex: 2
       zBias: 5
       zOrder: -100
       size: 6.5
@@ -566,7 +579,7 @@ pixelCanvasTextA =
       offset: [0, 0]
       background: 0
       color: 0x808080
-      zIndex: 1
+      zIndex: 2
       zBias: 5
       zOrder: -100
       size: 6.5
@@ -620,7 +633,7 @@ triangleSnapOutline =
         width: [0, 3]
       .point
         color: deepred
-        size: 30
+        size: 25
         zBias: 15
 
 # ====================================================================================
@@ -630,7 +643,7 @@ triangleFaceData =
   .slide
       steps: 0
       from: 12
-      to: 20
+      to: 19
     .reveal
         duration: 1
       .array
@@ -652,7 +665,7 @@ triangleOutline =
   .slide
       steps: 0
       from: 12
-      to: 20
+      to: 19
     .reveal
         duration: 1
       .transform()
@@ -672,12 +685,16 @@ triangleOutline =
           color: deepred
           width: 10
           zBias: 10
+          zIndex: 1
+          zOrder: -1
         .slice
           width: [0, 3]
         .point
           color: deepred
-          size: 30
+          size: 25
           zBias: 15
+          zIndex: 1
+          zOrder: -1
         .transpose
           order: 'yzwx'
         .face
@@ -704,174 +721,6 @@ multisamples = [
   [.125, -.375],
   [-.375,-.125],
 ]
-
-sliceLerp = 0
-triangleSamples =
-  pixelView
-  .slide
-      steps: 0
-      from: 13
-      to: 20
-    .reveal
-        duration: 1
-        stagger: [3, 3]
-      .area
-        width:  WIDTH
-        height: HEIGHT
-        centeredX: true
-        centeredY: true
-        items: 4
-        expr: (emit, x, y, i, j) ->
-          for k in [0..3]
-            emit x, y, 0, 0
-          return
-
-      .step
-        trigger: 4
-        duration: 1
-        script: [
-          [{
-            expr: (emit, x, y, i, j) ->
-              for k in [0..3]
-                emit x, y, 0, 0
-              return
-          }],
-          [{
-            expr: (emit, x, y, i, j) ->
-              for k in [0..3]
-                ms = multisamples[k]
-                xx = x + ms[0]
-                yy = y + ms[1]
-                emit xx, yy, 0, 0
-              return
-          }]
-        ]
-
-      .slice()
-      .step
-        trigger: 4,
-        duration: 1
-        script: {
-          0:    [{items: [0, 1]}]
-          0.01: [{items: [0, 4]}]
-        }
-      .area
-        width:  WIDTH
-        height: HEIGHT
-        items: 4
-        expr: (emit, x, y, i, j) ->
-          for k in [0..3]
-            inside = inTriangle x, y
-            if inside
-              emit deepred.r, deepred.g, deepred.b, 1
-            else
-              emit .5, .5, .5, 1
-
-      .step
-        trigger: 4
-        duration: 1
-        script: [
-          [{
-            expr: (emit, x, y, i, j) ->
-              for k in [0..3]
-                inside = inTriangle x, y
-                if inside
-                  emit deepred.r, deepred.g, deepred.b, 1
-                else
-                  emit .5, .5, .5, 1
-          }],
-          [{
-            expr: (emit, x, y, i, j) ->
-              for k in [0..3]
-                ms = multisamples[k]
-                xx = x + ms[0]
-                yy = y + ms[1]
-
-                inside = inTriangle xx, yy
-                if inside
-                  emit deepred.r, deepred.g, deepred.b, 1
-                else
-                  emit .5, .5, .5, 1
-          }],
-        ]
-
-      .slice()
-      .step
-        trigger: 4,
-        duration: 0
-        script: {
-          0:    [{items: [0, 1]}]
-          0.01: [{items: [0, 4]}]
-        }
-
-triangleSamplePoint =
-  triangleSamples
-  .transform()
-    .step
-      duration: 2
-      script: [
-        [{position: [0, 0, 0]}]
-        [{position: [0, 0, 7]}]
-        [{position: [0, 0, 0]}]
-      ]
-
-    .point
-      color: 0xffffff
-      points: "<<<"
-      colors: "<"
-      size: 10.5
-      zIndex: 1
-      zBias: 6
-      zOrder: -2
-    .step
-      trigger: 4,
-      duration: 1
-      script: {
-        0: [{size: 10.5}]
-        1: [{size: 7}]
-      }
-# ====================================================================================
-
-sampleCone =
-  pixelView
-  .slide
-      steps: 0
-      from: 14
-      to: 15
-    .reveal
-        stagger: [0, 5]
-        durationEnter: 2
-        durationExit: 1
-      .transform()
-        .step
-          trigger: 0
-          duration: 2
-          script: [
-            [{scale: [1, 1, 0]}]
-            [{scale: [1, 1, 1]}]
-            [{scale: [1, 1, 0]}]
-          ]
-        .matrix
-          channels: 3
-          width:  5
-          height: 2
-          expr: sampleCone
-        .surface
-          color: deepred
-          zBias: 5
-          zOrder: -2
-          zIndex: 1
-          opacity: .5
-        .surface
-          fill: false
-          lineX: true
-          lineY: true
-          color: deeperred
-          width: 3
-          zBias: 5
-          zOrder: -3
-          zIndex: 1
-          opacity: .5
 
 # ====================================================================================
 
@@ -963,6 +812,223 @@ pixelRTTms4
     opacity: .5
     zBias: 5
 
+# ====================================================================================
+
+sliceLerp = 0
+triangleSamples =
+  pixelView
+  .slide
+      steps: 0
+      from: 13
+      to: 19
+    .reveal
+        duration: 1
+        stagger: [3, 3]
+      .area
+        width:  WIDTH
+        height: HEIGHT
+        centeredX: true
+        centeredY: true
+        items: 4
+        expr: (emit, x, y, i, j) ->
+          for k in [0..3]
+            emit x, y, 0, 0
+          return
+
+      .step
+        trigger: 4
+        duration: 1
+        script: [
+          [{
+            expr: (emit, x, y, i, j) ->
+              for k in [0..3]
+                emit x, y, 0, 0
+              return
+          }],
+          [{
+            expr: (emit, x, y, i, j) ->
+              for k in [0..3]
+                ms = multisamples[k]
+                xx = x + ms[0]
+                yy = y + ms[1]
+                emit xx, yy, 0, 0
+              return
+          }]
+        ]
+      .shader
+        sources: [pixelRTTms1, pixelRTTms2, pixelRTTms3, pixelRTTms4]
+        code: """
+        uniform float multisample;
+        vec4 getSample1(vec4 xyzw);
+        vec4 getSample2(vec4 xyzw);
+        vec4 getSample3(vec4 xyzw);
+        vec4 getSample4(vec4 xyzw);
+        vec4 getSamplePos(vec4 xyzw);
+
+        vec4 getSampleMS(vec4 xyzw) {
+          if (multisample <= 0.0) {
+            return getSamplePos(xyzw);
+          }
+
+          vec4 a = getSample1(xyzw);
+          vec4 b = getSample2(xyzw);
+          vec4 c = getSample3(xyzw);
+          vec4 d = getSample4(xyzw);
+
+          vec4 pos = getSamplePos(xyzw);
+          
+          float diff = length(a - b) + length(c - d) + length(a - c) + length(b - d);
+          if (diff > 0.0) {
+            return pos;
+          }
+          else {
+            if (multisample >= 1.0 && xyzw.w > 0.0) {
+              return vec4(0.0, 0.0, 1000.0, 0.0);
+            }
+            vec4 avg = .25 * (
+              getSamplePos(vec4(xyzw.xyz, 0.0)) +
+              getSamplePos(vec4(xyzw.xyz, 1.0)) +
+              getSamplePos(vec4(xyzw.xyz, 2.0)) +
+              getSamplePos(vec4(xyzw.xyz, 3.0))
+            );
+            return mix(pos, avg, multisample);
+          }
+        }
+        """
+      .step
+        trigger: 5
+        duration: 1
+        script: [
+          [{multisample: 0}]
+          [{multisample: 1}]
+        ]
+      .resample()
+      .slice()
+      .step
+        trigger: 4,
+        duration: 1
+        script: {
+          0:     [{items: [0, 1]}]
+          0.017: [{items: [0, 4]}]
+        }
+      .area
+        width:  WIDTH
+        height: HEIGHT
+        items: 4
+        expr: (emit, x, y, i, j) ->
+          for k in [0..3]
+            inside = inTriangle x, y
+            if inside
+              emit deepred.r, deepred.g, deepred.b, 1
+            else
+              emit .5, .5, .5, 1
+
+      .step
+        trigger: 4
+        duration: 1
+        script: [
+          [{
+            expr: (emit, x, y, i, j) ->
+              for k in [0..3]
+                inside = inTriangle x, y
+                if inside
+                  emit deepred.r, deepred.g, deepred.b, 1
+                else
+                  emit .5, .5, .5, 1
+          }],
+          [{
+            expr: (emit, x, y, i, j) ->
+              for k in [0..3]
+                ms = multisamples[k]
+                xx = x + ms[0]
+                yy = y + ms[1]
+
+                inside = inTriangle xx, yy
+                if inside
+                  emit deepred.r, deepred.g, deepred.b, 1
+                else
+                  emit .5, .5, .5, 1
+          }],
+        ]
+
+      .slice()
+      .step
+        trigger: 4,
+        duration: 1
+        script: {
+          0:     [{items: [0, 1]}]
+          0.017: [{items: [0, 4]}]
+        }
+
+triangleSamplePoint =
+  triangleSamples
+  .transform()
+    .step
+      duration: 2
+      script: [
+        [{position: [0, 0, 0]}]
+        [{position: [0, 0, 7]}]
+        [{position: [0, 0, 0]}]
+      ]
+
+    .point
+      color: 0xffffff
+      points: "<<<"
+      colors: "<"
+      size: 10.5
+      zIndex: 2
+      zBias: 6
+      zOrder: -2
+    .step
+      trigger: 4,
+      duration: 1
+      script: {
+        0: [{size: 10.5}]
+        1: [{size: 7}]
+      }
+# ====================================================================================
+
+sampleCone =
+  pixelView
+  .slide
+      steps: 0
+      from: 14
+      to: 15
+    .reveal
+        stagger: [0, 5]
+        durationEnter: 2
+        durationExit: 1
+      .transform()
+        .step
+          trigger: 0
+          duration: 2
+          script: [
+            [{scale: [1, 1, 0]}]
+            [{scale: [1, 1, 1]}]
+            [{scale: [1, 1, 0]}]
+          ]
+        .matrix
+          channels: 3
+          width:  5
+          height: 2
+          expr: sampleCone
+        .surface
+          color: deepred
+          zBias: 5
+          zOrder: -2
+          zIndex: 2
+          opacity: .5
+        .surface
+          fill: false
+          lineX: true
+          lineY: true
+          color: deeperred
+          width: 3
+          zBias: 5
+          zOrder: -3
+          zIndex: 2
+          opacity: .5
+
 multisampleShader =
   pixelView
   .shader
@@ -988,7 +1054,7 @@ multisampleCanvas =
   .slide
       steps: 0
       from: 17
-      to: 20
+      to: 19
     .reveal
         duration: 1
       .area
@@ -1000,7 +1066,144 @@ multisampleCanvas =
 
 # ====================================================================================
 
+nyquistView =
+  pixelView
+  .slide
+      steps: 0
+      from: 19
+      to: 30
+    .reveal
+        stagger: [5]
+        delayEnter: 1
+        duration: 2
+      .cartesian
+          range: [[0, WIDTH], [0, 1], [-.5, .5]]
+          scale: [WIDTH / 2, .5, .5]
+          position: [WIDTH / 2, HEIGHT, .5]
+          rotation: [π / 2, 0, 0]
+        .grid
+          color: 0x606060
+          detailX: 10
+          detailY: 3
+          divideX: WIDTH
+          divideY: 3
 
+        .shader
+          id: "nyquistShader"
+          code: "uniform float frequency; void main() {};"
+        .step
+          duration: 2
+          script: [
+            [{frequency: .5}]
+            [{frequency: 1}]
+            [{frequency: 2}]
+            [{frequency: 3.478}]
+            [{frequency: .9}]
+            [{frequency: .5}]
+            [{frequency: 1}]
+          ]
+
+        .interval
+          length: WIDTH * 48
+          channels: 2
+          expr: (emit, x, i, t) ->
+            y = nyquistSampler x, t
+            x = nyquistX x
+            emit x, y
+        .line
+          width: 2
+          color: 0x3090FF
+          zBias: 20
+
+        .interval
+          length: WIDTH
+          channels: 2
+          expr: (emit, x, i, t) ->
+            y = nyquistSampler x, t
+            x = nyquistX x
+            emit x, y
+        .point
+          size: 5
+          color: 0xFFFFFF
+          zBias: 21
+          zIndex: 1
+          zOrder: -5
+        .point
+          size: 4
+          color: 0x3090FF
+          zBias: 22
+          zIndex: 1
+          zOrder: -6
+
+        .area
+          width:  3
+          height: 16
+        .interval
+          length: WIDTH * 32
+          minFilter: 'linear'
+          magFilter: 'linear'
+          expr: (emit, x, i, t) ->
+            x = nyquistXi x
+            y = nyquistSampler x, t
+            emit y, y, y, 1
+        .surface
+          color: 0xffffff
+          points: '<<'
+          map: '<'
+          zBias: -5
+
+        .slide
+            steps: 0
+            from: 6
+            to: 7
+          .reveal
+              duration: 3
+              delayEnter: 1
+              stagger: [0, -5]
+            .transform
+                position: [0, 1, -10000]
+                rotation: [π / 2, 0, 0]
+                scale: [1, 10000, 1]
+              .area
+                width:  3
+                height: 16
+                rangeX: [-WIDTH*3, WIDTH*4]
+              .interval
+                range: [-WIDTH*3, WIDTH*4]
+                length: WIDTH * 64
+                minFilter: 'linear'
+                magFilter: 'linear'
+                expr: (emit, x, i, t) ->
+                  x = nyquistXi x
+                  y = nyquistSampler x, t
+                  emit y, y, y, 1
+              .surface
+                color: 0xffffff
+                points: '<<'
+                map: '<'
+                zBias: -5
+            .end()
+          .end()
+        .end()
+
+        .transform
+            rotation: [π / 2, 0, 0]
+            scale: [1, HEIGHT, 1]
+          .area
+            width:  3
+            height: 3
+          .interval
+            length: WIDTH
+            expr: (emit, x, i, t) ->
+              y = nyquistSampler x, t
+              emit y, y, y, 1
+          .surface
+            color: 0xffffff
+            points: '<<'
+            map: '<'
+            zBias: 1
+
+nyquistShader = mathbox.select('#nyquistShader')[0]
 
 # ====================================================================================
 

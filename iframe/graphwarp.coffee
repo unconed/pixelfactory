@@ -9,6 +9,16 @@ window.mathbox = window.three =
     color: 'blue'
 window.three = three
 
+speed = 1
+three.on 'update', do ->
+  intra   = 1
+  current = 1
+  () ->
+    lerp = (a, b, f) -> a + (b - a) * f
+    intra   = lerp intra,   speed, .1
+    current = lerp current, intra,  .1
+    three.Time.set speed: current
+
 MathBox.DOM.Types.latex = MathBox.DOM.createClass
   render: (el, props, children) ->
     props.innerHTML = katex.renderToString children
@@ -46,7 +56,7 @@ intensitySteps =
   }
 
 orbit = (t) -> [Math.cos(t / 8) * .5 - 2, -.2, 1.8 + .25 * Math.sin(t / 8)]
-time  = (t) -> t / 4
+time  = (t) -> t / 3
 
 mathbox
   .set
@@ -59,7 +69,26 @@ present = mathbox.present
 present.slide()
 
 slide = present
-  .slide({ id: 'top' })
+  .clock()
+    .slide
+      id: 'top'
+
+slide
+  .step
+    target: '<<'
+    duration: 0
+    pace:     1
+    trigger:  4
+    stops:    [0, 1, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 4, 4, 5]
+    realtime: true
+    script: [
+      [{speed: 1}]
+      [{speed: 0}]
+      [{speed: 1}]
+      [{speed: .5}]
+      [{speed: .1}]
+      [{speed: 1}]
+    ]
 
 camera = slide
   .camera()
@@ -76,21 +105,7 @@ camera = slide
       {key: 6, props: {position: [-2.4, 1, 1.2], lookAt: [0, -.9, -1]}}
       {key: 6.2, props: {position: [-2.1, .7, 1.1], lookAt: [0, -1.2, -1]}}
     ]
-  .step
-    target:   'root'
-    duration: 0
-    pace:     1
-    trigger:  4
-    stops:    [0, 1, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 4, 4, 5]
-    realtime: true
-    script: [
-      [{speed: 1}]
-      [{speed: 0}]
-      [{speed: 1}]
-      [{speed: .5}]
-      [{speed: .1}]
-      [{speed: 1}]
-    ]
+
 
 warpShader =
 slide
@@ -418,7 +433,7 @@ polar
         vec3 c = warpVertex(getSample(xyz0)).xyz;
         vec3 r = warpVertex(getSample(xyz0 + vec4(1.0, 0.0, 0.0, 0.0))).xyz;
         vec3 u = warpVertex(getSample(xyz0 + vec4(0.0, 1.0, 0.0, 0.0))).xyz;
-        vec3 n = normalize(cross(r - c, u - c));
+        vec3 n = cross(r - c, u - c) * 24.0 * 24.0;
         return vec4(c - scale * n * xyzw.w, 0.0);
       }
       """
@@ -447,7 +462,7 @@ polar
       paddingWidth:  1
       paddingHeight: 1
     .vector
-      color: '#40C0FF'
+      color: '#47D0FF'
       #color: '#3090FF'
       zBias: 15
       end: true
@@ -497,7 +512,7 @@ polar
         vec4 xyz0 = vec4(xyzw.xyz, 0.0);
         vec3 c = warpVertex(getSample(xyz0)).xyz;
         vec3 r = warpVertex(getSample(xyz0 + vec4(1.0, 0.0, 0.0, 0.0))).xyz;
-        return vec4(c - normalize(c - r) * xyzw.w * .15, 0.0);
+        return vec4(c - (c - r) * 24.0 * xyzw.w * .15, 0.0);
       }
       """
     }, {
@@ -560,7 +575,7 @@ polar
         vec4 xyz0 = vec4(xyzw.xyz, 0.0);
         vec3 c = warpVertex(getSample(xyz0)).xyz;
         vec3 u = warpVertex(getSample(xyz0 + vec4(0.0, 1.0, 0.0, 0.0))).xyz;
-        return vec4(c + normalize(c - u) * xyzw.w * .15, 0.0);
+        return vec4(c + (c - u) * 24.0 * xyzw.w * .15, 0.0);
       }
       """
     }, {
@@ -789,30 +804,34 @@ view
 
     .scale
       axis: 1
-      divide: 2
+      divide: 1
+      nice: false
       origin: [0, π / 2, 0]
     .slice
-      width: [0, 0]
+      width: [1, 2]
     .format
       data: ["x"]
     .label
       color: 0x3080FF
     .scale
       axis: 2
-      divide: 2
+      divide: 1
+      nice: false
       origin: [0, π / 2, 0]
     .slice
-      width: [0, 0]
+      width: [1, 2]
     .format
       data: ["y"]
     .label
       color: 0x40A020
+      offset: [30, -30]
     .scale
       axis: 3
-      divide: 2
+      divide: 1
+      nice: false
       origin: [0, π / 2, 0]
     .slice
-      width: [0, 0]
+      width: [1, 2]
     .format
       data: ["z"]
     .label
@@ -822,6 +841,8 @@ window.onmessage = (e) ->
   {data} = e
   if data.type == 'slideshow'
     present.set 'index', data.i + 1
+  if data.type == 'speed'
+    speed = data.speed
 
 enlarge = (el, zoom) ->
   el.style.zoom = zoom

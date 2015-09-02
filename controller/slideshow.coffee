@@ -2,6 +2,7 @@
 
 IFRAME_UNLOAD = 150
 IFRAME_LOAD   = 150
+ANIMATE_TIME  = 300
 
 slideshow = (el, index, callback) ->
   steps  = process fetch el, '.slide'
@@ -63,6 +64,7 @@ show = (el, i, delta) ->
       release el, true
     el.timer = setTimeout () ->
         el.src = el.dataset.src
+        el.timer = null
       , IFRAME_LOAD
     el
 
@@ -82,6 +84,11 @@ prep = (el, back) ->
   el.classList.remove 'animate'
   el.classList.toggle 'slide-out', back
   el.classList.toggle 'slide-in', !back
+  clearTimeout el.timer if el.timer?
+  el.timer = setTimeout () ->
+      el.classList.remove 'animate'
+      el.timer = null
+    , ANIMATE_TIME
 
 release = (el, active) ->
   el.classList.toggle 'slide-active', active

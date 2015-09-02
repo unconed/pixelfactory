@@ -121,3 +121,12 @@ body.animate iframe.animate {
 body.animate iframe.slide-active {
   opacity: 1;
 }
+
+body.animate .animate .animate.slide-out:not(.slide-active) {
+  transition-delay: .3s;
+}
+
+body.animate .animate .animate.slide-out.slide-active {
+  transition-delay: 0s;
+  transition-duration: 0s;
+}
