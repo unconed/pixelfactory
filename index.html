@@ -66,6 +66,233 @@
 
         <!-- ============================================= -->
 
+        <section class="slide first" style="background: #fff">
+        
+          <div class="masthead middle"><div>
+            <h1 class="text-outline">Pixels</h1>
+          </div></div>
+
+        </section>
+
+        <!-- ============================================= -->
+
+        <section class="slide">
+
+          <iframe class="naked fill recessed" data-src="iframe/index.html#pixels"></iframe>
+        
+          <div class="slide"></div>
+
+          <div class="slide fill slide-zoom-in">
+            <div class="masthead middle absolute text-center"><div>
+              <p class="text-outline">            
+                $$ (\color{#3080FF}{x}, \color{#40A020}{y}) $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide fill" data-stay="3">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Bresenham Line Drawing</h4>
+            </div></div>
+          </div>
+          
+          <div class="slide"></div>
+          <div class="slide"></div>
+
+          <div class="slide fill" data-stay="1">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">True Color?</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Red Green Blue Primaries</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">8-bit per channel</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill slide-delay-1">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Blending = Linear Interpolation</h4>
+            </div></div>
+            <div class="masthead footer absolute text-background-heavy"><div>
+              <p class="text-outline">
+                $$
+                \begin{array}{ccc}
+                lerp(\color{#F08000}{a}, \color{#0090FF}{b}, \color{#40C090}{f}) = \color{#F08000}{a} + (\color{#0090FF}{b} - \color{#F08000}{a}) \cdot \color{#40C090}{t} &amp; &amp; \color{#40C090}{t} = [0...1]
+                \end{array}
+                $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Human Color Vision</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Rasterization</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Snap to Pixel</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Subpixel Accuracy</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Samples</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill slide-delay-3 slide-zoom-in">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Sampling</h4>
+            </div></div>
+            <div class="masthead middle absolute"><div>
+              <div class="padding-t-8">
+                <div class="grid2"><h4 class="text-outline">Vector World</h4></div>
+                <div class="grid2"><h4 class="text-outline">Raster World</h4></div>
+              </div>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Nearest Neighbour Filter</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Bilinear Filter</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Pixel Coverage?</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">SuperSampling x 4</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">MultiSampling x 4</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill slide-delay-1">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Aliasing - Sampling Theorem</h4>
+            </div></div>
+
+            <div class="masthead footer absolute text-background slide slide-zoom-out instant"><div>
+              <p class="text-outline">
+                $$
+                f = f_s / 4
+                $$
+              </p>
+            </div></div>
+
+            <div class="masthead footer absolute text-background slide slide-zoom-out"><div>
+              <p class="text-outline">
+                $$
+                f = f_s / 2
+                $$
+              </p>
+            </div></div>
+
+            <div class="masthead footer absolute text-background slide slide-zoom-out"><div>
+              <p class="text-outline">
+                $$
+                f = f_s \approx f_\text{DC}
+                $$
+              </p>
+            </div></div>
+
+            <div class="masthead footer absolute text-background slide slide-zoom-out"><div>
+              <p class="text-outline">
+                $$
+                f = 1.7 f_s \approx -0.3 f_s
+                $$
+              </p>
+            </div></div>
+
+            <div class="masthead footer absolute text-background slide slide-zoom-out"><div>
+              <p class="text-outline">
+                $$
+                f = 0.45 f_s
+                $$
+              </p>
+            </div></div>
+
+            <div class="masthead footer absolute text-background slide slide-zoom-out"><div>
+              <p class="text-outline">
+                $$
+                f = f_s / 4
+                $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide fill" data-stay="2">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">
+                <span class="text-normal text-regular text-pad">⬋</span>
+                Moiré Patterns
+                <span class="text-normal text-regular text-pad">⬊</span>
+              </h4>
+            </div></div>
+          </div>
+          
+          <div class="slide"></div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Depth Sorting</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Depth Buffer</h4>
+            </div></div>
+          </div>
+
+          <div class="slide"></div>
+          <div class="slide"></div>
+          <div class="slide"></div>
+          <div class="slide"></div>
+          <div class="slide"></div>
+          <div class="slide"></div>
+
+        </section>
+
+        <!-- ============================================= -->
+
         <section class="slide first">
         
           <div class="masthead middle"><div>
@@ -176,7 +403,7 @@
                 $$
                   \color{#9759d1}{\vec U}
                   = \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial u}}
-                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u} + \epsilon, \color{#2fb28c}{v}) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\epsilon}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u} + \varepsilon, \color{#2fb28c}{v}) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\varepsilon}
                 $$
               </p>
             </div></div>
@@ -185,7 +412,7 @@
                 $$
                   \color{#9759d1}{\vec U}
                   = \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial u}}
-                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u} + \epsilon, \color{#2fb28c}{v}) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\epsilon}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u} + \varepsilon, \color{#2fb28c}{v}) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\varepsilon}
                 $$
               </p>
             </div></div>
@@ -200,7 +427,7 @@
                 $$
                   \color{#2fb28c}{\vec V}
                   = \frac{\color{#18487F}{\partial \vec p}}{\color{#2fb28c}{\partial v}}
-                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u}, \color{#2fb28c}{v} + \epsilon) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\epsilon}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u}, \color{#2fb28c}{v} + \varepsilon) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\varepsilon}
                 $$
               </p>
             </div></div>
@@ -209,7 +436,7 @@
                 $$
                   \color{#2fb28c}{\vec V}
                   = \frac{\color{#18487F}{\partial \vec p}}{\color{#2fb28c}{\partial v}}
-                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u}, \color{#2fb28c}{v} + \epsilon) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\epsilon}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u}, \color{#2fb28c}{v} + \varepsilon) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\varepsilon}
                 $$
               </p>
             </div></div>
@@ -461,53 +688,6 @@
             </div></div>
           </div>
 
-        </section>
-        <!-- ============================================= -->
-
-        <section class="slide first" style="background: #fff">
-        
-          <div class="masthead middle"><div>
-            <h1 class="text-outline">Pixels</h1>
-          </div></div>
-
-        </section>
-
-        <!-- ============================================= -->
-
-        <section class="slide">
-
-          <iframe class="naked fill recessed" data-src="iframe/index.html#pixels"></iframe>
-        
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-        
         </section>
       
       </div>

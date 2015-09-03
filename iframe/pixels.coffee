@@ -2,7 +2,7 @@ window.mathbox =
 {mathbox, three} = mathBox
   plugins: ['core', 'cursor']
   size:
-    scale: .5
+    scale: 1
   time:
     delay: 10
   mathbox:
@@ -26,8 +26,10 @@ three.renderer.setClearColor new THREE.Color(0xFFFFFF), 1.0
 
 # ====================================================================================
 
-deepred = new THREE.Color(0xa00000)
-deeperred = new THREE.Color(0x800000)
+deepred    = new THREE.Color(0xa00000)
+deeperred  = new THREE.Color(0x800000)
+blue       = new THREE.Color(0x3090FF)
+deeperblue = new THREE.Color(0x000080)
 
 # ====================================================================================
 
@@ -87,6 +89,12 @@ nyquistSampler = (x, t) ->
 
 formatNumber = MathBox.Util.Pretty.number()
 
+triangleRel = (emit, i, t) ->
+  theta = i * τ / 3 + t / 8
+  x = Math.sin(theta) * .75
+  y = Math.cos(theta) * .75
+  emit x, y, 0
+
 WIDTH  = 32
 HEIGHT = 20
 ASPECT = WIDTH / HEIGHT
@@ -98,11 +106,32 @@ mathbox
   scale: 720
   focus: 4
 
+depthVertex =
+  mathbox
+  .shader
+    code: """
+    varying float vDepth;
+    vec4 getPosition(vec4 xyzw, inout vec4 stpq) {
+      float z = xyzw.z * -1.0;
+      vDepth = z * .5;
+      return xyzw;
+    }
+    """
+
+depthFragment =
+  mathbox
+  .shader
+    code: """
+    varying float vDepth;
+    vec4 getFragDepth(vec4 rgba, inout vec4 stpq) {
+      return vec4(vec3(vDepth), 1.0);
+    }
+    """
+
 present =
   mathbox
   .present
     index: 0
-    index: 17
 
 present.slide()
 
@@ -110,7 +139,8 @@ present.slide()
 
 pixelSlide =
   present
-  .slide()
+  .slide
+    to: 30
 
 pixelView =
   pixelSlide
@@ -123,24 +153,33 @@ pixelView =
     duration: 1
     pace: 1
     rewind: 2
-    stops: [0, 1, 1.5, 2.5, 4.5, 4.5, 4.5, 4.5, 5.5, 7.5, 9.5, 10.5, 10.5, 10.5, 12, 12, 12, 12, 12, 12, 13]
+    stops: [0, 1, 1.5, 2.5, 4.5, 4.5, 4.5, 4.5, 5.5, 7.5, 9.5, 9.5, 10.5, 10.5, 10.5, 12, 12, 12, 12, 12, 12, 13, 14, 15, 15, 15]
     script: {
-      0:   [{position: [0, 0, 4.5], rotation: [0, 0, 0], quaternion: [0, 0, 0, 1]}]
-      1:   [{position: [0, .2, 2]}]
-      1.5: [{position: [0, .2, .75]}]
-      2.5: [{position: [0, -1.1, .6], rotation: [1, 0, .3]}]
-      4.5: [{position: [0, 0, 4.5], rotation: [0, 0, 0], lookAt: null}]
-      5.5:   [{position: [0, 0, 3.5], rotation: [0, 0, 0], lookAt: [0, 0, 0]}]
-      7.5:   [{position: [2.5, 0, 0]}]
-      9.5:   [{position: [0, 0, 3.5]}]
-      10.5:  [{position: [0, .4, 1.2], lookAt: [0, .4, 0]}]
-      12:    [{position: [0, .3, .4], lookAt: [0, .3, 0], quaternion: [.5, 0, 0, .833]}]
-      13:    [{position: [0, 0, .5], lookAt: [0, 0, 0], quaternion: [.65, 0, 0, .76]}]
+      0:    [{position: [0, 0, 4.5], rotation: [0, 0, 0], quaternion: [0, 0, 0, 1]}]
+      1:    [{position: [0, .2, 2]}]
+      1.5:  [{position: [0, .2, .75]}]
+      2.5:  [{position: [0, -1.1, .6], rotation: [1, 0, .3]}]
+      4.5:  [{position: [0, 0, 4.5], rotation: [0, 0, 0], lookAt: null}]
+      5.5:  [{position: [0, 0, 3.5], rotation: [0, 0, 0], lookAt: [0, 0, 0]}]
+      7.5:  [{position: [2.5, 0, 0]}]
+      9.5:  [{position: [0, 0, 3.5]}]
+      10.5: [{position: [0, .4, 1.2], lookAt: [0, .4, 0]}]
+      12:   [{position: [0, .3, .4], lookAt: [0, .3, 0], quaternion: [.5, 0, 0, .833]}]
+      13:   [{quaternion: [.65, 0, 0, .76], lookAt: [0, 0, 0], position: [0, 0, .5]}]
+      14:   [{quaternion: [.65, 0, 0, .76], lookAt: [0, 0, 0]}, {position: ((t) -> [Math.cos(t) * .13, 0, .5])}]
+      15:   [{quaternion: [0, 0, 0, 1], position: [0, 0, 4.5], lookAt: [0, 0, 0]}]
     }
 
   .cartesian
       range: [[0, WIDTH], [0, HEIGHT], [-HEIGHT / 2, HEIGHT / 2]]
       scale: [WIDTH / HEIGHT, 1, 1]
+    .step
+      trigger: 29
+      duration: 2
+      script: [
+        {rotation: [0, 0, 0], position: [0, 0, 0]}
+        {rotation: [-τ / 6, 0, 0], position: [0, -.4, 0]}
+      ]
 
 pixelView
 .slide
@@ -165,6 +204,19 @@ pixelView
 # ====================================================================================
 
 pixelRTT =
+  pixelView
+  .rtt
+    width:  WIDTH
+    height: HEIGHT
+    minFilter: 'nearest'
+    magFilter: 'nearest'
+
+pixelRTTLinear =
+  pixelView.memo
+    minFilter: 'linear'
+    magFilter: 'linear'
+
+pixelRTTDepth =
   pixelView
   .rtt
     width:  WIDTH
@@ -223,8 +275,19 @@ pixelRTT
   position: [0, 0, 1]
   fov: 90
 
+pixelRTTDepth
+.camera
+  position: [0, 0, 1]
+  fov: 90
+
 pixelGrid =
   pixelRTT
+  .cartesian
+      range: [[0, WIDTH], [0, HEIGHT], [-HEIGHT / 2, HEIGHT / 2]]
+      scale: [WIDTH / HEIGHT, 1, 1]
+
+pixelGridDepth =
+  pixelRTTDepth
   .cartesian
       range: [[0, WIDTH], [0, HEIGHT], [-HEIGHT / 2, HEIGHT / 2]]
       scale: [WIDTH / HEIGHT, 1, 1]
@@ -278,6 +341,18 @@ pixelCanvas =
       .surface
         color: 0xFFFFFF
         map: pixelRTT
+
+      .slide
+          steps: 0
+          from:  16
+          to:    17
+        .reveal()
+          .area
+            width:  2
+            height: 2
+          .surface
+            color: 0xFFFFFF
+            map: pixelRTTLinear
     .end()
   .end()
 
@@ -643,7 +718,7 @@ triangleFaceData =
   .slide
       steps: 0
       from: 12
-      to: 19
+      to: 20
     .reveal
         duration: 1
       .array
@@ -665,7 +740,7 @@ triangleOutline =
   .slide
       steps: 0
       from: 12
-      to: 19
+      to: 20
     .reveal
         duration: 1
       .transform()
@@ -820,7 +895,7 @@ triangleSamples =
   .slide
       steps: 0
       from: 13
-      to: 19
+      to: 20
     .reveal
         duration: 1
         stagger: [3, 3]
@@ -836,7 +911,7 @@ triangleSamples =
           return
 
       .step
-        trigger: 4
+        trigger: 5
         duration: 1
         script: [
           [{
@@ -896,7 +971,7 @@ triangleSamples =
         }
         """
       .step
-        trigger: 5
+        trigger: 6
         duration: 1
         script: [
           [{multisample: 0}]
@@ -905,7 +980,7 @@ triangleSamples =
       .resample()
       .slice()
       .step
-        trigger: 4,
+        trigger: 5,
         duration: 1
         script: {
           0:     [{items: [0, 1]}]
@@ -924,7 +999,7 @@ triangleSamples =
               emit .5, .5, .5, 1
 
       .step
-        trigger: 4
+        trigger: 5
         duration: 1
         script: [
           [{
@@ -953,7 +1028,7 @@ triangleSamples =
 
       .slice()
       .step
-        trigger: 4,
+        trigger: 5,
         duration: 1
         script: {
           0:     [{items: [0, 1]}]
@@ -980,7 +1055,7 @@ triangleSamplePoint =
       zBias: 6
       zOrder: -2
     .step
-      trigger: 4,
+      trigger: 5,
       duration: 1
       script: {
         0: [{size: 10.5}]
@@ -1053,8 +1128,8 @@ multisampleCanvas =
   pixelView
   .slide
       steps: 0
-      from: 17
-      to: 19
+      from: 18
+      to: 20
     .reveal
         duration: 1
       .area
@@ -1070,11 +1145,12 @@ nyquistView =
   pixelView
   .slide
       steps: 0
-      from: 19
-      to: 30
+      from: 20
+      to: 27
     .reveal
         stagger: [5]
         delayEnter: 1
+        delayExit:  .5
         duration: 2
       .cartesian
           range: [[0, WIDTH], [0, 1], [-.5, .5]]
@@ -1155,10 +1231,11 @@ nyquistView =
         .slide
             steps: 0
             from: 6
-            to: 7
+            to: 8
           .reveal
               duration: 3
               delayEnter: 1
+              delayExit:  .5
               stagger: [0, -5]
             .transform
                 position: [0, 1, -10000]
@@ -1204,6 +1281,187 @@ nyquistView =
             zBias: 1
 
 nyquistShader = mathbox.select('#nyquistShader')[0]
+
+# ====================================================================================
+
+triangleFace1 =
+  pixelGrid
+  .slide
+      steps: 0
+      from: 28
+      to: 31
+    .reveal
+        duration: 1
+      .array
+        channels: 3
+        length: 3
+        expr: triangleRel
+      .transpose
+        order: 'yzwx'
+      .transform
+          position: [14, 10, 1]
+          scale: [10, 10]
+        .step
+          duration: 1
+          trigger: 2
+          script: [
+            [{rotation: [0, 0, 0]}]
+            [{rotation: [0, .4, 0]}]
+          ]
+        .face
+          color: deepred
+          zBias: 5
+
+triangleFace2 =
+  pixelGrid
+  .slide
+      steps: 0
+      from: 28
+      to: 31
+    .reveal
+        duration: 1
+      .array
+        channels: 3
+        length: 3
+        expr: triangleRel
+      .transpose
+        order: 'yzwx'
+      .transform
+          position: [18, 10, -1]
+          scale: [10, 10]
+        .step
+          duration: 1
+          trigger: 2
+          script: [
+            [{rotation: [0, 0, 0]}]
+            [{}, {rotation: (t) -> [0, Math.cos(t), 0]}]
+          ]
+        .face
+          color: blue
+          zBias: 5
+
+# ====================================================================================
+
+triangleFaceDepth1 =
+  pixelGridDepth
+  .slide
+      steps: 0
+      from: 29
+      to: 31
+    .reveal
+        delayEnter: 1
+        duration: 1
+
+      .vertex
+          pass: 'eye'
+          shader: depthVertex
+
+        .fragment
+            shader: depthFragment
+
+
+          .array
+            channels: 3
+            length: 3
+            expr: triangleRel
+          .transpose
+            order: 'yzwx'
+          .transform
+              position: [14, 10, 1]
+              scale: [10, 10]
+            .step
+              duration: 1
+              script: [
+                [{rotation: [0, 0, 0]}]
+                [{rotation: [0, .4, 0]}]
+              ]
+            .face
+              color: deepred
+              zBias: 5
+
+triangleFaceDepth2 =
+  pixelGridDepth
+  .slide
+      steps: 0
+      from: 29
+      to: 31
+    .reveal
+        delayEnter: 1
+        duration: 1
+
+      .vertex
+          pass: 'eye'
+          shader: depthVertex
+
+        .fragment
+            shader: depthFragment
+
+          .array
+            channels: 3
+            length: 3
+            expr: triangleRel
+          .transpose
+            order: 'yzwx'
+          .transform
+              position: [18, 10, -1]
+              scale: [10, 10]
+            .step
+              duration: 1
+              script: [
+                [{rotation: [0, 0, 0]}]
+                [{}, {rotation: (t) -> [0, Math.cos(t), 0]}]
+              ]
+            .face
+              color: blue
+              zBias: 5
+
+# ====================================================================================
+
+pixelCanvasDepth =
+  pixelView
+  .slide
+      steps: 0
+      from: 29
+      to: 31
+    .reveal
+        stagger: [5]
+        duration: 1
+        delay: 1
+      .area
+        width:  WIDTH  * 2 + 1
+        height: HEIGHT * 2 + 1
+        expr: (emit, x, y, i, j) ->
+          di = i % 2
+          dj = j % 2
+
+          emit x + .499 * di, y + .499 * dj, 0
+      .shader
+        sources: pixelRTTDepth
+        code: """
+        uniform float width;
+        uniform float height;
+        vec4 getColorSample(vec4 xyzw);
+        vec4 getPositionSample(vec4 xyzw);
+        vec4 getSample(vec4 xyzw) {
+          vec4 pos = getPositionSample(xyzw);
+          xyzw = (xyzw - mod(xyzw, 2.0)) / 2.0;
+          vec4 rgba = getColorSample(xyzw);
+          return vec4(pos.xy, 16.0 * (1.0 - rgba.r), 0.0);
+        }
+        """
+        width:  WIDTH
+        height: HEIGHT
+      .resample()
+      .surface
+        color: 0xFFFFFF
+        map: pixelRTT
+        zBias: 15
+      .surface
+        color: 0x000000
+        lineX: true
+        lineY: true
+        fill: false
+        zBias: 17
 
 # ====================================================================================
 

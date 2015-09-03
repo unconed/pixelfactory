@@ -121,12 +121,20 @@ h6 {
   background: rgba(255, 255, 255, .5);
 }
 
+.text-background-heavy {
+  background: rgba(255, 255, 255, .85);
+}
+
 .text-pad {
   padding: 0 10px;
 }
 
 .text-normal {
   font-weight: normal;
+}
+
+.text-regular {
+  font-style: normal;
 }
 
 
