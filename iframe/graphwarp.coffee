@@ -851,9 +851,9 @@ enlarge = (el, zoom) ->
     for svg in el.querySelectorAll('svg')
       svg.setAttribute 'height', svg.getAttribute('height') * zoom
 
-enter = (el) ->
+enter = (el, delay) ->
   setTimeout () ->
-    el.classList.add 'slide-delay-2'
+    el.classList.add "slide-delay-#{delay}"
     el.classList.add 'slide-active'
 
 three.on 'mathbox/progress', (e) ->
@@ -868,14 +868,21 @@ getOverlays = () ->
 
 present.on 'change', (e) ->
   step = present[0].get('index')
-  if step == 19 or step == 21
-    el.remove() for el in getOverlays()
+  el.remove() for el in getOverlays()
+
   if step == 20
     surface = mathbox.select('vector')[0]
     surface?.controller.objects[0].renders[0].material.fragmentGraph.inspect()
     for el in getOverlays()
       enlarge el, 2
-      enter   el
+      enter   el, 2
+
+  if step == 21
+    surface = mathbox.select('vector')[0]
+    surface?.controller.objects[0].renders[0].material.vertexGraph.inspect()
+    for el in getOverlays()
+      enlarge el, 1
+      enter   el, 0
 
 if window == top
   window.onkeydown = (e) ->

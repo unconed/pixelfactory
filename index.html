@@ -36,7 +36,7 @@
         
           <div class="masthead middle"><div>
             <h1 class="text-giant text-outline">The Pixel Factory</h1>
-            <p class="text-muted text-outline">WebGL, GPUs and Math</p>
+            <p class="text-muted text-outline">WebGL, GPUs and Math(Box)</p>
           </div></div>
 
           <div class="masthead footer"><div>
@@ -60,7 +60,8 @@
 
         <section class="slide">
 
-          <iframe class="naked fill" data-src="http://acko.net/"></iframe>
+          <!--<iframe class="naked fill" data-src="http://acko.net/"></iframe>-->
+          <iframe class="naked fill" data-src="http://localhost:4000"></iframe>
         
         </section>
 
@@ -134,7 +135,7 @@
 
           <div class="slide fill">
             <div class="masthead header absolute"><div>
-              <h4 class="text-outline">Human Color Vision</h4>
+              <h4 class="text-outline">Human Color Vision - Additive</h4>
             </div></div>
           </div>
 
@@ -268,8 +269,12 @@
             </div></div>
           </div>
           
-          <div class="slide"></div>
-
+         <div class="slide fill">
+           <div class="masthead middle absolute"><div>
+             <h4 class="text-outline">Need hundreds of samples per pixel<br><span class="text-normal">(so we do it ahead of time)</span></h4>
+           </div></div>
+         </div>
+ 
           <div class="slide fill">
             <div class="masthead header absolute"><div>
               <h4 class="text-outline">Depth Sorting</h4>
@@ -278,16 +283,21 @@
 
           <div class="slide fill">
             <div class="masthead header absolute"><div>
-              <h4 class="text-outline">Depth Buffer</h4>
+              <h4 class="text-outline">Depth/Z-Buffer</h4>
             </div></div>
           </div>
 
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
-          <div class="slide"></div>
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Visibility Per Sample</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Z-Buffer is Opaque Only</h4>
+            </div></div>
+          </div>
 
         </section>
 
@@ -316,7 +326,7 @@
           <div class="slide"></div>
 
           <div class="slide masthead footer"><div>
-            <h2 class="text-outline text-brand">MathBox 2</h2>
+            <h2 class="text-outline text-brand">MathBox 2 - Bring your own GLSL</h2>
           </div></div>
         
           <div class="slide fill slide-zoom-in" data-stay="3">
@@ -591,6 +601,10 @@
             <h3 class="text-outline padding-b-1 text-brand">Pixel Shader</h3>
             <h4 class="text-outline padding-b-2">1920 ⨉ 1080 pixels @ 60fps = 124 million calls / second</h4>
           </div></div>
+
+          <div class="slide masthead footer"><div>
+            <h3 class="text-outline text-brand">Generated Vertex Shader</h3>
+          </div></div>
         </section>
 
         <!-- ============================================= -->
@@ -687,6 +701,12 @@
               <h4 class="text-outline">Supercomputing is now background radiation</h4>
             </div></div>
           </div>
+
+        </section>
+      
+        <!-- ============================================= -->
+
+        <section class="slide fill slide-zoom-in slow">
 
         </section>
       

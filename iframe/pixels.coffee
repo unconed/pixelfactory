@@ -28,8 +28,10 @@ three.renderer.setClearColor new THREE.Color(0xFFFFFF), 1.0
 
 deepred    = new THREE.Color(0xa00000)
 deeperred  = new THREE.Color(0x800000)
-blue       = new THREE.Color(0x3090FF)
 deeperblue = new THREE.Color(0x000080)
+
+red        = new THREE.Color(0xC02050)
+blue       = new THREE.Color(0x3090FF)
 
 # ====================================================================================
 
@@ -140,7 +142,7 @@ present.slide()
 pixelSlide =
   present
   .slide
-    to: 30
+    to: 31
 
 pixelView =
   pixelSlide
@@ -1243,7 +1245,7 @@ nyquistView =
                 scale: [1, 10000, 1]
               .area
                 width:  3
-                height: 16
+                height: 128
                 rangeX: [-WIDTH*3, WIDTH*4]
               .interval
                 range: [-WIDTH*3, WIDTH*4]
@@ -1462,6 +1464,41 @@ pixelCanvasDepth =
         lineY: true
         fill: false
         zBias: 17
+
+# ====================================================================================
+
+present
+  .slide
+      steps: 0
+      from: 32
+      to: 33
+    .reveal
+        stagger: [2, 2]
+        delayEnter: 2
+      .cartesian(
+        {}, {rotation: (t) -> [0, t, 0]}
+      )
+        .area
+          width:  2
+          height: 2
+        .transform
+            position: [0, 0, .2]
+          .surface
+            color: blue
+            opacity: .5
+          .end()
+        .transform
+            position: [0, 0, 0]
+          .surface
+            color: 0
+            opacity: .5
+          .end()
+        .transform
+            position: [0, 0, -.2]
+          .surface
+            color: red
+            opacity: .5
+          .end()
 
 # ====================================================================================
 
