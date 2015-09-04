@@ -79,7 +79,7 @@ slide
     duration: 0
     pace:     1
     trigger:  4
-    stops:    [0, 1, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 4, 4, 5]
+    stops:    [0, 1, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 4, 4, 4, 5]
     realtime: true
     script: [
       [{speed: 1}]
@@ -341,6 +341,7 @@ subslide
         detailY: 128
         crossed: true
 
+view.slide().end()
 view.slide().end()
 view.slide().end()
 view.slide().end()
@@ -870,14 +871,14 @@ present.on 'change', (e) ->
   step = present[0].get('index')
   el.remove() for el in getOverlays()
 
-  if step == 20
+  if step == 21
     surface = mathbox.select('vector')[0]
     surface?.controller.objects[0].renders[0].material.fragmentGraph.inspect()
     for el in getOverlays()
       enlarge el, 2
       enter   el, 2
 
-  if step == 21
+  if step == 22
     surface = mathbox.select('vector')[0]
     surface?.controller.objects[0].renders[0].material.vertexGraph.inspect()
     for el in getOverlays()

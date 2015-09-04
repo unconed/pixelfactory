@@ -2,7 +2,7 @@
 var controls;
 
 controls = function(els, slideshow) {
-  var FOOTER, HEIGHT, WIDTH, next, ping, prev, slides, squeeze;
+  var FOOTER, HEIGHT, WIDTH, next, ping, prev, setSpeed, slides, squeeze;
   prev = els.querySelector('.prev');
   next = els.querySelector('.next');
   prev.onclick = slideshow.prev;
@@ -17,7 +17,22 @@ controls = function(els, slideshow) {
       return typeof slideshow[name = d.method] === "function" ? slideshow[name]() : void 0;
     }
   };
+  setSpeed = function(e) {
+    var i, iframe, len, ref, ref1, results, speed;
+    speed = e.shiftKey ? .2 : 1;
+    ref = document.querySelectorAll('iframe');
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      iframe = ref[i];
+      results.push((ref1 = iframe.contentWindow) != null ? ref1.postMessage({
+        type: 'speed',
+        speed: speed
+      }, '*') : void 0);
+    }
+    return results;
+  };
   window.onkeydown = function(e) {
+    setSpeed(e);
     switch (e.keyCode) {
       case 37:
       case 38:
@@ -26,6 +41,9 @@ controls = function(els, slideshow) {
       case 40:
         return slideshow.next();
     }
+  };
+  window.onkeyup = function(e) {
+    return setSpeed(e);
   };
   slides = document.querySelector('.slides');
   squeeze = document.querySelector('.squeeze');
@@ -89,13 +107,15 @@ root.App = {
 
 
 },{"./controls":1,"./slideshow":3}],3:[function(require,module,exports){
-var IFRAME_LOAD, IFRAME_UNLOAD, clicker, collapse, difference, expand, fetch, filter, flatten, hide, match, notify, parents, patch, prep, process, ref1, release, reset, show, slides, slideshow, sources, tag, traverse, trigger, unique;
+var ANIMATE_TIME, IFRAME_LOAD, IFRAME_UNLOAD, clicker, collapse, difference, expand, fetch, filter, flatten, hide, match, notify, parents, patch, prep, process, ref1, release, reset, show, slides, slideshow, sources, tag, traverse, trigger, unique;
 
 ref1 = require('lodash'), difference = ref1.difference, flatten = ref1.flatten, unique = ref1.unique;
 
 IFRAME_UNLOAD = 150;
 
 IFRAME_LOAD = 150;
+
+ANIMATE_TIME = 300;
 
 slideshow = function(el, index, callback) {
   var embeds, l, last, len, len1, m, open, step, steps;
@@ -222,7 +242,8 @@ show = function(el, i, delta) {
       return release(el, true);
     };
     el.timer = setTimeout(function() {
-      return el.src = el.dataset.src;
+      el.src = el.dataset.src;
+      return el.timer = null;
     }, IFRAME_LOAD);
     return el;
   }) : void 0;
@@ -254,7 +275,14 @@ hide = function(el, i, delta) {
 prep = function(el, back) {
   el.classList.remove('animate');
   el.classList.toggle('slide-out', back);
-  return el.classList.toggle('slide-in', !back);
+  el.classList.toggle('slide-in', !back);
+  if (el.timer != null) {
+    clearTimeout(el.timer);
+  }
+  return el.timer = setTimeout(function() {
+    el.classList.remove('animate');
+    return el.timer = null;
+  }, ANIMATE_TIME);
 };
 
 release = function(el, active) {

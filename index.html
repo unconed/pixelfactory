@@ -67,7 +67,7 @@
 
         <!-- ============================================= -->
 
-        <section class="slide first" style="background: #fff">
+        <section class="slide" style="background: #fff">
         
           <div class="masthead middle"><div>
             <h1 class="text-outline">Pixels</h1>
@@ -126,7 +126,7 @@
               <p class="text-outline">
                 $$
                 \begin{array}{ccc}
-                lerp(\color{#F08000}{a}, \color{#0090FF}{b}, \color{#40C090}{f}) = \color{#F08000}{a} + (\color{#0090FF}{b} - \color{#F08000}{a}) \cdot \color{#40C090}{t} &amp; &amp; \color{#40C090}{t} = [0...1]
+                lerp(\color{#F08000}{a}, \color{#0090FF}{b}, \color{#40C090}{t}) = \color{#F08000}{a} + (\color{#0090FF}{b} - \color{#F08000}{a}) \cdot \color{#40C090}{t} &amp; &amp; \color{#40C090}{t} = [0...1]
                 \end{array}
                 $$
               </p>
@@ -135,7 +135,11 @@
 
           <div class="slide fill">
             <div class="masthead header absolute"><div>
-              <h4 class="text-outline">Human Color Vision - Additive</h4>
+              <h4 class="text-outline">Human Color Vision is Additive</h4>
+            </div></div>
+
+            <div class="masthead footer absolute"><div>
+              <h4 class="text-outline">(but sRGB is not linear)</h4>
             </div></div>
           </div>
 
@@ -221,7 +225,7 @@
             <div class="masthead footer absolute text-background slide slide-zoom-out"><div>
               <p class="text-outline">
                 $$
-                f = f_s / 2
+                f = f_s / 2 = f_\text{nyquist}
                 $$
               </p>
             </div></div>
@@ -237,7 +241,7 @@
             <div class="masthead footer absolute text-background slide slide-zoom-out"><div>
               <p class="text-outline">
                 $$
-                f = 1.7 f_s \approx -0.3 f_s
+                f = 1.7 f_s
                 $$
               </p>
             </div></div>
@@ -271,7 +275,7 @@
           
          <div class="slide fill">
            <div class="masthead middle absolute"><div>
-             <h4 class="text-outline">Need hundreds of samples per pixel<br><span class="text-normal">(so we do it ahead of time)</span></h4>
+             <h4 class="text-outline">Need 100s of samples per pixel<br><span class="text-normal">(downsize ahead of time)</span></h4>
            </div></div>
          </div>
  
@@ -295,15 +299,15 @@
 
           <div class="slide fill">
             <div class="masthead header absolute"><div>
-              <h4 class="text-outline">Z-Buffer is Opaque Only</h4>
+              <h4 class="text-outline">Z-Buffer - Solid Surfaces Only</h4>
             </div></div>
           </div>
 
         </section>
-
+        
         <!-- ============================================= -->
 
-        <section class="slide first">
+        <section class="slide">
         
           <div class="masthead middle"><div>
             <h1 class="text-outline">Graphics Processing Unit</h1>
@@ -520,7 +524,7 @@
 
           <div class="slide masthead footer text-background"><div>
             <img src="img/glsl-warp-normal.png" alt="GLSL Vertex Shader Code - Warping Normals" />
-            <h4 class="text-outline padding-b-2">~2.5 x 676,158 vertices @ 60fps = ~101 million calls / second</h4>
+            <h4 class="text-outline padding-b-2">~2.5 x 850,104 vertices @ 60fps = ~127 million calls / second</h4>
             <h6 class="text-outline padding-b-2">(including vector visualization)</h6>
           </div></div>
 
@@ -587,6 +591,142 @@
                    \color{#9759d1}{{U_\color{#C02050}{z}}} &amp; 
                    \color{#2fb28c}{{V_\color{#C02050}{z}}} &amp; 
                    \color{#d08040}{{W_\color{#C02050}{z}}}
+                   
+                   \end{array}
+                   \right]    
+                               
+                $$
+    
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Affine vs Projective Matrix</h4>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fill grid2">
+                
+                $$
+                
+                   \left[
+                   \begin{array}{ccc}
+
+                   \color{#9759d1}{{U_\color{#3080FF}{x}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#3080FF}{x}}} &amp; 
+                   \color{#d08040}{{W_\color{#3080FF}{x}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#40A020}{y}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#40A020}{y}}} &amp; 
+                   \color{#d08040}{{W_\color{#40A020}{y}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#C02050}{z}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#C02050}{z}}} &amp; 
+                   \color{#d08040}{{W_\color{#C02050}{z}}}
+                   
+                   \end{array}
+                   \right]    
+                               
+                $$
+    
+              </p>
+              <p class="text-outline-fill grid2">
+                
+                $$
+                
+                   \left[
+                   \begin{array}{cccc}
+
+                   \color{#9759d1}{{U_\color{#3080FF}{x}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#3080FF}{x}}} &amp; 
+                   \color{#d08040}{{W_\color{#3080FF}{x}}} &amp;
+                   \color{#18487F}{p_\color{#3080FF}{x}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#40A020}{y}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#40A020}{y}}} &amp; 
+                   \color{#d08040}{{W_\color{#40A020}{y}}} &amp;
+                   \color{#18487F}{p_\color{#40A020}{y}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#C02050}{z}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#C02050}{z}}} &amp; 
+                   \color{#d08040}{{W_\color{#C02050}{z}}} &amp;
+                   \color{#18487F}{p_\color{#C02050}{z}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#487F18}{w}}} &amp;
+                   \color{#2fb28c}{{V_\color{#487F18}{w}}} &amp;
+                   \color{#d08040}{{W_\color{#487F18}{w}}} &amp;
+                   1
+                   
+                   \end{array}
+                   \right]    
+                               
+                $$
+    
+              </p>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fix grid2">
+                
+                $$
+
+                   \left[
+                   \begin{array}{ccc}
+
+                   \color{#9759d1}{{U_\color{#3080FF}{x}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#3080FF}{x}}} &amp; 
+                   \color{#d08040}{{W_\color{#3080FF}{x}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#40A020}{y}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#40A020}{y}}} &amp; 
+                   \color{#d08040}{{W_\color{#40A020}{y}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#C02050}{z}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#C02050}{z}}} &amp; 
+                   \color{#d08040}{{W_\color{#C02050}{z}}}
+                   
+                   \end{array}
+                   \right]    
+                               
+                $$
+    
+              </p>
+              <p class="text-outline-fix grid2">
+                
+                $$
+                
+                   \left[
+                   \begin{array}{cccc}
+
+                   \color{#9759d1}{{U_\color{#3080FF}{x}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#3080FF}{x}}} &amp; 
+                   \color{#d08040}{{W_\color{#3080FF}{x}}} &amp;
+                   \color{#18487F}{p_\color{#3080FF}{x}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#40A020}{y}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#40A020}{y}}} &amp; 
+                   \color{#d08040}{{W_\color{#40A020}{y}}} &amp;
+                   \color{#18487F}{p_\color{#40A020}{y}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#C02050}{z}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#C02050}{z}}} &amp; 
+                   \color{#d08040}{{W_\color{#C02050}{z}}} &amp;
+                   \color{#18487F}{p_\color{#C02050}{z}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#48187F}{w}}} &amp;
+                   \color{#2fb28c}{{V_\color{#48187F}{w}}} &amp;
+                   \color{#d08040}{{W_\color{#48187F}{w}}} &amp;
+                   1
                    
                    \end{array}
                    \right]    
@@ -706,10 +846,133 @@
       
         <!-- ============================================= -->
 
-        <section class="slide fill slide-zoom-in slow">
+        <section class="slide" style="background: #fff">
+        
+          <div class="masthead middle"><div>
+            <h1 class="text-outline">WebGL</h1>
+          </div></div>
 
         </section>
-      
+
+        <section class="slide">
+
+          <div class="masthead bottom absolute clip recessed text-center"><div>
+            <div class="padding-b-4"><img src="img/loading.png" alt="Loading" title="Loading" width="200" /></div>
+            <div><img src="img/createshader.png" alt="Create Shader" title="Create Shader" width="800" /></div>
+          </div></div>
+          
+          <div class="masthead header absolute"><div>
+            <h4 class="text-outline">Synchronous Shader Compile</h4>
+          </div></div>
+
+        </section>
+          
+        <section class="slide">
+
+          <div class="masthead bottom absolute clip recessed text-center"><div>
+            <img class="padding-b-8" src="img/floatingpoint.png" alt="Floating Point Readback" title="Floating Point Readback" width="1200" />
+          </div></div>
+          
+          <div class="masthead header absolute"><div>
+            <h4 class="text-outline">Floating Point Readback<br>(32-bit float → 32-bit RGBA)</h4>
+          </div></div>
+
+        </section>
+
+        <section class="slide">
+
+          <div class="masthead bottom absolute clip recessed text-center"><div>
+            <img src="img/mecha_shot1.png" alt="Order Independent Transparency" title="Order Independent Transparency" />
+          </div></div>
+          
+          <div class="masthead header absolute"><div>
+            <h4 class="text-outline">Multisampling or Post-Processing:<br>Pick One</h4>
+          </div></div>
+
+          <div class="masthead footer absolute"><div>
+            <h4 class="text-outline">(Order Independent Transparency)</h4>
+          </div></div>
+
+        </section>
+          
+        <section class="slide">
+
+          <div class="fill clip recessed">
+            <img src="img/pinocchio.jpg" alt="Pinnochio" title="Pinnochio" />
+          </div>
+          
+          <div class="masthead header absolute"><div>
+            <h4 class="text-outline">I wanna be a real API!</h4>
+          </div></div>
+
+        </section>
+
+        <section class="slide">
+
+          <div class="fill clip recessed">
+            <img src="img/three.png" alt="Three.js" title="Three.js" />
+          </div>
+          
+          <div class="masthead header absolute"><div>
+            <h4 class="text-outline">Where would WebGL be without Three.js?</h4>
+          </div></div>
+
+        </section>
+
+        <section class="slide">
+
+          <div class="fill clip recessed">
+            <div class="padding-t-8">
+              <img src="img/webglstats.png" class="padding-t-8" alt="WebGLStats" title="WebGLStats" />
+            </div>
+          </div>
+          
+          <div class="masthead top absolute"><div>
+            <h4 class="text-outline">WebGLStats.com (Florian Bösch)</h4>
+          </div></div>
+
+        </section>
+
+        <section class="slide">
+
+          <div class="fill clip recessed text-center absolute">
+            <img src="img/webgl2.png" alt="WebGL 2" title="WebGL 2" />
+          </div>
+        
+          <div class="masthead header absolute"><div>
+            <h4 class="text-outline">WebGL 2?</h4>
+          </div></div>
+
+        </section>
+                  
+        <section class="slide">
+
+          <div class="fill clip recessed text-center absolute masthead middle">
+            <img src="img/vulkan-logo.png" alt="Vulkan" title="Vulkan" />
+          </div>
+        
+          <div class="masthead header absolute"><div>
+            <h4 class="text-outline">WebVulkan?</h4>
+          </div></div>
+
+        </section>
+
+        <section class="slide">
+
+          <div class="fill clip recessed">
+            <img src="img/spir.png" alt="SPIR" title="SPIR" />
+          </div>
+          
+        </section>
+            
+        <section class="slide">
+
+          <div class="masthead middle absolute"><div>
+            <h4 class="text-outline">Thank you, everyone who made WebGL happen.</h4>
+          </div></div>
+
+        </section>
+
       </div>
     </div>
     

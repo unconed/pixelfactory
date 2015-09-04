@@ -1474,6 +1474,7 @@ present
       to: 33
     .reveal
         stagger: [2, 2]
+        duration: 1
         delayEnter: 2
       .cartesian(
         {}, {rotation: (t) -> [0, t, 0]}
@@ -1481,6 +1482,16 @@ present
         .area
           width:  2
           height: 2
+        .transform
+            position: [0, -1, 0]
+          .grid
+            axes: [1, 3]
+            divideX: 5
+            divideY: 5
+            width: 3
+            color: 0x000000
+            opacity: .5
+          .end()
         .transform
             position: [0, 0, .2]
           .surface

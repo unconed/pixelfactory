@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var camera, emitCurve, emitSurface, enlarge, enter, formatNumber, getOverlays, intensitySteps, mathbox, orbit, polar, present, ref, slide, subslide, three, time, view, warpShader;
+var camera, emitCurve, emitSurface, enlarge, enter, formatNumber, getOverlays, intensitySteps, mathbox, orbit, polar, present, ref, slide, speed, subslide, three, time, view, warpShader;
 
 window.mathbox = window.three = (ref = mathBox({
   plugins: ['core'],
@@ -15,6 +15,25 @@ window.mathbox = window.three = (ref = mathBox({
 }), mathbox = ref.mathbox, three = ref.three, ref);
 
 window.three = three;
+
+speed = 1;
+
+three.on('update', (function() {
+  var current, intra;
+  intra = 1;
+  current = 1;
+  return function() {
+    var lerp;
+    lerp = function(a, b, f) {
+      return a + (b - a) * f;
+    };
+    intra = lerp(intra, speed, .1);
+    current = lerp(current, intra, .1);
+    return three.Time.set({
+      speed: current
+    });
+  };
+})());
 
 MathBox.DOM.Types.latex = MathBox.DOM.createClass({
   render: function(el, props, children) {
@@ -98,7 +117,7 @@ orbit = function(t) {
 };
 
 time = function(t) {
-  return t / 4;
+  return t / 3;
 };
 
 mathbox.set({
@@ -112,8 +131,44 @@ present = mathbox.present({
 
 present.slide();
 
-slide = present.slide({
+slide = present.clock().slide({
   id: 'top'
+});
+
+slide.step({
+  target: '<<',
+  duration: 0,
+  pace: 1,
+  trigger: 4,
+  stops: [0, 1, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 4, 4, 4, 5],
+  realtime: true,
+  script: [
+    [
+      {
+        speed: 1
+      }
+    ], [
+      {
+        speed: 0
+      }
+    ], [
+      {
+        speed: 1
+      }
+    ], [
+      {
+        speed: .5
+      }
+    ], [
+      {
+        speed: .1
+      }
+    ], [
+      {
+        speed: 1
+      }
+    ]
+  ]
 });
 
 camera = slide.camera().step({
@@ -168,40 +223,6 @@ camera = slide.camera().step({
         lookAt: [0, -1.2, -1]
       }
     }
-  ]
-}).step({
-  target: 'root',
-  duration: 0,
-  pace: 1,
-  trigger: 4,
-  stops: [0, 1, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 4, 4, 5],
-  realtime: true,
-  script: [
-    [
-      {
-        speed: 1
-      }
-    ], [
-      {
-        speed: 0
-      }
-    ], [
-      {
-        speed: 1
-      }
-    ], [
-      {
-        speed: .5
-      }
-    ], [
-      {
-        speed: .1
-      }
-    ], [
-      {
-        speed: 1
-      }
-    ]
   ]
 });
 
@@ -467,6 +488,8 @@ view.slide().end();
 
 view.slide().end();
 
+view.slide().end();
+
 view.reveal({
   stagger: [-100]
 }).step({
@@ -572,7 +595,7 @@ polar.reveal({
   }
 }).shader({
   id: 'normals',
-  code: "uniform float time;\nuniform float intensity;\nuniform float scale;\n\nvec4 warpVertex(vec4 xyzw) {\n  xyzw *= vec4(1.0, 0.5, 0.5, 0.0);\n\n  xyzw +=   0.2 * intensity * (sin(xyzw.yzwx * 1.91 + time + sin(xyzw.wxyz * 1.74 + time)));\n  xyzw +=   0.1 * intensity * (sin(xyzw.yzwx * 4.03 + time + sin(xyzw.wxyz * 2.74 + time)));\n  xyzw +=  0.05 * intensity * (sin(xyzw.yzwx * 8.39 + time + sin(xyzw.wxyz * 4.18 + time)));\n  xyzw += 0.025 * intensity * (sin(xyzw.yzwx * 15.1 + time + sin(xyzw.wxyz * 9.18 + time)));\n\n  xyzw *= vec4(1.0, 2.0, 2.0, 0.0);\n    \n  return xyzw;\n}\n\nvec4 getSample(vec4 xyzw);\nvec4 getVectorSample(vec4 xyzw) {\n  vec4 xyz0 = vec4(xyzw.xyz, 0.0);\n  vec3 c = warpVertex(getSample(xyz0)).xyz;\n  vec3 r = warpVertex(getSample(xyz0 + vec4(1.0, 0.0, 0.0, 0.0))).xyz;\n  vec3 u = warpVertex(getSample(xyz0 + vec4(0.0, 1.0, 0.0, 0.0))).xyz;\n  vec3 n = normalize(cross(r - c, u - c));\n  return vec4(c - scale * n * xyzw.w, 0.0);\n}"
+  code: "uniform float time;\nuniform float intensity;\nuniform float scale;\n\nvec4 warpVertex(vec4 xyzw) {\n  xyzw *= vec4(1.0, 0.5, 0.5, 0.0);\n\n  xyzw +=   0.2 * intensity * (sin(xyzw.yzwx * 1.91 + time + sin(xyzw.wxyz * 1.74 + time)));\n  xyzw +=   0.1 * intensity * (sin(xyzw.yzwx * 4.03 + time + sin(xyzw.wxyz * 2.74 + time)));\n  xyzw +=  0.05 * intensity * (sin(xyzw.yzwx * 8.39 + time + sin(xyzw.wxyz * 4.18 + time)));\n  xyzw += 0.025 * intensity * (sin(xyzw.yzwx * 15.1 + time + sin(xyzw.wxyz * 9.18 + time)));\n\n  xyzw *= vec4(1.0, 2.0, 2.0, 0.0);\n    \n  return xyzw;\n}\n\nvec4 getSample(vec4 xyzw);\nvec4 getVectorSample(vec4 xyzw) {\n  vec4 xyz0 = vec4(xyzw.xyz, 0.0);\n  vec3 c = warpVertex(getSample(xyz0)).xyz;\n  vec3 r = warpVertex(getSample(xyz0 + vec4(1.0, 0.0, 0.0, 0.0))).xyz;\n  vec3 u = warpVertex(getSample(xyz0 + vec4(0.0, 1.0, 0.0, 0.0))).xyz;\n  vec3 n = cross(r - c, u - c) * 24.0 * 24.0;\n  return vec4(c - scale * n * xyzw.w, 0.0);\n}"
 }, {
   time: time
 }).step(intensitySteps).step({
@@ -620,7 +643,7 @@ polar.reveal({
   paddingWidth: 1,
   paddingHeight: 1
 }).vector({
-  color: '#40C0FF',
+  color: '#47D0FF',
   zBias: 15,
   end: true,
   width: 1
@@ -669,7 +692,7 @@ polar.reveal({
   }
 }).shader({
   id: 'tangent1',
-  code: "uniform float time;\nuniform float intensity;\n\nvec4 warpVertex(vec4 xyzw) {\n  xyzw *= vec4(1.0, 0.5, 0.5, 0.0);\n\n  xyzw +=   0.2 * intensity * (sin(xyzw.yzwx * 1.91 + time + sin(xyzw.wxyz * 1.74 + time)));\n  xyzw +=   0.1 * intensity * (sin(xyzw.yzwx * 4.03 + time + sin(xyzw.wxyz * 2.74 + time)));\n  xyzw +=  0.05 * intensity * (sin(xyzw.yzwx * 8.39 + time + sin(xyzw.wxyz * 4.18 + time)));\n  xyzw += 0.025 * intensity * (sin(xyzw.yzwx * 15.1 + time + sin(xyzw.wxyz * 9.18 + time)));\n\n  xyzw *= vec4(1.0, 2.0, 2.0, 0.0);\n    \n  return xyzw;\n}\n\nvec4 getSample(vec4 xyzw);\nvec4 getVectorSample(vec4 xyzw) {\n  vec4 xyz0 = vec4(xyzw.xyz, 0.0);\n  vec3 c = warpVertex(getSample(xyz0)).xyz;\n  vec3 r = warpVertex(getSample(xyz0 + vec4(1.0, 0.0, 0.0, 0.0))).xyz;\n  return vec4(c - normalize(c - r) * xyzw.w * .15, 0.0);\n}"
+  code: "uniform float time;\nuniform float intensity;\n\nvec4 warpVertex(vec4 xyzw) {\n  xyzw *= vec4(1.0, 0.5, 0.5, 0.0);\n\n  xyzw +=   0.2 * intensity * (sin(xyzw.yzwx * 1.91 + time + sin(xyzw.wxyz * 1.74 + time)));\n  xyzw +=   0.1 * intensity * (sin(xyzw.yzwx * 4.03 + time + sin(xyzw.wxyz * 2.74 + time)));\n  xyzw +=  0.05 * intensity * (sin(xyzw.yzwx * 8.39 + time + sin(xyzw.wxyz * 4.18 + time)));\n  xyzw += 0.025 * intensity * (sin(xyzw.yzwx * 15.1 + time + sin(xyzw.wxyz * 9.18 + time)));\n\n  xyzw *= vec4(1.0, 2.0, 2.0, 0.0);\n    \n  return xyzw;\n}\n\nvec4 getSample(vec4 xyzw);\nvec4 getVectorSample(vec4 xyzw) {\n  vec4 xyz0 = vec4(xyzw.xyz, 0.0);\n  vec3 c = warpVertex(getSample(xyz0)).xyz;\n  vec3 r = warpVertex(getSample(xyz0 + vec4(1.0, 0.0, 0.0, 0.0))).xyz;\n  return vec4(c - (c - r) * 24.0 * xyzw.w * .15, 0.0);\n}"
 }, {
   time: time
 }).step(intensitySteps).resample({
@@ -719,7 +742,7 @@ polar.reveal({
   }
 }).shader({
   id: 'tangent2',
-  code: "uniform float time;\nuniform float intensity;\n\nvec4 warpVertex(vec4 xyzw) {\n  xyzw *= vec4(1.0, 0.5, 0.5, 0.0);\n\n  xyzw +=   0.2 * intensity * (sin(xyzw.yzwx * 1.91 + time + sin(xyzw.wxyz * 1.74 + time)));\n  xyzw +=   0.1 * intensity * (sin(xyzw.yzwx * 4.03 + time + sin(xyzw.wxyz * 2.74 + time)));\n  xyzw +=  0.05 * intensity * (sin(xyzw.yzwx * 8.39 + time + sin(xyzw.wxyz * 4.18 + time)));\n  xyzw += 0.025 * intensity * (sin(xyzw.yzwx * 15.1 + time + sin(xyzw.wxyz * 9.18 + time)));\n\n  xyzw *= vec4(1.0, 2.0, 2.0, 0.0);\n    \n  return xyzw;\n}\n\nvec4 getSample(vec4 xyzw);\nvec4 getVectorSample(vec4 xyzw) {\n  vec4 xyz0 = vec4(xyzw.xyz, 0.0);\n  vec3 c = warpVertex(getSample(xyz0)).xyz;\n  vec3 u = warpVertex(getSample(xyz0 + vec4(0.0, 1.0, 0.0, 0.0))).xyz;\n  return vec4(c + normalize(c - u) * xyzw.w * .15, 0.0);\n}"
+  code: "uniform float time;\nuniform float intensity;\n\nvec4 warpVertex(vec4 xyzw) {\n  xyzw *= vec4(1.0, 0.5, 0.5, 0.0);\n\n  xyzw +=   0.2 * intensity * (sin(xyzw.yzwx * 1.91 + time + sin(xyzw.wxyz * 1.74 + time)));\n  xyzw +=   0.1 * intensity * (sin(xyzw.yzwx * 4.03 + time + sin(xyzw.wxyz * 2.74 + time)));\n  xyzw +=  0.05 * intensity * (sin(xyzw.yzwx * 8.39 + time + sin(xyzw.wxyz * 4.18 + time)));\n  xyzw += 0.025 * intensity * (sin(xyzw.yzwx * 15.1 + time + sin(xyzw.wxyz * 9.18 + time)));\n\n  xyzw *= vec4(1.0, 2.0, 2.0, 0.0);\n    \n  return xyzw;\n}\n\nvec4 getSample(vec4 xyzw);\nvec4 getVectorSample(vec4 xyzw) {\n  vec4 xyz0 = vec4(xyzw.xyz, 0.0);\n  vec3 c = warpVertex(getSample(xyz0)).xyz;\n  vec3 u = warpVertex(getSample(xyz0 + vec4(0.0, 1.0, 0.0, 0.0))).xyz;\n  return vec4(c + (c - u) * 24.0 * xyzw.w * .15, 0.0);\n}"
 }, {
   time: time
 }).step(intensitySteps).resample({
@@ -969,30 +992,34 @@ view.grid({
   origin: [0, π / 2, 0]
 }).scale({
   axis: 1,
-  divide: 2,
+  divide: 1,
+  nice: false,
   origin: [0, π / 2, 0]
 }).slice({
-  width: [0, 0]
+  width: [1, 2]
 }).format({
   data: ["x"]
 }).label({
   color: 0x3080FF
 }).scale({
   axis: 2,
-  divide: 2,
+  divide: 1,
+  nice: false,
   origin: [0, π / 2, 0]
 }).slice({
-  width: [0, 0]
+  width: [1, 2]
 }).format({
   data: ["y"]
 }).label({
-  color: 0x40A020
+  color: 0x40A020,
+  offset: [30, -30]
 }).scale({
   axis: 3,
-  divide: 2,
+  divide: 1,
+  nice: false,
   origin: [0, π / 2, 0]
 }).slice({
-  width: [0, 0]
+  width: [1, 2]
 }).format({
   data: ["z"]
 }).label({
@@ -1003,7 +1030,10 @@ window.onmessage = function(e) {
   var data;
   data = e.data;
   if (data.type === 'slideshow') {
-    return present.set('index', data.i + 1);
+    present.set('index', data.i + 1);
+  }
+  if (data.type === 'speed') {
+    return speed = data.speed;
   }
 };
 
@@ -1031,9 +1061,9 @@ enlarge = function(el, zoom) {
   return results;
 };
 
-enter = function(el) {
+enter = function(el, delay) {
   return setTimeout(function() {
-    el.classList.add('slide-delay-2');
+    el.classList.add("slide-delay-" + delay);
     return el.classList.add('slide-active');
   });
 };
@@ -1058,26 +1088,36 @@ getOverlays = function() {
 };
 
 present.on('change', function(e) {
-  var el, k, l, len, len1, ref1, ref2, results, step, surface;
+  var el, k, l, len, len1, len2, m, ref1, ref2, ref3, results, step, surface;
   step = present[0].get('index');
-  if (step === 19 || step === 21) {
-    ref1 = getOverlays();
-    for (k = 0, len = ref1.length; k < len; k++) {
-      el = ref1[k];
-      el.remove();
-    }
+  ref1 = getOverlays();
+  for (k = 0, len = ref1.length; k < len; k++) {
+    el = ref1[k];
+    el.remove();
   }
-  if (step === 20) {
+  if (step === 21) {
     surface = mathbox.select('vector')[0];
     if (surface != null) {
       surface.controller.objects[0].renders[0].material.fragmentGraph.inspect();
     }
     ref2 = getOverlays();
-    results = [];
     for (l = 0, len1 = ref2.length; l < len1; l++) {
       el = ref2[l];
       enlarge(el, 2);
-      results.push(enter(el));
+      enter(el, 2);
+    }
+  }
+  if (step === 22) {
+    surface = mathbox.select('vector')[0];
+    if (surface != null) {
+      surface.controller.objects[0].renders[0].material.vertexGraph.inspect();
+    }
+    ref3 = getOverlays();
+    results = [];
+    for (m = 0, len2 = ref3.length; m < len2; m++) {
+      el = ref3[m];
+      enlarge(el, 1);
+      results.push(enter(el, 0));
     }
     return results;
   }
