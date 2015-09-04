@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html class="naked">
+  <head>
+    <meta charset="utf-8">
+    <title>The Pixel Factory</title>
+
+    <meta name="viewport" content="width=1280">
+
+    <link rel="stylesheet" href="css/typography.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/slides.css" />
+    <link rel="stylesheet" href="css/transition.css" />
+    <link rel="stylesheet" href="css/controls.css" />
+
+    <link rel="stylesheet" href="katex/katex.min.css">
+    <script src="katex/katex.min.js"></script>
+    <script src="katex/contrib/auto-render.min.js"></script>
+
+    <script type="text/javascript" src="http://use.typekit.com/nde6wmn.js"></script>
+    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+
+    <script type="text/javascript" src="build/controller.js"></script>
+
+  </head>
+
+  <body class="naked">
+
+    <div class="squeeze">
+      <div class="slides">
+
+        <!-- ============================================= -->
+
+        <section class="slide first">
+        
+          <div class="masthead middle"><div>
+            <h1 class="text-giant text-outline">The Pixel Factory</h1>
+            <p class="text-muted text-outline">WebGL, GPUs and Math(Box)</p>
+          </div></div>
+
+          <div class="masthead footer"><div>
+          
+            <div class="grid2 pad text-left text-outline">
+              <h2 class="text-brand">
+                <span class="text-muted text-normal">http://</span>
+                acko.net
+              </h2>
+            </div>
+
+            <div class="grid2 pad text-right text-outline">
+              <h3 class="text-muted">Steven Wittens</h3>
+            </div>
+        
+          </div></div>
+        
+        </section>
+
+        <!-- ============================================= -->
+
+        <section class="slide">
+
+          <iframe class="naked fill" data-src="http://acko.net/"></iframe>
+        
+        </section>
+
+        <!-- ============================================= -->
+
+        <section class="slide" style="background: #fff">
+        
+          <div class="masthead middle"><div>
+            <h1 class="text-outline">Pixels</h1>
+          </div></div>
+
+        </section>
+
+        <!-- ============================================= -->
+
+        <section class="slide">
+
+          <iframe class="naked fill recessed" data-src="iframe/index.html#pixels"></iframe>
+        
+          <div class="slide"></div>
+
+          <div class="slide fill slide-zoom-in">
+            <div class="masthead middle absolute text-center"><div>
+              <p class="text-outline">            
+                $$ (\color{#3080FF}{x}, \color{#40A020}{y}) $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide fill" data-stay="3">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Bresenham Line Drawing</h4>
+            </div></div>
+          </div>
+          
+          <div class="slide"></div>
+          <div class="slide"></div>
+
+          <div class="slide fill" data-stay="1">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">True Color?</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Red Green Blue Primaries</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">8-bit per channel</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill slide-delay-1">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Blending = Linear Interpolation</h4>
+            </div></div>
+            <div class="masthead footer absolute text-background-heavy"><div>
+              <p class="text-outline">
+                $$
+                \begin{array}{ccc}
+                lerp(\color{#F08000}{a}, \color{#0090FF}{b}, \color{#40C090}{t}) = \color{#F08000}{a} + (\color{#0090FF}{b} - \color{#F08000}{a}) \cdot \color{#40C090}{t} &amp; &amp; \color{#40C090}{t} = [0...1]
+                \end{array}
+                $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Human Color Vision is Additive</h4>
+            </div></div>
+
+            <div class="masthead footer absolute"><div>
+              <h4 class="text-outline">(but sRGB is not linear)</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Rasterization</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Snap to Pixel</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Subpixel Accuracy</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Samples</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill slide-delay-3 slide-zoom-in">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Sampling</h4>
+            </div></div>
+            <div class="masthead middle absolute"><div>
+              <div class="padding-t-8">
+                <div class="grid2"><h4 class="text-outline">Vector World</h4></div>
+                <div class="grid2"><h4 class="text-outline">Raster World</h4></div>
+              </div>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Nearest Neighbour Filter</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Bilinear Filter</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Pixel Coverage?</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">SuperSampling x 4</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">MultiSampling x 4</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill slide-delay-1">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Aliasing - Sampling Theorem</h4>
+            </div></div>
+
+            <div class="masthead footer absolute text-background slide slide-zoom-out instant"><div>
+              <p class="text-outline">
+                $$
+                f = f_s / 4
+                $$
+              </p>
+            </div></div>
+
+            <div class="masthead footer absolute text-background slide slide-zoom-out"><div>
+              <p class="text-outline">
+                $$
+                f = f_s / 2 = f_\text{nyquist}
+                $$
+              </p>
+            </div></div>
+
+            <div class="masthead footer absolute text-background slide slide-zoom-out"><div>
+              <p class="text-outline">
+                $$
+                f = f_s \approx f_\text{DC}
+                $$
+              </p>
+            </div></div>
+
+            <div class="masthead footer absolute text-background slide slide-zoom-out"><div>
+              <p class="text-outline">
+                $$
+                f = 1.7 f_s
+                $$
+              </p>
+            </div></div>
+
+            <div class="masthead footer absolute text-background slide slide-zoom-out"><div>
+              <p class="text-outline">
+                $$
+                f = 0.45 f_s
+                $$
+              </p>
+            </div></div>
+
+            <div class="masthead footer absolute text-background slide slide-zoom-out"><div>
+              <p class="text-outline">
+                $$
+                f = f_s / 4
+                $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide fill" data-stay="2">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">
+                <span class="text-normal text-regular text-pad">⬋</span>
+                Moiré Patterns
+                <span class="text-normal text-regular text-pad">⬊</span>
+              </h4>
+            </div></div>
+          </div>
+          
+         <div class="slide fill">
+           <div class="masthead middle absolute"><div>
+             <h4 class="text-outline">Need 100s of samples per pixel<br><span class="text-normal">(downsize ahead of time)</span></h4>
+           </div></div>
+         </div>
+ 
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Depth Sorting</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Depth/Z-Buffer</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Visibility Per Sample</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Z-Buffer - Solid Surfaces Only</h4>
+            </div></div>
+          </div>
+
+        </section>
+        
+        <!-- ============================================= -->
+
+        <section class="slide">
+        
+          <div class="masthead middle"><div>
+            <h1 class="text-outline">Graphics Processing Unit</h1>
+          </div></div>
+
+        </section>
+        
+        <!-- ============================================= -->
+
+        <section class="slide">
+
+          <iframe class="naked fill recessed" data-src="iframe/index.html#graphwarp"></iframe>
+        
+          <div class="slide instant masthead footer" data-stay="3"><div>
+            <h2 class="text-outline text-brand">MathBox</h2>
+          </div></div>
+
+          <div class="slide"></div>
+
+          <div class="slide"></div>
+
+          <div class="slide masthead footer"><div>
+            <h2 class="text-outline text-brand">MathBox 2 - Bring your own GLSL</h2>
+          </div></div>
+        
+          <div class="slide fill slide-zoom-in" data-stay="3">
+            <div class="masthead top absolute"><div>
+              <h4 class="text-outline"><span class="green">Time</span> Parameter</h4>
+            </div></div>
+          </div>
+
+          <div class="slide"></div>
+
+          <div class="slide"></div>
+
+          <div class="slide fill slide-zoom-in">
+            <div class="masthead top absolute"><div>
+              <h4 class="text-outline"><span class="blue">Intensity</span> Parameter</h4>
+            </div></div>
+          </div>
+          
+          <div class="slide fill slide-zoom-in slide-delay-1">
+            <div class="masthead footer absolute text-background"><div>
+              <img src="img/glsl-warp-vertex-invert.png" alt="GLSL Vertex Shader Code - Warping Vertices" />
+              <h4 class="text-outline padding-b-2">120,354 vertices @ 60fps = 7.2 million calls / second</h4>
+            </div></div>
+          </div>
+
+          <div class="slide fill" data-stay="2">
+            <div class="masthead top slide-delay-1"><div>
+              <h4 class="text-outline">XYZ Space</h4>
+            </div></div>
+            <div class="masthead footer slide-delay-1"><div>
+              <p class="text-outline">
+                $$
+                  f(\color{#3080FF}{x}, \color{#40A020}{y}, \color{#C02050}{z}, \text{time}, \text{intensity})
+                  \rightarrow
+                  (\color{#3080FF}{x}, \color{#40A020}{y}, \color{#C02050}{z})
+                $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide"></div>
+          <div class="slide"></div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Surface Normals</h4>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+
+              <div class="grid2 pad text-center">
+                <p class="text-outline">
+                  $$ \color{#18487F}{\vec p} = (\color{#18487F}{p_\color{#3080FF}{x}}, \color{#18487F}{p_\color{#40A020}{y}}, \color{#18487F}{p_\color{#C02050}{z}}) $$
+                </p>
+              </div>
+
+              <div class="grid2 pad text-center">
+                <p class="text-outline">
+                  $$ \color{#40B0FF}{\vec n} = (\color{#40B0FF}{n_\color{#3080FF}{x}}, \color{#40B0FF}{n_\color{#40A020}{y}}, \color{#40B0FF}{n_\color{#C02050}{z}}) $$
+                </p>
+              </div>
+
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">UV Plane to XYZ Space</h4>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline">
+                $$
+                  \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}) = \text{warp}\Big(\text{surface}(\color{#9759d1}{u}, \color{#2fb28c}{v}), \text{time}, \text{intensity}\Big)
+                $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">U Tangents</h4>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fill">
+                $$
+                  \color{#9759d1}{\vec U}
+                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial u}}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u} + \varepsilon, \color{#2fb28c}{v}) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\varepsilon}
+                $$
+              </p>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fix">
+                $$
+                  \color{#9759d1}{\vec U}
+                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial u}}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u} + \varepsilon, \color{#2fb28c}{v}) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\varepsilon}
+                $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">V Tangents</h4>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fill">
+                $$
+                  \color{#2fb28c}{\vec V}
+                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#2fb28c}{\partial v}}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u}, \color{#2fb28c}{v} + \varepsilon) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\varepsilon}
+                $$
+              </p>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fix">
+                $$
+                  \color{#2fb28c}{\vec V}
+                  = \frac{\color{#18487F}{\partial \vec p}}{\color{#2fb28c}{\partial v}}
+                  \approx \frac{\color{#18487F}{\vec p}\big(\color{#9759d1}{u}, \color{#2fb28c}{v} + \varepsilon) - \color{#18487F}{\vec p}(\color{#9759d1}{u}, \color{#2fb28c}{v}\big)}{\varepsilon}
+                $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Vector Cross Product = Normal</h4>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fill text-smaller">
+                $$ \color{#40B0FF}{\vec n}
+                 = \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial u}}
+                   \times
+                   \frac{\color{#18487F}{\partial \vec p}}{\color{#2fb28c}{\partial v}}
+                 =
+
+                \left(
+                \begin{array}{c}
+                  \color{#9759d1}{{U_\color{#40A020}{y}}} \color{#2fb28c}{{V_\color{#C02050}{z}}}
+                  - \color{#2fb28c}{{V_\color{#40A020}{y}}} \color{#9759d1}{{U_\color{#C02050}{z}}} \\
+                  \color{#9759d1}{{U_\color{#C02050}{z}}} \color{#2fb28c}{{V_\color{#3080FF}{x}}}
+                  - \color{#2fb28c}{{V_\color{#C02050}{z}}} \color{#9759d1}{{U_\color{#3080FF}{x}}} \\ 
+                  \color{#9759d1}{{U_\color{#3080FF}{x}}} \color{#2fb28c}{{V_\color{#40A020}{y}}}
+                  - \color{#2fb28c}{{V_\color{#3080FF}{x}}} \color{#9759d1}{{U_\color{#40A020}{y}}}
+                \end{array}
+                \right)
+
+                =
+                
+               \left(
+               \begin{array}{c}
+                 \color{#40B0FF}{n_\color{#3080FF}{x}} \\ \color{#40B0FF}{n_\color{#40A020}{y}} \\ \color{#40B0FF}{n_\color{#C02050}{z}}
+               \end{array}
+               \right)         
+
+                 $$
+              </p>
+            </div></div>
+            <div class="masthead footer slide instant absolute text-background"><div>
+              <p class="text-outline-fix text-smaller">
+                $$ \color{#40B0FF}{\vec n}
+                 = \frac{\color{#18487F}{\partial \vec p}}{\color{#9759d1}{\partial u}}
+                   \times
+                   \frac{\color{#18487F}{\partial \vec p}}{\color{#2fb28c}{\partial v}}
+                 =
+
+                \left(
+                \begin{array}{c}
+                  \color{#9759d1}{{U_\color{#40A020}{y}}} \color{#2fb28c}{{V_\color{#C02050}{z}}}
+                  - \color{#2fb28c}{{V_\color{#40A020}{y}}} \color{#9759d1}{{U_\color{#C02050}{z}}} \\
+                  \color{#9759d1}{{U_\color{#C02050}{z}}} \color{#2fb28c}{{V_\color{#3080FF}{x}}}
+                  - \color{#2fb28c}{{V_\color{#C02050}{z}}} \color{#9759d1}{{U_\color{#3080FF}{x}}} \\ 
+                  \color{#9759d1}{{U_\color{#3080FF}{x}}} \color{#2fb28c}{{V_\color{#40A020}{y}}}
+                  - \color{#2fb28c}{{V_\color{#3080FF}{x}}} \color{#9759d1}{{U_\color{#40A020}{y}}}
+                \end{array}
+                \right)
+
+                =
+                
+               \left(
+               \begin{array}{c}
+                 \color{#40B0FF}{n_\color{#3080FF}{x}} \\ \color{#40B0FF}{n_\color{#40A020}{y}} \\ \color{#40B0FF}{n_\color{#C02050}{z}}
+               \end{array}
+               \right)         
+
+                 $$
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide masthead footer text-background"><div>
+            <img src="img/glsl-warp-normal.png" alt="GLSL Vertex Shader Code - Warping Normals" />
+            <h4 class="text-outline padding-b-2">~2.5 x 850,104 vertices @ 60fps = ~127 million calls / second</h4>
+            <h6 class="text-outline padding-b-2">(including vector visualization)</h6>
+          </div></div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Differential Geometry - Jacobian Matrices</h4>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fill">
+                
+                $$
+                
+                 J(\color{#9759d1}{u}, \color{#2fb28c}{v}, \color{#d08040}{w})
+                
+                 = 
+
+                   \left[
+                   \begin{array}{ccc}
+
+                   \color{#9759d1}{{U_\color{#3080FF}{x}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#3080FF}{x}}} &amp; 
+                   \color{#d08040}{{W_\color{#3080FF}{x}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#40A020}{y}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#40A020}{y}}} &amp; 
+                   \color{#d08040}{{W_\color{#40A020}{y}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#C02050}{z}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#C02050}{z}}} &amp; 
+                   \color{#d08040}{{W_\color{#C02050}{z}}}
+                   
+                   \end{array}
+                   \right]    
+                               
+                $$
+    
+              </p>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fix">
+                
+                $$
+
+                 J(\color{#9759d1}{u}, \color{#2fb28c}{v}, \color{#d08040}{w})
+                
+                 = 
+
+
+                   \left[
+                   \begin{array}{ccc}
+
+                   \color{#9759d1}{{U_\color{#3080FF}{x}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#3080FF}{x}}} &amp; 
+                   \color{#d08040}{{W_\color{#3080FF}{x}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#40A020}{y}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#40A020}{y}}} &amp; 
+                   \color{#d08040}{{W_\color{#40A020}{y}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#C02050}{z}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#C02050}{z}}} &amp; 
+                   \color{#d08040}{{W_\color{#C02050}{z}}}
+                   
+                   \end{array}
+                   \right]    
+                               
+                $$
+    
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide fill">
+            <div class="masthead header absolute"><div>
+              <h4 class="text-outline">Affine vs Projective Matrix</h4>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fill grid2">
+                
+                $$
+                
+                   \left[
+                   \begin{array}{ccc}
+
+                   \color{#9759d1}{{U_\color{#3080FF}{x}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#3080FF}{x}}} &amp; 
+                   \color{#d08040}{{W_\color{#3080FF}{x}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#40A020}{y}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#40A020}{y}}} &amp; 
+                   \color{#d08040}{{W_\color{#40A020}{y}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#C02050}{z}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#C02050}{z}}} &amp; 
+                   \color{#d08040}{{W_\color{#C02050}{z}}}
+                   
+                   \end{array}
+                   \right]    
+                               
+                $$
+    
+              </p>
+              <p class="text-outline-fill grid2">
+                
+                $$
+                
+                   \left[
+                   \begin{array}{cccc}
+
+                   \color{#9759d1}{{U_\color{#3080FF}{x}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#3080FF}{x}}} &amp; 
+                   \color{#d08040}{{W_\color{#3080FF}{x}}} &amp;
+                   \color{#18487F}{p_\color{#3080FF}{x}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#40A020}{y}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#40A020}{y}}} &amp; 
+                   \color{#d08040}{{W_\color{#40A020}{y}}} &amp;
+                   \color{#18487F}{p_\color{#40A020}{y}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#C02050}{z}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#C02050}{z}}} &amp; 
+                   \color{#d08040}{{W_\color{#C02050}{z}}} &amp;
+                   \color{#18487F}{p_\color{#C02050}{z}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#487F18}{w}}} &amp;
+                   \color{#2fb28c}{{V_\color{#487F18}{w}}} &amp;
+                   \color{#d08040}{{W_\color{#487F18}{w}}} &amp;
+                   1
+                   
+                   \end{array}
+                   \right]    
+                               
+                $$
+    
+              </p>
+            </div></div>
+            <div class="masthead footer absolute text-background"><div>
+              <p class="text-outline-fix grid2">
+                
+                $$
+
+                   \left[
+                   \begin{array}{ccc}
+
+                   \color{#9759d1}{{U_\color{#3080FF}{x}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#3080FF}{x}}} &amp; 
+                   \color{#d08040}{{W_\color{#3080FF}{x}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#40A020}{y}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#40A020}{y}}} &amp; 
+                   \color{#d08040}{{W_\color{#40A020}{y}}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#C02050}{z}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#C02050}{z}}} &amp; 
+                   \color{#d08040}{{W_\color{#C02050}{z}}}
+                   
+                   \end{array}
+                   \right]    
+                               
+                $$
+    
+              </p>
+              <p class="text-outline-fix grid2">
+                
+                $$
+                
+                   \left[
+                   \begin{array}{cccc}
+
+                   \color{#9759d1}{{U_\color{#3080FF}{x}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#3080FF}{x}}} &amp; 
+                   \color{#d08040}{{W_\color{#3080FF}{x}}} &amp;
+                   \color{#18487F}{p_\color{#3080FF}{x}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#40A020}{y}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#40A020}{y}}} &amp; 
+                   \color{#d08040}{{W_\color{#40A020}{y}}} &amp;
+                   \color{#18487F}{p_\color{#40A020}{y}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#C02050}{z}}} &amp; 
+                   \color{#2fb28c}{{V_\color{#C02050}{z}}} &amp; 
+                   \color{#d08040}{{W_\color{#C02050}{z}}} &amp;
+                   \color{#18487F}{p_\color{#C02050}{z}}
+                   \\
+                   
+                   \color{#9759d1}{{U_\color{#48187F}{w}}} &amp;
+                   \color{#2fb28c}{{V_\color{#48187F}{w}}} &amp;
+                   \color{#d08040}{{W_\color{#48187F}{w}}} &amp;
+                   1
+                   
+                   \end{array}
+                   \right]    
+                               
+                $$
+    
+              </p>
+            </div></div>
+          </div>
+
+          <div class="slide masthead stack footer"><div>
+            <h3 class="text-outline padding-b-1 text-brand">Pixel Shader</h3>
+            <h4 class="text-outline padding-b-2">1920 ⨉ 1080 pixels @ 60fps = 124 million calls / second</h4>
+          </div></div>
+
+          <div class="slide masthead footer"><div>
+            <h3 class="text-outline text-brand">Generated Vertex Shader</h3>
+          </div></div>
+        </section>
+
+        <!-- ============================================= -->
+
+        <section class="slide fill slide-zoom-in slow">
+          <div class="fill clip" style="opacity: .5">
+            <img src="img/gpu-die.jpg" alt="GPU - Kepler Die" title="GPU - Kepler Die" />
+          </div>
+          <div class="masthead middle absolute text-center" style="margin-left: 300px">
+            <img src="img/gpu-card-amd.png" alt="GPU - AMD R9 390X" title="GPU - AMD R9 390X" width="650" />
+          </div>
+          <div class="masthead middle absolute text-center" style="margin-left: -300px">
+            <img src="img/gpu-card-nvidia.png" alt="GPU - AMD R9 390X" title="GPU - AMD R9 390X" width="700" />
+          </div>
+          <div class="masthead footer absolute text-background"><div>
+            <h4 class="text-outline padding-b-2 padding-t-2">Nvidia GTX 980 <span class="text-pad">&middot;</span> 336 GB/s <span class="text-pad">&middot;</span> 5.2 billion transistors <span class="text-pad">&middot;</span> 5 TFLOPS</h4>
+            <h4 class="text-outline padding-b-2">AMD R9 390X <span class="text-pad">&middot;</span> 384 GB/s <span class="text-pad">&middot;</span> 3.3 trillion bits/s</h4>
+          </div></div>
+        </section>
+
+        <!-- ============================================= -->
+
+        <section class="slide fill slide-zoom-in slow">
+          <div class="slide fill slide-zoom-out">
+            <div class="absolute" style="top: 10%; left: 37%; width: 25%; height: 90%; border-radius: 40px; border: 20px solid rgba(255,106,00,1);">
+            </div>              
+            <div class="masthead top absolute text-background"><div>
+              <h4 class="text-outline">2007 <span class="text-pad">&middot;</span> 5 T<span class="text-muted">rillion</span> FL<span class="text-muted">oating-point</span> OPS = 1 supercomputer rack</h4>
+            </div></div>
+          </div>
+
+          <div class="fill clip recessed">
+            <img src="img/ibm-blue-gene-p.jpg" alt="IBM Blue Gene/P" title="IBM Blue Gene/P" />
+          </div>
+
+        </section>
+      
+        <!-- ============================================= -->
+
+        <section class="slide fill slide-zoom-in slow">
+          <div class="absolute">
+            <div class="grid2 pad text-center">
+              <img src="img/htc-one.jpg" height="720" alt="HTC One Smartphone">
+            </div>
+            <div class="grid2 slide slide-zoom-in pad text-center">
+              <img src="img/dell-dimension.jpg" alt="DELL Dimension">
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================= -->
+
+        <section class="slide fill slide-zoom-in slow">
+
+          <div class="masthead top absolute text-center slide instant" data-stay="3"
+              style="z-index: 100"><div>
+            <h4 class="text-outline">Alien: Isolation</h4>
+          </div></div>
+
+          <div class="fill clip recessed slide slide-zoom-in instant" data-stay="6">
+            <img src="img/alien-isolation.jpg" alt="Alien: Isolation" title="Alien: Isolation" />
+          </div>
+
+          <div class="fill clip recessed slide slide-zoom-in" data-stay="5">
+            <img src="img/alien-isolation-3.jpg" alt="Alien: Isolation" title="Alien: Isolation" />
+          </div>
+
+          <div class="fill clip recessed slide slide-zoom-in" data-stay="4">
+            <img src="img/alien-isolation-2.jpg" alt="Alien: Isolation" title="Alien: Isolation" />
+          </div>
+
+          <div class="fill clip recessed slide slide-zoom-in"  data-stay="3">
+            <img src="img/crysis3.jpg" alt="Crysis 3" title="Crysis 3" />
+          </div>
+
+          <div class="masthead top absolute text-center slide instant"><div>
+            <h4 class="text-outline">Crysis 3 (PC/360/PS3)</h4>
+          </div></div>
+
+          <div class="fill clip recessed slide slide-zoom-in" data-stay="2">
+            <img src="img/shadowfall.jpg" alt="Shadowfall" title="Shadowfall" />
+          </div>
+
+          <div class="masthead top absolute text-center slide instant"><div>
+            <h4 class="text-outline">Killzone: Shadow Fall (PS4)</h4>
+          </div></div>
+
+          <div class="fill clip recessed slide slide-zoom-in" style="background: #fff">
+            <img class="padding-t-4" src="img/background-radiation.jpg" alt="Background Radiation" title="Background Radiation" />
+          </div>
+
+          <div class="fill slide slide-zoom-in instant">
+            <div class="masthead middle absolute text-background"><div>
+              <h4 class="text-outline">Supercomputing is now background radiation</h4>
+            </div></div>
+          </div>
+
+        </section>
+      
+        <!-- ============================================= -->
+
+        <section class="slide" style="background: #fff">
+        
+          <div class="masthead middle"><div>
+            <h1 class="text-outline">WebGL</h1>
+            <h4>The Good, The Bad and The Ugly</h4>
+          </div></div>
+
+        </section>
+          
+        <section class="slide">
+
+          <div class="masthead bottom absolute clip recessed text-center"><div>
+            <div><img src="img/preallocate.png" alt="Pre Allocate" title="Pre Allocate" width="1000" /></div>
+          </div></div>
+          
+          <div class="masthead header absolute"><div>
+            <h4 class="text-outline">Pre-allocate as much as possible,<br>avoid garbage collection</h4>
+          </div></div>
+
+        </section>
+
+        <section class="slide">
+
+          <div class="masthead bottom absolute clip recessed text-center"><div>
+            <div><img src="img/sdftext.png" width="1024" style="margin-bottom: -512px;" alt="Signed Distance Field text" title="Signed Distance Field text" /></div>
+          </div></div>
+          
+          <div class="masthead header absolute"><div>
+            <h4 class="text-outline">Text Rendering - Signed Distance Fields</h4>
+          </div></div>
+
+        </section>
+        
+        <section class="slide">
+
+          <div class="masthead bottom absolute clip recessed text-center"><div>
+            <div class="padding-b-4"><img src="img/loading.png" alt="Loading" title="Loading" width="200" /></div>
+            <div><img src="img/createshader.png" alt="Create Shader" title="Create Shader" width="800" /></div>
+          </div></div>
+          
+          <div class="masthead header absolute"><div>
+            <h4 class="text-outline">Synchronous Shader Compile :/</h4>
+          </div></div>
+
+        </section>
+
+
+        <section class="slide">
+
+          <div class="masthead bottom absolute clip recessed text-center"><div>
+            <img class="padding-b-8" src="img/floatingpoint.png" alt="Floating Point Readback" title="Floating Point Readback" width="1200" />
+          </div></div>
+          
+          <div class="masthead header absolute"><div>
+            <h4 class="text-outline">Floating Point Readback<br>(32-bit float → 32-bit RGBA)</h4>
+          </div></div>
+
+        </section>
+
+        <section class="slide">
+
+          <div class="masthead bottom absolute clip recessed text-center"><div>
+            <img src="img/mecha_shot1.png" alt="Order Independent Transparency" title="Order Independent Transparency" />
+          </div></div>
+          
+          <div class="masthead header absolute"><div>
+            <h4 class="text-outline">Multisampling or Post-Processing:<br>Pick One</h4>
+          </div></div>
+
+          <div class="masthead footer absolute"><div>
+            <h4 class="text-outline">(Order Independent Transparency: Two Passes)</h4>
+          </div></div>
+
+        </section>
+
+        <section class="slide">
+        
+          <div class="fill clip recessed">
+            <div class="text-center">
+              <img src="img/webglstats.png" class="padding-t-2" alt="WebGLStats" title="WebGLStats" width="860" />
+              <img src="img/webglstats2.png" alt="WebGLStats" title="WebGLStats" width="860" />
+            </div>
+          </div>
+        
+          <div class="masthead bottom absolute"><div>
+            <h4 class="text-outline">WebGLStats.com (Florian Bösch)</h4>
+          </div></div>
+        
+        </section>
+
+        <section class="slide">
+
+          <div class="masthead middle absolute"><div>
+            <h4 class="text-outline">Live Performance Scaling = Near impossible</h4>
+          </div></div>
+
+        </section>
+             
+        <section class="slide">
+
+          <div class="fill clip recessed">
+            <img src="img/pinocchio.jpg" alt="Pinnochio" title="Pinnochio" />
+          </div>
+          
+          <div class="masthead header absolute"><div>
+            <h4 class="text-outline">I wanna be a real API!</h4>
+          </div></div>
+
+        </section>
+
+        <section class="slide">
+
+          <div class="fill clip recessed">
+            <img src="img/three.png" alt="Three.js" title="Three.js" />
+          </div>
+          
+          <div class="masthead footer absolute text-background"><div>
+            <h4 class="text-outline">Where would WebGL be without Three.js?</h4>
+          </div></div>
+
+        </section>
+
+        <section class="slide">
+
+          <div class="fill clip recessed text-center absolute">
+            <img src="img/webgl2.png" alt="WebGL 2" title="WebGL 2" />
+          </div>
+        
+          <div class="masthead header absolute"><div>
+            <h4 class="text-outline">WebGL 2?</h4>
+          </div></div>
+
+        </section>
+                  
+        <section class="slide">
+
+          <div class="fill clip recessed text-center absolute masthead middle">
+            <img src="img/vulkan-logo.png" alt="Vulkan" title="Vulkan" />
+          </div>
+        
+          <div class="masthead header absolute"><div>
+            <h4 class="text-outline">WebVulkan?</h4>
+          </div></div>
+
+        </section>
+
+        <section class="slide">
+
+          <div class="fill clip recessed">
+            <img src="img/spir.png" alt="SPIR" title="SPIR" />
+          </div>
+          
+        </section>
+            
+        <section class="slide">
+
+          <div class="masthead middle absolute"><div>
+            <h2 class="text-outline">Still, makes 2D Canvas and SVG look like toys.</h2><br><br>
+            <h4 class="text-outline">Thank you, everyone who made WebGL happen!</h4>
+          </div></div>
+
+        </section>
+
+      </div>
+    </div>
+    
+    <div class="controls text-center">
+      <button class="prev">‹</button>
+      <button class="next">›</button>
+    </div>
+    
+  </body>
+
+  <script>
+    renderMathInElement(document.body);
+  </script>
+
+  <script type="text/javascript">
+    var q = document.querySelector.bind(document);
+    App.mount(q('.slides'), q('.controls'), location);
+  </script>
+
+</html>

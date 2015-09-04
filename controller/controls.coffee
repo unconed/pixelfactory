@@ -3,12 +3,13 @@ controls = (els, slideshow) ->
   prev = els.querySelector '.prev'
   next = els.querySelector '.next'
 
-  prev.onclick = slideshow.prev
-  next.onclick = slideshow.next
+  if prev and next
+    prev.onclick = slideshow.prev
+    next.onclick = slideshow.next
 
   WIDTH  = 1280
   HEIGHT = 720
-  FOOTER = 60
+  FOOTER = if location.href.match /offline/ then 0 else 60
 
   window.onmessage = (e) ->
     d = e.data
@@ -23,8 +24,8 @@ controls = (els, slideshow) ->
   window.onkeydown = (e) ->
     setSpeed e
     switch e.keyCode
-      when 37, 38 then slideshow.prev()
-      when 39, 40 then slideshow.next()
+      when 33, 37, 38 then slideshow.prev()
+      when 34, 39, 40 then slideshow.next()
       #else console.log 'keyCode', e.keyCode
   window.onkeyup = (e) -> setSpeed e
 

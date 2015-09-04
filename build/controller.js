@@ -5,11 +5,13 @@ controls = function(els, slideshow) {
   var FOOTER, HEIGHT, WIDTH, next, ping, prev, setSpeed, slides, squeeze;
   prev = els.querySelector('.prev');
   next = els.querySelector('.next');
-  prev.onclick = slideshow.prev;
-  next.onclick = slideshow.next;
+  if (prev && next) {
+    prev.onclick = slideshow.prev;
+    next.onclick = slideshow.next;
+  }
   WIDTH = 1280;
   HEIGHT = 720;
-  FOOTER = 60;
+  FOOTER = location.href.match(/offline/) ? 0 : 60;
   window.onmessage = function(e) {
     var d, name;
     d = e.data;
@@ -34,9 +36,11 @@ controls = function(els, slideshow) {
   window.onkeydown = function(e) {
     setSpeed(e);
     switch (e.keyCode) {
+      case 33:
       case 37:
       case 38:
         return slideshow.prev();
+      case 34:
       case 39:
       case 40:
         return slideshow.next();
