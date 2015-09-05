@@ -87,7 +87,7 @@ slide
       [{speed: 1}]
       [{speed: .5}]
       [{speed: .1}]
-      [{speed: 1}]
+      [{speed: .5}]
     ]
 
 camera = slide

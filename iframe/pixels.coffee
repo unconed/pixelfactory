@@ -764,6 +764,14 @@ triangleOutline =
           zBias: 10
           zIndex: 1
           zOrder: -1
+        .step
+          trigger: 3
+          duration: 1
+          stops: [0, 1, 1, 0]
+          script: [
+            [{opacity: 1}]
+            [{opacity: 0}]
+          ]
         .slice
           width: [0, 3]
         .point
