@@ -3,8 +3,14 @@ window.mathbox =
   plugins: ['core', 'mathbox', 'controls', 'cursor']
   controls:
     klass: THREE.OrbitControls
+  camera:
+    fov: 60
+
+document.body.classList.add 'sandbox'
+mathbox.set scale: 720, focus: 3
 
 three.renderer.setClearColor new THREE.Color(0xFFFFFF), 1
+three.camera.position.set 0, 0, 3
 
 types =
   for k, klass of MathBox.Primitives.Types.Classes

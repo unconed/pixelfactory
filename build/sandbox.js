@@ -5,10 +5,22 @@ window.mathbox = (ref = mathBox({
   plugins: ['core', 'mathbox', 'controls', 'cursor'],
   controls: {
     klass: THREE.OrbitControls
+  },
+  camera: {
+    fov: 60
   }
 }), mathbox = ref.mathbox, three = ref.three, ref);
 
+document.body.classList.add('sandbox');
+
+mathbox.set({
+  scale: 720,
+  focus: 3
+});
+
 three.renderer.setClearColor(new THREE.Color(0xFFFFFF), 1);
+
+three.camera.position.set(0, 0, 3);
 
 types = (function() {
   var ref1, results;

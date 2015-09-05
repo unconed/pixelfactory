@@ -29,3 +29,7 @@
 .shadergraph-code {
   margin-bottom: 100px;
 }
+
+body.sandbox .shadergraph-overlay {
+  opacity: 1;
+}
