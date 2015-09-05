@@ -1033,6 +1033,101 @@
       <button class="prev">‹</button>
       <button class="next">›</button>
     </div>
+  
+    <div class="notes">
+      <p class="slide">
+        Note: these slides have not (yet) been optimized for low-end GPUs or mobile.
+      </p>
+      <p class="slide">
+        Hi, I'm Steven, and this is my website, usually known as <em>that site with that header</em>. This is a really fun effect because it's its own progress bar: most of the work generating the model is done during the animation, not before. I'm using texture uploads to do this, and I found this to be really fast and efficient: there are ~45k triangles in the model above.
+      </p>
+      <p class="slide">
+        First though, a quote by Willian Thurston, a mathematician who passed away a few years ago. I found this and it really resonated with what I'm trying to do.
+      </p>
+      <p class="slide"></p>
+      <p class="slide">So let's begin with pixels.</p>
+      <p class="slide">Oh there's this little loading thing. Hang on.</p>
+      <p class="slide">Pixels.</p>
+      <p class="slide">If you want to do anything with pixels, you need a coordinate system, x and y. Note that in GL, y points up.</p>
+      <p class="slide">We quickly developed simple algorithms to draw things, like Bresenham's line and circle algorithms. Horizontally.</p>
+      <p class="slide">Vertically.</p>
+      <p class="slide">Diagonally, this is a little bit trickier, but a fun exercise to try and do this yourself.</p>
+      <p class="slide">But we don't just want to color whole pixels, we need to do operations with pixels, like blending, which lead to what was then called "True Color".</p>
+      <p class="slide">True color means RGB, the Red Green Blue primaries, with often an additional alpha channel for transparency.</p>
+      <p class="slide">Typically we use 8 bits per channel, each a number from 0 to 255.</p>
+      <p class="slide">So when we blend images, we're actually doing linear interpolation per pixel, moving proportionally from one RGB triplet to another. It's not that I don't think people know this, it's that I want to convey a full sense of how much work happens when you change an opacity in CSS or Photoshop.</p>
+      <p class="slide">Light is an <em>additive</em> model: add more light, it gets brighter. This is different from ink, which has a subtractive model: the more ink you have, the darker the color. This is why print uses Cyan, Magenta and Yellow, the inverse colors. Note however that standard RGB is not linear: 50% gray is not half as bright as white. This is the problem of <em>gamma</em> and you just learn to deal with it.</p>
+      <p class="slide">In general, drawing shapes on pixel grids is called rasterization. If you can draw lines, you can draw solid shapes just by filling the area between them, for example one horizontal line at a time, stepping from top to bottom.</p>
+      <p class="slide">However, if we try to naively rasterize, we end up with shapes that skip and jump like this. The problem is that we've defined our entire stack based on pixels, so we have to snap to the nearest pixel.</p>
+      <p class="slide">What we want is to be <em>subpixel accurate</em>, i.e. being able to put the corners of our shape anywhere.</p>
+      <p class="slide">The secret for this is the concept of <em>samples</em>: the color of the entire pixel is defined by the point right in the middle. If that point is inside the triangle, the pixel is red, otherwise it's white.</p>
+      <p class="slide">And that means that there are really two different worlds. On the left side is Vector World, where everything is mathematical and precise. On the right is Raster World, where you've sampled it into a grid, and you're stuck with it. Hence you want sampling to be a last step as much as possible.</p>
+      <p class="slide">Every image is sampled data though, so you need a way to turn samples back into a continuous function. The simplest way is as square pixels, the <em>nearest neighbour</em> filter.</p>
+      <p class="slide">A slightly better option is the <em>bilinear filter</em> where you create linear gradients between samples in both directions. But it doesn't get rid of <em>jaggies</em>, our samples are still only on or off.</p>
+      <p class="slide">To fix that, we need more information. Ideally we would shade a pixel proportionally to how much it is covered. Calculating this exactly, especially for hundreds of thousands of triangles, is a lot of work.</p>
+      <p class="slide">Instead we can just sample multiple times per pixel, e.g. <em>supersampling</em> x 4. Now we can have 3 additional levels of in-between colors instead of just a binary on or off. The sampling pattern is rotated to ensure that a nearly horizontal or vertical line that passes through will hit each sample individually, creating even stair-steps.</p>
+      <p class="slide">But now you're doing 4 times as much work, you may as well just render at 4x the resolution. So instead we use multisampling, where we only apply the dense sampling on the edges of shapes, while sampling normally in the middle.</p>
+      <p class="slide">Sampling is far more than just a trick though, it is an entire field with associated mathematics. For example, the sampling theorem. We're going to sample a pattern of alternating white and black bars, in this case, a sine wave. Everything looks peachy.</p>
+      <p class="slide">If we increase the frequency though, we reach a critical point. This is the Nyquist frequency, half the sample rate. Now the pixels alternate exactly, and it is impossible to tell whether it is moving left or right.</p>
+      <p class="slide">If we go to twice the Nyquist frequency, the exact sample rate, now all the samples are identical, effectively "DC" (direct current), hinting at the field's origin in analog electronics.</p>
+      <p class="slide">Above that, the wave actually starts going the wrong way. This is the same effect that caused wagon wheels to spin backwards in old western films: the frame rate was too low for the motion.</p>
+      <p class="slide">In fact, even below the Nyquist frequency, we can get some artifacts, for example here there is a noticeable left-to-right sweep even though our wave only moves right-to-left.</p>
+      <p class="slide">To really avoid artifacts, you have to stay below a quarter the sample rate. This incidentally also justifies Apple's approach to Retina, where a factor 2x increase in resolution is great, while an inbetween scaled UI like 1.7x looks less crisp than 1x.</p>
+      <p class="slide">On a large scale, especially with a variable sampling rate, aliasing leads to so-called Moiré patterns. Like in this visualization, where you can see the stripes doing something weird at the horizon.</p>
+      <p class="slide">It gets much worse when the camera is moving, creating shimmering <em>Moiré</em> patterns. To avoid this, we effectively need hundreds of samples per pixel, because each pixel projects out to a huge area in the distance. Instead, we typically use MIP Mapping, i.e. creating a pyramid of images, each 1/2 the scale of the previous. This way, you can achieve reasonable fidelity just by sampling one or two layers of your pyramid, instead of the original full size image.</p>
+      <p class="slide">There's more problems: what about 3D? If you're drawing overlapping shapes, you need to draw them back-to-front for things to layer correctly.</p>
+      <p class="slide">But this isn't sufficent: when shapes intersect, there is no right order, because a part of each shape is in front of the other. So instead we have a depth buffer, where we record the depth for every pixel.</p>
+      <p class="slide">Using the depth buffer, we can simply check when we're drawing a pixel: is this closer or further away than what's already there? It allows you to cut out shapes on a per-pixel basis.</p>
+      <p class="slide">There's a pretty big problem with this though: it only works for solid things. In this pathological case, everything is transparent, yet it appears solid from one side. The problem is that the Z-buffer only stores one depth value, so transparent pixels act as solid ones when drawn before and on top of other things. You need to draw transparent surfaces back-to-front and hope they don't intersect, or use a different technique entirely.</p>
+      <p class="slide">So let's talk about GPUs, which are in every phone and laptop.</p>
+      <p class="slide">And let's also talk about what's been going on here with this presentation. I'm using something called MathBox, which I've been working on for the past few years.</p>
+      <p class="slide">MathBox 1 was an adhoc little plotting library. It consisted of pre-made views and transforms that you could use.</p>
+      <p class="slide">MathBox 1 focused on particular transitions, ensuring they worked really well. Outside of that, you were out of luck.</p>
+      <p class="slide">With MathBox 2, the goal is to remove all limitations and allow you to mix and match arbitrary GLSL code with what's already there.</p>
+      <p class="slide">So this is an arbitary distortion effect, which has two parameters. The first one is time.</p>
+      <p class="slide">If time stops, nothing moves. The computation is identical every frame.</p>
+      <p class="slide">If time moves, the shape moves. Simple enough.</p>
+      <p class="slide">The second parameter is intensity, controlling the magnitude of the displacement. Let's move that up and down a bit. When it goes down, the grid straightens out. When it goes up, the lines get warped beyond recognition.</p>
+      <p class="slide">All of this is done on the GPU. I've added a piece of GLSL code that will warp a point with an arbitrary formula. This is just typical demoscene meaningless mishmashing that looks cool. This function is being called once for every vertex in the scene, total of 7.2 million times per second.</p>
+      <p class="slide">While this is just mapping individual points, the fact that the underlying numbers are continous means that you're really warping space. This is the mathematics of differential geometry, which is how we deal with e.g. the warping of spacetime in General Relativity.</p>
+      <p class="slide">So when we embed an object inside this space, the object gets distorted along. That's not so surprising.</p>
+      <p class="slide">If we embed a surface in this space though, then by warping it, it doesn't just move, it also changes its appearance and shading. That <em>is</em> surprising.</p>
+      <p class="slide">The reason this happens is that the <em>surface's normals</em> are changing. This is, simply put, the <em>up</em> direction at every point. As the surface warps, <em>up</em> changes depending on what the neighbouring area around it is doing. The shading is determined by how much the normal points towards or away from the light source: a very simple lighting model.</p>
+      <p class="slide">How do we get normals? Well we need to look at the original parameters of the surface. The original XYZ coordinates are themselves the result of a function <code>surface(u,v)</code> which maps a 2D plane into 3D space. The lines of constant U and constant V are the grid lines on the surface.</p>
+      <p class="slide">We need tangents. First U. This is a <em>partial derivative</em>, a word that might make some people's eyes glaze over, but it shouldn't. Really, it's just the difference between two neighbouring points, normalized by step size. The ε is the step size. In calculus, you use limits to take infinitely small steps, but in practice, a small-but-finite step works fine for most cases.</p>
+      <p class="slide">The same applies to the V tangents. Combined, they form a local footprint that tells you how the surface has warped and how the angles have changed.</p>
+      <p class="slide">We apply the vector cross product to the pair, which calculates a perpendicular vector. This is our normal. There's a pattern that you can see from the way the indices cycle in the formula, but the gist of it is that it's a set of projections that straighten things out by subtracting the non-straight parts.</p>
+      <p class="slide">From the very moment the surface appeared, in order to shade it, the normals were being calculated this way. So now we're visualizing the visualization, and we've grown to a sizable 850k vertices. To get a normal, we need to transform the tangents, which means 3 warp calls per vertex, not 1. On average across the entire diagram, it comes out to about 2.5x per vertex.</p>
+      <p class="slide">But what if instead of straightening out the normal with a cross product, we warp the original <em>up</em> direction? We get a Jacobian matrix: this is the full set of tangents, which tell you exactly how space has been warped at every point. The vectors can stretch and turn in any direction.</p>
+      <p class="slide">A matrix tells you how much space is warped in each direction, but it doesn't specify the absolute position of the center. It can only warp things in place. To move the center around, we use <em>projective matrices</em> where we use a 4x4 matrix, with 4D vectors, as a formalism. The 4th dimension is made up, and only used in the intermediate calculations. This is weird, but not difficult, you just get used it.</p>
+      <p class="slide">The numbers I've been tossing out appear high, but they're not. If you take a 1080p screen, which has 2 million pixels at 60fps, it already takes 120 million operations per second just to touch every pixel once. If you have blending and overlaps, that only goes up. This is a pixel shader from the previous scene, filling in the pixels for the arrows. It combines a style color with a dynamic transition mask, using a binary operator. Click the nodes to see the code.</p>
+      <p class="slide">This is the vertex shader for the arrows: a lot more complicated. The top-left part calculates the mask value for the pixel shader to use. The rest transforms one position at a time. The custom warp effect is located in the <code>getVectorSample</code> block, bottom middle. These graphs are generated and assembled behind the scenes with <em>ShaderGraph</em>, turned into a GLSL program, one for the vertices and one for the pixels. Unlike, e.g. <code>glslify</code>, ShaderGraph is about run-time, not compile-time composition.</p>
+      <p class="slide">So GPU hardware is pretty crazy these days. Here are some numbers on top of the line products from Nvidia and AMD. The number of transistors is often mentioned, but I'm more interested in the number of TeraFlops.</p>
+      <p class="slide">This is the IBM Blue Gene/P supercomputer.</p>
+      <p class="slide">In 2007, 5 TFLOPS was one of these cabinets. Today it is a high-end consumer GPU.</p>
+      <p class="slide">And your smartphone...</p>
+      <p class="slide">...is roughly equivalent to a mid 2000s desktop PC.</p>
+      <p class="slide">So the real-time graphics of today use huge amounts of computation to look as gorgeous as they do. This is from <em>Alien: Isolation</em>, a game noted for its incredible lighting and set design, accurately reproducing the original film's look.</p>
+      <p class="slide">It is difficult to tell whether this is a picture of a film set or a screenshot of a video game. But of course it's a video game.</p>
+      <p class="slide">This is the scary Alien you spend most of the game trying to get away from. It's not just the character itself that is being shaded in very sophisticated ways, there's smoke all around, and even its drool is rendered, distorting the background.</p>
+      <p class="slide">This is a shot from Crysis 3, which was a last-gen game. There's some fog in the background, usually this is a sign they wanted to draw more but couldn't, and had to cover it up.</p>
+      <p class="slide">One console generation later, the limitation is gone: we effectively have infinite draw distance for scenes of this complexity, like in this PlayStation 4 tech-pony showcase/game.</p>
+      <p class="slide">What that means is that supercomputing is now the background radiation of our lives. Every smartphone, every HD TV, every display requires enormous amounts of digital computation just to work, and the technology to do exactly that is cheap.</p>
+      <p class="slide">Finally I want to talk a bit about WebGL and the lessons learned here. MathBox 2 has been a two year project for a reason, and it wasn't just because I took a few breaks.</p>
+      <p class="slide">WebGL and 60fps requires you to write JavaScript (or Coffeescript) a certain way. You want to allocate all your state and buffers ahead of time, and keep reading and writing the same memory as much as possible. You most definitely do not want to allocate once per item or point, you want to batch and group things as much as possible.</p>
+      <p class="slide">Text rendering is a huge boondoggle in GL, because scaled text looks blurry or aliased at anything but its original size. To get real crisp scalable text, you need Signed Distance Fields. This is where the image captures the closest distance to the shape rather than just an on/off value, up to a certain distance. By applying a contrast and bias to this image, just like the Curves tool in Photoshop, you can generate text that is perfectly anti-aliased for a given size. You also get text outlines for free.</p>
+      <p class="slide">WebGL mirrors the OpenGL API, which means shaders must be compiled synchronously on the main thread. This is a huge bummer, and basically means you need to throttle the shader compilation to maintain a minimum of responsiveness, if you do what I do. It will still be choppy.</p>
+      <p class="slide">What's sillier is that you can't read back floating point numbers from the GPU with WebGL, only bytes. So if you want to read floats, you need to render and encode them manually as RGBA colors and extract the data that way. Luckily somebody else already did this work.</p>
+      <p class="slide">Multisampling is only available as a final step: you can't process a multisampled image further. This means techniques like Order Independent Transparency—a solution to the z-buffer transparency problem—aren't drop in. Worse, due to the lack of certain extensions, you have to do in two render passes what OpenGL and DirectX can do in one.</p>
+      <p class="slide">Luckily there is WebGLStats, a community treasure maintained by Florian Bösch, which catalogues WebGL support in the wild, including various extensions. The situation isn't too great, too much really useful stuff is just not supported on certain platforms, particularly mobile.</p>
+      <p class="slide">Worse is that scaling the complexity of a scene to match the hardware is an incredibly tricky task, because you cannot detect how much slack you have. You can only render too much, measure that you're not hitting 60fps, and reduce your work until you do. This is very fragile.</p>
+      <p class="slide">All of this suggests that WebGL 1 has some fundamental flaws, but, they are not unexpected. See, WebGL is actually the first time a real, existing battle-tested API was bolted wholesale onto a browser: OpenGL. Before, the video game developers cared more about performance than security, so a lot of policy had to put in place to define undefined behavior. WebGL was a very good exercise, for more than just the web.</p>
+      <p class="slide">It also shouldn't be underestimated how much WebGL adoption has been driven by Three.js. Without it, simply getting one triangle rendered on the screen is a challenge that could go wrong in any number of places. As the GPU is mostly a black box, this is frustration city for newbies. Three.js made real 3D graphics immensely more accessible.</p>
+      <p class="slide">Things are looking up though. WebGL 2 is on its way, bringing a few much needed improvements and ditching some of the concerns of legacy mobile platforms. There are still a few annoying gaps though, which is why MathBox 2 streams data into textures: I couldn't wait for WebGL 3 to get real geometry shaders, so I made my own, eating the performance cost.</p>
+      <p class="slide">OpenGL is a decades old API only improved incrementally. In native land, there is talk of "Vulkan" (aka GLNext), an open API that would offer what e.g. Apple offers with Metal on iOS: a modern, parallelization-friendly GPU API that offers full compute access. There could be a WebVulkan.</p>
+      <p class="slide">Even better is that LLVM continues to bear fruit in the form of SPIR-V, an intermediate binary representation for shaders that would reduce loading time. It could also possibly enable the kind of linking I currently have to do in JS with ShaderGraph, with GLSL code transforms.</p>
+      <p class="slide">So despite my long laundry list of concerns, the future is very bright, and there is still the undeniable trump card: WebGL is so much faster that even if you have to bend it in unsavory ways, it will still make DOM/SVG/Canvas 2D look clunky as hell.<br>Note: MathBox 2 will be out as soon as I catch up on sleep and get some rudimentary docs together. In the meantime, the brave can <a target="_blank" href="/files/gltalks/pixelfactory/iframe/index.html#sandbox">try the JS sandbox</a>.</p>
+    </div>
 
   </body>
 
@@ -1042,7 +1137,7 @@
 
   <script type="text/javascript">
     var q = document.querySelector.bind(document);
-    App.mount(q('.slides'), q('.controls'), location);
+    App.mount(q('.slides'), q('.controls'), q('.notes'), location);
   </script>
 
 </html>

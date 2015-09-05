@@ -7,9 +7,11 @@ controls = (els, slideshow) ->
     prev.onclick = slideshow.prev
     next.onclick = slideshow.next
 
+  offline = location.href.match /offline/
+
   WIDTH  = 1280
   HEIGHT = 720
-  FOOTER = if location.href.match /offline/ then 0 else 60
+  FOOTER = if offline then 0 else 60 + 100
 
   window.onmessage = (e) ->
     d = e.data

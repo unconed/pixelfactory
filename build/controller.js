@@ -2,16 +2,17 @@
 var controls;
 
 controls = function(els, slideshow) {
-  var FOOTER, HEIGHT, WIDTH, next, ping, prev, setSpeed, slides, squeeze;
+  var FOOTER, HEIGHT, WIDTH, next, offline, ping, prev, setSpeed, slides, squeeze;
   prev = els.querySelector('.prev');
   next = els.querySelector('.next');
   if (prev && next) {
     prev.onclick = slideshow.prev;
     next.onclick = slideshow.next;
   }
+  offline = location.href.match(/offline/);
   WIDTH = 1280;
   HEIGHT = 720;
-  FOOTER = location.href.match(/offline/) ? 0 : 60;
+  FOOTER = offline ? 0 : 60 + 100;
   window.onmessage = function(e) {
     var d, name;
     d = e.data;
@@ -89,15 +90,16 @@ root = typeof module !== 'undefined' ? module : null;
 root = typeof window !== 'undefined' ? window : root;
 
 root.App = {
-  mount: function(_slides, _controls, location) {
+  mount: function(_slides, _controls, _notes, location) {
     var controls, getIndex, setIndex, slideshow;
     getIndex = function() {
-      return +(location.hash.split('#')[1] || '0');
+      var ref;
+      return +(((ref = location.hash) != null ? ref.split('#')[1] : void 0) || '0');
     };
     setIndex = function(i) {
       return location.hash = '#' + i;
     };
-    slideshow = makeSlideshow(_slides, getIndex(), setIndex);
+    slideshow = makeSlideshow(_slides, _notes, getIndex(), setIndex);
     controls = makeControls(_controls, slideshow);
     root.onhashchange = function() {
       return slideshow.go(getIndex());
@@ -121,8 +123,8 @@ IFRAME_LOAD = 150;
 
 ANIMATE_TIME = 300;
 
-slideshow = function(el, index, callback) {
-  var embeds, l, last, len, len1, m, open, step, steps;
+slideshow = function(el, notes, index, callback) {
+  var embeds, l, last, len, len1, len2, m, note, o, open, step, steps;
   steps = process(fetch(el, '.slide'));
   embeds = sources(el, 'iframe[data-src], video[data-src], img[data-src]');
   last = [];
@@ -134,6 +136,13 @@ slideshow = function(el, index, callback) {
       reset(el);
     }
   }
+  if (notes != null) {
+    notes = fetch(notes, '.slide');
+    for (o = 0, len2 = notes.length; o < len2; o++) {
+      note = notes[o];
+      reset(note);
+    }
+  }
   return trigger(clicker(steps.length, index), function(i, delta) {
     var active, inactive, loaded, unloaded;
     inactive = last;
@@ -141,22 +150,25 @@ slideshow = function(el, index, callback) {
     if (inactive === active) {
       return;
     }
+    if ((notes != null) && (notes != null ? notes[i] : void 0)) {
+      active.push(notes[i]);
+    }
     loaded = flatten((function() {
-      var len2, o, ref2, results;
+      var len3, p, ref2, results;
       ref2 = difference(active, inactive);
       results = [];
-      for (o = 0, len2 = ref2.length; o < len2; o++) {
-        el = ref2[o];
+      for (p = 0, len3 = ref2.length; p < len3; p++) {
+        el = ref2[p];
         results.push(show(el, i, delta));
       }
       return results;
     })());
     unloaded = flatten((function() {
-      var len2, o, ref2, results;
+      var len3, p, ref2, results;
       ref2 = difference(inactive, active);
       results = [];
-      for (o = 0, len2 = ref2.length; o < len2; o++) {
-        el = ref2[o];
+      for (p = 0, len3 = ref2.length; p < len3; p++) {
+        el = ref2[p];
         results.push(hide(el, i, delta));
       }
       return results;

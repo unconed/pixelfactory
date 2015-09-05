@@ -4,19 +4,25 @@ IFRAME_UNLOAD = 150
 IFRAME_LOAD   = 150
 ANIMATE_TIME  = 300
 
-slideshow = (el, index, callback) ->
+slideshow = (el, notes, index, callback) ->
   steps  = process fetch el, '.slide'
   embeds = sources el, 'iframe[data-src], video[data-src], img[data-src]'
   last   = []
   open   = []
 
-  reset el for el in step for step in steps
+  reset el   for el   in step  for step in steps
+
+  if notes?
+    notes = fetch notes, '.slide'
+    reset note for note in notes
 
   trigger clicker(steps.length, index), (i, delta) ->
     inactive = last
     active   = last = steps[i]
 
     return if inactive == active
+
+    active.push notes[i] if notes? and notes?[i]
 
     loaded   = flatten (show el, i, delta for el in difference active, inactive)
     unloaded = flatten (hide el, i, delta for el in difference inactive, active)
