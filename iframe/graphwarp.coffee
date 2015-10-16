@@ -870,7 +870,7 @@ getOverlays = () ->
 
 present.on 'change', (e) ->
   step = present[0].get('index')
-  #el.remove() for el in getOverlays()
+  el.remove() for el in getOverlays()
 
   if step == 21
     surface = mathbox.select('vector')[0]

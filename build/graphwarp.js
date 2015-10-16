@@ -1089,16 +1089,21 @@ getOverlays = function() {
 };
 
 present.on('change', function(e) {
-  var el, k, l, len, len1, ref1, ref2, results, step, surface;
+  var el, k, l, len, len1, len2, m, ref1, ref2, ref3, results, step, surface;
   step = present[0].get('index');
+  ref1 = getOverlays();
+  for (k = 0, len = ref1.length; k < len; k++) {
+    el = ref1[k];
+    el.remove();
+  }
   if (step === 21) {
     surface = mathbox.select('vector')[0];
     if (surface != null) {
       surface.controller.objects[0].renders[0].material.fragmentGraph.inspect();
     }
-    ref1 = getOverlays();
-    for (k = 0, len = ref1.length; k < len; k++) {
-      el = ref1[k];
+    ref2 = getOverlays();
+    for (l = 0, len1 = ref2.length; l < len1; l++) {
+      el = ref2[l];
       enlarge(el, 2);
       enter(el, 2);
     }
@@ -1108,10 +1113,10 @@ present.on('change', function(e) {
     if (surface != null) {
       surface.controller.objects[0].renders[0].material.vertexGraph.inspect();
     }
-    ref2 = getOverlays();
+    ref3 = getOverlays();
     results = [];
-    for (l = 0, len1 = ref2.length; l < len1; l++) {
-      el = ref2[l];
+    for (m = 0, len2 = ref3.length; m < len2; m++) {
+      el = ref3[m];
       enlarge(el, 1);
       results.push(enter(el, 0));
     }
