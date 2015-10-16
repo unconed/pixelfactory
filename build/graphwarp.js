@@ -397,7 +397,7 @@ polar = slide.reveal({
 });
 
 polar.step({
-  stops: [0, 11, 11, 11, 11, 11, 11, 11, 12],
+  stops: [0, 11, 11, 11, 11, 11, 11, 11, 13],
   duration: 0,
   pace: 1,
   script: {
@@ -423,7 +423,7 @@ polar.step({
         quaternion: [0, 0, 0, -1]
       }
     ],
-    12: [
+    13: [
       {
         bend: 0
       }
@@ -543,7 +543,7 @@ view.reveal({
   lineY: true,
   fill: false,
   width: 0,
-  zBias: 3
+  zBias: 7
 }).step({
   trigger: 12,
   pace: 1,
@@ -845,12 +845,13 @@ view.transform({
   start: false,
   end: true
 }).format({
-  expand: 7,
+  sdf: 7,
   expr: function(x) {
     return formatNumber(x);
   },
   font: ["klavika-web", "Klavika Web Basic", "sans-serif"]
 }).label({
+  color: 0,
   depth: .5,
   zIndex: 1,
   zOrder: -5
@@ -1088,21 +1089,16 @@ getOverlays = function() {
 };
 
 present.on('change', function(e) {
-  var el, k, l, len, len1, len2, m, ref1, ref2, ref3, results, step, surface;
+  var el, k, l, len, len1, ref1, ref2, results, step, surface;
   step = present[0].get('index');
-  ref1 = getOverlays();
-  for (k = 0, len = ref1.length; k < len; k++) {
-    el = ref1[k];
-    el.remove();
-  }
   if (step === 21) {
     surface = mathbox.select('vector')[0];
     if (surface != null) {
       surface.controller.objects[0].renders[0].material.fragmentGraph.inspect();
     }
-    ref2 = getOverlays();
-    for (l = 0, len1 = ref2.length; l < len1; l++) {
-      el = ref2[l];
+    ref1 = getOverlays();
+    for (k = 0, len = ref1.length; k < len; k++) {
+      el = ref1[k];
       enlarge(el, 2);
       enter(el, 2);
     }
@@ -1112,10 +1108,10 @@ present.on('change', function(e) {
     if (surface != null) {
       surface.controller.objects[0].renders[0].material.vertexGraph.inspect();
     }
-    ref3 = getOverlays();
+    ref2 = getOverlays();
     results = [];
-    for (m = 0, len2 = ref3.length; m < len2; m++) {
-      el = ref3[m];
+    for (l = 0, len1 = ref2.length; l < len1; l++) {
+      el = ref2[l];
       enlarge(el, 1);
       results.push(enter(el, 0));
     }

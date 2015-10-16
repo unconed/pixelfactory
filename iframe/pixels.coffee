@@ -13,6 +13,9 @@ window.mathbox =
     klass: THREE.OrbitControls
     parameters:
       noKeys: true
+  camera:
+    near: .1
+    far: 10000
 window.three = three
 
 MathBox.DOM.Types.latex = MathBox.DOM.createClass
@@ -1368,6 +1371,7 @@ triangleFaceDepth1 =
 
         .fragment
             shader: depthFragment
+            gamma: false
 
 
           .array
@@ -1386,7 +1390,7 @@ triangleFaceDepth1 =
                 [{rotation: [0, .4, 0]}]
               ]
             .face
-              color: deepred
+              color: 0xffffff
               zBias: 5
 
 triangleFaceDepth2 =
@@ -1405,6 +1409,7 @@ triangleFaceDepth2 =
 
         .fragment
             shader: depthFragment
+            gamma: false
 
           .array
             channels: 3
@@ -1422,7 +1427,7 @@ triangleFaceDepth2 =
                 [{}, {rotation: (t) -> [0, Math.cos(t), 0]}]
               ]
             .face
-              color: blue
+              color: 0xffffff
               zBias: 5
 
 # ====================================================================================

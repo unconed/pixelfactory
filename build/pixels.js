@@ -20,6 +20,10 @@ window.mathbox = (ref = mathBox({
     parameters: {
       noKeys: true
     }
+  },
+  camera: {
+    near: .1,
+    far: 10000
   }
 }), mathbox = ref.mathbox, three = ref.three, ref);
 
@@ -1507,7 +1511,8 @@ triangleFaceDepth1 = pixelGridDepth.slide({
   pass: 'eye',
   shader: depthVertex
 }).fragment({
-  shader: depthFragment
+  shader: depthFragment,
+  gamma: false
 }).array({
   channels: 3,
   length: 3,
@@ -1531,7 +1536,7 @@ triangleFaceDepth1 = pixelGridDepth.slide({
     ]
   ]
 }).face({
-  color: deepred,
+  color: 0xffffff,
   zBias: 5
 });
 
@@ -1546,7 +1551,8 @@ triangleFaceDepth2 = pixelGridDepth.slide({
   pass: 'eye',
   shader: depthVertex
 }).fragment({
-  shader: depthFragment
+  shader: depthFragment,
+  gamma: false
 }).array({
   channels: 3,
   length: 3,
@@ -1572,7 +1578,7 @@ triangleFaceDepth2 = pixelGridDepth.slide({
     ]
   ]
 }).face({
-  color: blue,
+  color: 0xffffff,
   zBias: 5
 });
 

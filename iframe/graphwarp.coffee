@@ -290,7 +290,7 @@ polar = slide
 
 polar
   .step
-    stops: [0, 11, 11, 11, 11, 11, 11, 11, 12]
+    stops: [0, 11, 11, 11, 11, 11, 11, 11, 13]
     duration: 0
     pace:     1
     script: {
@@ -298,7 +298,7 @@ polar
       5: [{bend: 1}]
       7: [{bend: 1, quaternion: [0, 1, 0, 0]}]
       11: [{bend: .33, quaternion: [0, 0, 0, -1]}]
-      12: [{bend: 0}]
+      13: [{bend: 0}]
     }
 
 view = polar
@@ -386,7 +386,7 @@ view
       lineY: true
       fill: false
       width: 0
-      zBias: 3
+      zBias: 7
     .step
       trigger: 12
       pace: 1
@@ -691,10 +691,11 @@ view
       start: false
       end:   true
     .format
-      expand: 7
+      sdf: 7
       expr: (x) -> formatNumber x
       font: ["klavika-web", "Klavika Web Basic", "sans-serif"]
     .label
+      color: 0
       depth: .5
       zIndex: 1
       zOrder: -5
@@ -869,7 +870,7 @@ getOverlays = () ->
 
 present.on 'change', (e) ->
   step = present[0].get('index')
-  el.remove() for el in getOverlays()
+  #el.remove() for el in getOverlays()
 
   if step == 21
     surface = mathbox.select('vector')[0]
