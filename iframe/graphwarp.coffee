@@ -171,7 +171,7 @@ slide
               color: 'white'
               opacity: .95
               zBias: -10
-              zOrder: -1
+              zOrder: 1
               zIndex: 3
             .grid
               divideX: 15
@@ -185,7 +185,7 @@ slide
               durationEnter: 1
               durationExit: .5
             .array
-              length: 1
+              width: 1
               history: 512
               expr: (emit, i, t) -> emit 0, t % 4
               channels: 2
@@ -241,9 +241,10 @@ slide
               durationEnter: 1
               durationExit:  1
             .array
-              length: 1
+              width: 1
               history: 512
-              expr: (emit, i, t) -> emit 0, warpShader.evaluate 'intensity', t
+              expr: (emit, i, t) ->
+                emit 0, warpShader.evaluate 'intensity', t
               channels: 2
               fps: 60
               hurry: 20
@@ -460,8 +461,8 @@ polar
       height: 19
       items: 2
       channels: 4
-      paddingWidth:  1
-      paddingHeight: 1
+      paddingX: 1
+      paddingY: 1
     .vector
       color: '#47D0FF'
       #color: '#3090FF'
@@ -526,8 +527,8 @@ polar
       height: 19
       items: 2
       channels: 4
-      paddingWidth:  1
-      paddingHeight: 1
+      paddingX: 1
+      paddingY: 1
     .vector
       color: '#c099ff'
       zBias: 30
@@ -589,8 +590,8 @@ polar
       height: 19
       items: 2
       channels: 4
-      paddingWidth:  1
-      paddingHeight: 1
+      paddingX: 1
+      paddingY: 1
     .vector
       color: '#46daaf'
       zBias: 30
@@ -663,8 +664,8 @@ polar
       height: 19
       items: 2
       channels: 4
-      paddingWidth:  1
-      paddingHeight: 1
+      paddingX: 1
+      paddingY: 1
     .vector
       width: 1
       color: '#f0a050'
@@ -698,7 +699,7 @@ view
       color: 0
       depth: .5
       zIndex: 1
-      zOrder: -5
+      zOrder: 5
     .step
       stops: [0, 1]
       trigger: 3
@@ -753,7 +754,7 @@ view
     zBias: -5
     crossed: true
   .interval
-    length: 512
+    width: 512
     channels: 2
     expr: emitCurve
   .line
@@ -785,7 +786,7 @@ view
       color: 0x40C020
       width: 5
       zBias: 5
-      zOrder: -1
+      zOrder: 1
       origin: [0, π / 2, 0]
     .axis
       axis: 1
@@ -793,7 +794,7 @@ view
       color: 0x3090FF
       width: 5
       zBias: 5
-      zOrder: -1
+      zOrder: 1
       origin: [0, π / 2, 0]
     .axis
       axis: 3
@@ -801,7 +802,7 @@ view
       color: 0xC02050
       width: 5
       zBias: 5
-      zOrder: -1
+      zOrder: 1
       origin: [0, π / 2, 0]
 
     .scale

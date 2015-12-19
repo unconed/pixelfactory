@@ -319,7 +319,7 @@ pixelCanvas =
         width: 2
         crossed: true
         zBias: 15
-        zOrder: -1
+        zOrder: 1
         color: 0
       .step
         trigger: 6
@@ -493,7 +493,7 @@ pixelCanvasRGBA =
         color: 0xFFFFFF
         map: pixelRTTRGBA
         zBias: 5
-        zOrder: -100
+        zOrder: 100
 
 # ====================================================================================
 
@@ -541,7 +541,7 @@ pixelCanvasTextR =
       color: 0xFF8080
       zIndex: 2
       zBias: 5
-      zOrder: -100
+      zOrder: 100
       size: 6.5
       outline: .7
       depth: .8
@@ -581,7 +581,7 @@ pixelCanvasTextG =
       color: 0x80FF80
       zIndex: 2
       zBias: 5
-      zOrder: -100
+      zOrder: 100
       size: 6.5
       outline: .7
       depth: .8
@@ -621,7 +621,7 @@ pixelCanvasTextB =
       color: 0xA0A0FF
       zIndex: 2
       zBias: 5
-      zOrder: -100
+      zOrder: 100
       size: 6.5
       outline: .7
       depth: .8
@@ -661,7 +661,7 @@ pixelCanvasTextA =
       color: 0x808080
       zIndex: 2
       zBias: 5
-      zOrder: -100
+      zOrder: 100
       size: 6.5
       outline: .7
       depth: .8
@@ -679,7 +679,7 @@ triangleSnapFace =
         duration: .5
       .array
         channels: 2
-        length: 3
+        width: 3
         expr: triangleSnap
       .transpose
         order: 'yzwx'
@@ -703,7 +703,7 @@ triangleSnapOutline =
         duration: .5
       .array
         channels: 2
-        length: 4
+        width: 4
         expr: triangleSnap
       .line
         color: deepred
@@ -728,7 +728,7 @@ triangleFaceData =
         duration: 1
       .array
         channels: 2
-        length: 3
+        width: 3
         expr: triangle
       .transpose
         order: 'yzwx'
@@ -759,14 +759,14 @@ triangleOutline =
           ]
         .array
           channels: 2
-          length: 4
+          width: 4
           expr: triangle
         .line
           color: deepred
           width: 10
           zBias: 10
           zIndex: 1
-          zOrder: -1
+          zOrder: 1
         .step
           trigger: 3
           duration: 1
@@ -782,13 +782,13 @@ triangleOutline =
           size: 25
           zBias: 15
           zIndex: 1
-          zOrder: -1
+          zOrder: 1
         .transpose
           order: 'yzwx'
         .face
           color: deepred
           zBias: 8
-          zOrder: -3
+          zOrder: 3
         .step
           trigger: 2
           duration: 1
@@ -1066,7 +1066,7 @@ triangleSamplePoint =
       size: 10.5
       zIndex: 2
       zBias: 6
-      zOrder: -2
+      zOrder: 2
     .step
       trigger: 5,
       duration: 1
@@ -1103,7 +1103,7 @@ sampleCone =
         .surface
           color: deepred
           zBias: 5
-          zOrder: -2
+          zOrder: 2
           zIndex: 2
           opacity: .5
         .surface
@@ -1113,7 +1113,7 @@ sampleCone =
           color: deeperred
           width: 3
           zBias: 5
-          zOrder: -3
+          zOrder: 3
           zIndex: 2
           opacity: .5
 
@@ -1193,7 +1193,7 @@ nyquistView =
           ]
 
         .interval
-          length: WIDTH * 48
+          width: WIDTH * 48
           channels: 2
           expr: (emit, x, i, t) ->
             y = nyquistSampler x, t
@@ -1205,7 +1205,7 @@ nyquistView =
           zBias: 20
 
         .interval
-          length: WIDTH
+          width: WIDTH
           channels: 2
           expr: (emit, x, i, t) ->
             y = nyquistSampler x, t
@@ -1216,19 +1216,19 @@ nyquistView =
           color: 0xFFFFFF
           zBias: 21
           zIndex: 1
-          zOrder: -5
+          zOrder: 5
         .point
           size: 4
           color: 0x3090FF
           zBias: 22
           zIndex: 1
-          zOrder: -6
+          zOrder: 6
 
         .area
           width:  3
           height: 16
         .interval
-          length: WIDTH * 32
+          width: WIDTH * 32
           minFilter: 'linear'
           magFilter: 'linear'
           expr: (emit, x, i, t) ->
@@ -1260,7 +1260,7 @@ nyquistView =
                 rangeX: [-WIDTH*3, WIDTH*4]
               .interval
                 range: [-WIDTH*3, WIDTH*4]
-                length: WIDTH * 64
+                width: WIDTH * 64
                 minFilter: 'linear'
                 magFilter: 'linear'
                 expr: (emit, x, i, t) ->
@@ -1283,7 +1283,7 @@ nyquistView =
             width:  3
             height: 3
           .interval
-            length: WIDTH
+            width: WIDTH
             expr: (emit, x, i, t) ->
               y = nyquistSampler x, t
               emit y, y, y, 1
@@ -1307,7 +1307,7 @@ triangleFace1 =
         duration: 1
       .array
         channels: 3
-        length: 3
+        width: 3
         expr: triangleRel
       .transpose
         order: 'yzwx'
@@ -1335,7 +1335,7 @@ triangleFace2 =
         duration: 1
       .array
         channels: 3
-        length: 3
+        width: 3
         expr: triangleRel
       .transpose
         order: 'yzwx'
@@ -1376,7 +1376,7 @@ triangleFaceDepth1 =
 
           .array
             channels: 3
-            length: 3
+            width: 3
             expr: triangleRel
           .transpose
             order: 'yzwx'
@@ -1413,7 +1413,7 @@ triangleFaceDepth2 =
 
           .array
             channels: 3
-            length: 3
+            width: 3
             expr: triangleRel
           .transpose
             order: 'yzwx'

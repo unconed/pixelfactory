@@ -229,7 +229,12 @@ camera = slide.camera().step({
 warpShader = slide.shader({
   code: "uniform float time;\nuniform float intensity;\n\nvec4 warpVertex(vec4 xyzw, inout vec4 stpq) {\n  xyzw *= vec4(1.0, 0.5, 0.5, 0.0);\n\n  xyzw +=   0.2 * intensity * (sin(xyzw.yzwx * 1.91 + time + sin(xyzw.wxyz * 1.74 + time)));\n  xyzw +=   0.1 * intensity * (sin(xyzw.yzwx * 4.03 + time + sin(xyzw.wxyz * 2.74 + time)));\n  xyzw +=  0.05 * intensity * (sin(xyzw.yzwx * 8.39 + time + sin(xyzw.wxyz * 4.18 + time)));\n  xyzw += 0.025 * intensity * (sin(xyzw.yzwx * 15.1 + time + sin(xyzw.wxyz * 9.18 + time)));\n    \n  xyzw *= vec4(1.0, 2.0, 2.0, 0.0);\n    \n  return xyzw;\n}"
 }, {
-  time: time
+  time: function(t) {
+    if (Math.random() > .9) {
+      console.log('time', t);
+    }
+    return t / 3;
+  }
 });
 
 slide.step(intensitySteps);
@@ -267,7 +272,7 @@ slide.layer().unit({
   color: 'white',
   opacity: .95,
   zBias: -10,
-  zOrder: -1,
+  zOrder: 1,
   zIndex: 3
 }).grid({
   divideX: 15,
@@ -279,7 +284,7 @@ slide.layer().unit({
   durationEnter: 1,
   durationExit: .5
 }).array({
-  length: 1,
+  width: 1,
   history: 512,
   expr: function(emit, i, t) {
     return emit(0, t % 4);
@@ -347,9 +352,12 @@ slide.layer().unit({
   durationEnter: 1,
   durationExit: 1
 }).array({
-  length: 1,
+  width: 1,
   history: 512,
   expr: function(emit, i, t) {
+    if (Math.random() > .9) {
+      console.log('eval', t);
+    }
     return emit(0, warpShader.evaluate('intensity', t));
   },
   channels: 2,
@@ -640,8 +648,8 @@ polar.reveal({
   height: 19,
   items: 2,
   channels: 4,
-  paddingWidth: 1,
-  paddingHeight: 1
+  paddingX: 1,
+  paddingY: 1
 }).vector({
   color: '#47D0FF',
   zBias: 15,
@@ -701,8 +709,8 @@ polar.reveal({
   height: 19,
   items: 2,
   channels: 4,
-  paddingWidth: 1,
-  paddingHeight: 1
+  paddingX: 1,
+  paddingY: 1
 }).vector({
   color: '#c099ff',
   zBias: 30,
@@ -751,8 +759,8 @@ polar.reveal({
   height: 19,
   items: 2,
   channels: 4,
-  paddingWidth: 1,
-  paddingHeight: 1
+  paddingX: 1,
+  paddingY: 1
 }).vector({
   color: '#46daaf',
   zBias: 30,
@@ -817,8 +825,8 @@ polar.reveal({
   height: 19,
   items: 2,
   channels: 4,
-  paddingWidth: 1,
-  paddingHeight: 1
+  paddingX: 1,
+  paddingY: 1
 }).vector({
   width: 1,
   color: '#f0a050',
@@ -854,7 +862,7 @@ view.transform({
   color: 0,
   depth: .5,
   zIndex: 1,
-  zOrder: -5
+  zOrder: 5
 }).step({
   stops: [0, 1],
   trigger: 3,
@@ -916,7 +924,7 @@ view.grid({
   zBias: -5,
   crossed: true
 }).interval({
-  length: 512,
+  width: 512,
   channels: 2,
   expr: emitCurve
 }).line({
@@ -973,7 +981,7 @@ view.grid({
   color: 0x40C020,
   width: 5,
   zBias: 5,
-  zOrder: -1,
+  zOrder: 1,
   origin: [0, π / 2, 0]
 }).axis({
   axis: 1,
@@ -981,7 +989,7 @@ view.grid({
   color: 0x3090FF,
   width: 5,
   zBias: 5,
-  zOrder: -1,
+  zOrder: 1,
   origin: [0, π / 2, 0]
 }).axis({
   axis: 3,
@@ -989,7 +997,7 @@ view.grid({
   color: 0xC02050,
   width: 5,
   zBias: 5,
-  zOrder: -1,
+  zOrder: 1,
   origin: [0, π / 2, 0]
 }).scale({
   axis: 1,

@@ -389,7 +389,7 @@ pixelCanvas = pixelView.reveal({
   width: 2,
   crossed: true,
   zBias: 15,
-  zOrder: -1,
+  zOrder: 1,
   color: 0
 }).step({
   trigger: 6,
@@ -607,7 +607,7 @@ pixelCanvasRGBA = pixelView.slide({
   color: 0xFFFFFF,
   map: pixelRTTRGBA,
   zBias: 5,
-  zOrder: -100
+  zOrder: 100
 });
 
 pixelCanvasText = pixelView.slide({
@@ -644,7 +644,7 @@ pixelCanvasTextR = pixelCanvasText.area({
   color: 0xFF8080,
   zIndex: 2,
   zBias: 5,
-  zOrder: -100,
+  zOrder: 100,
   size: 6.5,
   outline: .7,
   depth: .8
@@ -676,7 +676,7 @@ pixelCanvasTextG = pixelCanvasText.area({
   color: 0x80FF80,
   zIndex: 2,
   zBias: 5,
-  zOrder: -100,
+  zOrder: 100,
   size: 6.5,
   outline: .7,
   depth: .8
@@ -708,7 +708,7 @@ pixelCanvasTextB = pixelCanvasText.area({
   color: 0xA0A0FF,
   zIndex: 2,
   zBias: 5,
-  zOrder: -100,
+  zOrder: 100,
   size: 6.5,
   outline: .7,
   depth: .8
@@ -740,7 +740,7 @@ pixelCanvasTextA = pixelCanvasText.area({
   color: 0x808080,
   zIndex: 2,
   zBias: 5,
-  zOrder: -100,
+  zOrder: 100,
   size: 6.5,
   outline: .7,
   depth: .8
@@ -755,7 +755,7 @@ triangleSnapFace = pixelGrid.slide({
   duration: .5
 }).array({
   channels: 2,
-  length: 3,
+  width: 3,
   expr: triangleSnap
 }).transpose({
   order: 'yzwx'
@@ -785,7 +785,7 @@ triangleSnapOutline = pixelView.slide({
   duration: .5
 }).array({
   channels: 2,
-  length: 4,
+  width: 4,
   expr: triangleSnap
 }).line({
   color: deepred,
@@ -807,7 +807,7 @@ triangleFaceData = pixelGrid.slide({
   duration: 1
 }).array({
   channels: 2,
-  length: 3,
+  width: 3,
   expr: triangle
 }).transpose({
   order: 'yzwx'
@@ -845,14 +845,14 @@ triangleOutline = pixelView.slide({
   ]
 }).array({
   channels: 2,
-  length: 4,
+  width: 4,
   expr: triangle
 }).line({
   color: deepred,
   width: 10,
   zBias: 10,
   zIndex: 1,
-  zOrder: -1
+  zOrder: 1
 }).step({
   trigger: 3,
   duration: 1,
@@ -875,13 +875,13 @@ triangleOutline = pixelView.slide({
   size: 25,
   zBias: 15,
   zIndex: 1,
-  zOrder: -1
+  zOrder: 1
 }).transpose({
   order: 'yzwx'
 }).face({
   color: deepred,
   zBias: 8,
-  zOrder: -3
+  zOrder: 3
 }).step({
   trigger: 2,
   duration: 1,
@@ -1176,7 +1176,7 @@ triangleSamplePoint = triangleSamples.transform().step({
   size: 10.5,
   zIndex: 2,
   zBias: 6,
-  zOrder: -2
+  zOrder: 2
 }).step({
   trigger: 5,
   duration: 1,
@@ -1228,7 +1228,7 @@ sampleCone = pixelView.slide({
 }).surface({
   color: deepred,
   zBias: 5,
-  zOrder: -2,
+  zOrder: 2,
   zIndex: 2,
   opacity: .5
 }).surface({
@@ -1238,7 +1238,7 @@ sampleCone = pixelView.slide({
   color: deeperred,
   width: 3,
   zBias: 5,
-  zOrder: -3,
+  zOrder: 3,
   zIndex: 2,
   opacity: .5
 });
@@ -1324,7 +1324,7 @@ nyquistView = pixelView.slide({
     ]
   ]
 }).interval({
-  length: WIDTH * 48,
+  width: WIDTH * 48,
   channels: 2,
   expr: function(emit, x, i, t) {
     var y;
@@ -1337,7 +1337,7 @@ nyquistView = pixelView.slide({
   color: 0x3090FF,
   zBias: 20
 }).interval({
-  length: WIDTH,
+  width: WIDTH,
   channels: 2,
   expr: function(emit, x, i, t) {
     var y;
@@ -1350,18 +1350,18 @@ nyquistView = pixelView.slide({
   color: 0xFFFFFF,
   zBias: 21,
   zIndex: 1,
-  zOrder: -5
+  zOrder: 5
 }).point({
   size: 4,
   color: 0x3090FF,
   zBias: 22,
   zIndex: 1,
-  zOrder: -6
+  zOrder: 6
 }).area({
   width: 3,
   height: 16
 }).interval({
-  length: WIDTH * 32,
+  width: WIDTH * 32,
   minFilter: 'linear',
   magFilter: 'linear',
   expr: function(emit, x, i, t) {
@@ -1394,7 +1394,7 @@ nyquistView = pixelView.slide({
   rangeX: [-WIDTH * 3, WIDTH * 4]
 }).interval({
   range: [-WIDTH * 3, WIDTH * 4],
-  length: WIDTH * 64,
+  width: WIDTH * 64,
   minFilter: 'linear',
   magFilter: 'linear',
   expr: function(emit, x, i, t) {
@@ -1415,7 +1415,7 @@ nyquistView = pixelView.slide({
   width: 3,
   height: 3
 }).interval({
-  length: WIDTH,
+  width: WIDTH,
   expr: function(emit, x, i, t) {
     var y;
     y = nyquistSampler(x, t);
@@ -1438,7 +1438,7 @@ triangleFace1 = pixelGrid.slide({
   duration: 1
 }).array({
   channels: 3,
-  length: 3,
+  width: 3,
   expr: triangleRel
 }).transpose({
   order: 'yzwx'
@@ -1472,7 +1472,7 @@ triangleFace2 = pixelGrid.slide({
   duration: 1
 }).array({
   channels: 3,
-  length: 3,
+  width: 3,
   expr: triangleRel
 }).transpose({
   order: 'yzwx'
@@ -1515,7 +1515,7 @@ triangleFaceDepth1 = pixelGridDepth.slide({
   gamma: false
 }).array({
   channels: 3,
-  length: 3,
+  width: 3,
   expr: triangleRel
 }).transpose({
   order: 'yzwx'
@@ -1555,7 +1555,7 @@ triangleFaceDepth2 = pixelGridDepth.slide({
   gamma: false
 }).array({
   channels: 3,
-  length: 3,
+  width: 3,
   expr: triangleRel
 }).transpose({
   order: 'yzwx'
