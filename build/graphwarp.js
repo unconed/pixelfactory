@@ -229,12 +229,7 @@ camera = slide.camera().step({
 warpShader = slide.shader({
   code: "uniform float time;\nuniform float intensity;\n\nvec4 warpVertex(vec4 xyzw, inout vec4 stpq) {\n  xyzw *= vec4(1.0, 0.5, 0.5, 0.0);\n\n  xyzw +=   0.2 * intensity * (sin(xyzw.yzwx * 1.91 + time + sin(xyzw.wxyz * 1.74 + time)));\n  xyzw +=   0.1 * intensity * (sin(xyzw.yzwx * 4.03 + time + sin(xyzw.wxyz * 2.74 + time)));\n  xyzw +=  0.05 * intensity * (sin(xyzw.yzwx * 8.39 + time + sin(xyzw.wxyz * 4.18 + time)));\n  xyzw += 0.025 * intensity * (sin(xyzw.yzwx * 15.1 + time + sin(xyzw.wxyz * 9.18 + time)));\n    \n  xyzw *= vec4(1.0, 2.0, 2.0, 0.0);\n    \n  return xyzw;\n}"
 }, {
-  time: function(t) {
-    if (Math.random() > .9) {
-      console.log('time', t);
-    }
-    return t / 3;
-  }
+  time: time
 });
 
 slide.step(intensitySteps);
@@ -355,9 +350,6 @@ slide.layer().unit({
   width: 1,
   history: 512,
   expr: function(emit, i, t) {
-    if (Math.random() > .9) {
-      console.log('eval', t);
-    }
     return emit(0, warpShader.evaluate('intensity', t));
   },
   channels: 2,
